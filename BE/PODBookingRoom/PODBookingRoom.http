@@ -1,0 +1,6 @@
+@PODBookingRoom_HostAddress = http://localhost:5109
+
+GET {{PODBookingRoom_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
