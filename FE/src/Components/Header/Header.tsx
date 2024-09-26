@@ -1,23 +1,42 @@
-import React from 'react'
-import './Header.css'
+import React, { useState } from 'react';
+import LoginPopup from './LoginPopup';
+import RegisterPopup from './RegisterPopup';
 
 const Header = () => {
-  return (
-    <div id='header'>
-        <p className='logo'>WorkChill</p>
-        <ul className='list'>
-            <li><div>Trang chủ</div></li>
-            <li><div>Địa điểm</div></li>
-            <li><div>Phòng</div></li>
-            <li><div>Về Chúng Tôi</div></li>
-            <li><div>Gói Thành Viên</div></li>
-        </ul>
-        <div className="account">
-          <button className='login'>Log in</button>
-          <button className='register'>Register</button>
-        </div>
-    </div>
-  )
-}
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
-export default Header
+  const handleLoginClick = () => {
+    setIsLoginOpen(true);
+  };
+
+  const handleRegisterClick = () => {
+    setIsRegisterOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsLoginOpen(false);
+    setIsRegisterOpen(false);
+  };
+
+  return (
+    <div id="header">
+      <div className="logo">WorkChill</div>
+      <ul className="list">
+        <li>Trang chủ</li>
+        <li>Địa điểm</li>
+        <li>Phòng</li>
+        <li>Về Chúng Tôi</li>
+        <li>Gói Thành Viên</li>
+      </ul>
+      <div className="account">
+        <button className="login" onClick={handleLoginClick}>Log in</button>
+        <button className="register" onClick={handleRegisterClick}>Register</button>
+      </div>
+      {isLoginOpen && <LoginPopup onClose={closePopup} />}
+      {isRegisterOpen && <RegisterPopup onClose={closePopup} />}
+    </div>
+  );
+};
+
+export default Header;
