@@ -1,5 +1,7 @@
 using BE.src.Domains.Models;
+using BE.src.Domains.Models.Base;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 using System.Reflection.Emit;
 
 namespace BE.src.Domains.Database
@@ -25,9 +27,21 @@ namespace BE.src.Domains.Database
             public DbSet<Location> Locations { get; set; } = null!;
             public DbSet<Transaction> Transactions { get; set; } = null!;
 
+            private readonly IConfiguration _configuration;
+
+            public PodDbContext(DbContextOptions<PodDbContext> options, IConfiguration configuration)
+                : base(options)
+            {
+                  _configuration = configuration;
+            }
+
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
-                  optionsBuilder.UseMySQL("Server=localhost;Database=PODBooking;User=root;Password=12345;");
+                  if (!optionsBuilder.IsConfigured) // Check if already configured
+                  {
+                        optionsBuilder.UseMySql(_configuration.GetConnectionString("DefaultConnection"),
+                            new MySqlServerVersion(new Version(8, 0, 27)));
+                  }
             }
 
             protected override void OnModelCreating(ModelBuilder builder)
@@ -414,6 +428,13 @@ namespace BE.src.Domains.Database
                         .HasForeignKey(uam => uam.AreaId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
+                  builder.Entity<BaseEntity>()
+                        .Property(b => b.CreateAt)
+                        .IsRequired(false);
+
+                  builder.Entity<BaseEntity>()
+                      .Property(b => b.UpdateAt)
+                      .IsRequired(false);
             }
       }
 }

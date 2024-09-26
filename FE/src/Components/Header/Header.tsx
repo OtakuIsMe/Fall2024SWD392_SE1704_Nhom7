@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import LoginPopup from './LoginPopup';
-import RegisterPopup from './RegisterPopup';
+import LoginPopup from '../LoginPopup/LoginPopup';
+import RegisterPopup from '../RegisterPopup/RegisterPopup';
+import './Header.css'
 
 const Header = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
