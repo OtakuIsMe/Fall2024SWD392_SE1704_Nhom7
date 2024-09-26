@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 
-const LoginPopup = ({ onClose }) => {
+const RegisterPopup = ({ onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login submitted', { email, password });
+    // Handle registration logic here
+    console.log('Registration submitted', { email, password, confirmPassword });
     onClose();
   };
 
   return (
     <div className="popup-overlay">
       <div className="popup-content">
-        <h2>Đăng nhập</h2>
+        <h2>Đăng ký</h2>
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -30,10 +31,14 @@ const LoginPopup = ({ onClose }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <label>
-            <input type="checkbox" /> Nhớ đăng nhập
-          </label>
-          <button type="submit">Đăng nhập</button>
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Đăng ký</button>
         </form>
         <button className="close-button" onClick={onClose}>×</button>
       </div>
@@ -41,4 +46,4 @@ const LoginPopup = ({ onClose }) => {
   );
 };
 
-export default LoginPopup;
+export default RegisterPopup;
