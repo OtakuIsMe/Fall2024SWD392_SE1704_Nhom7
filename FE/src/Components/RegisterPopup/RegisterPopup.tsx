@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './RegisterPopup.css';
 
 const RegisterPopup = ({ onClose }) => {
   const [email, setEmail] = useState('');
