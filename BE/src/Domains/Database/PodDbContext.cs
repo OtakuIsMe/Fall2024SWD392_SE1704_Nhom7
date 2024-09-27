@@ -1,8 +1,10 @@
+using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using BE.src.Domains.Models.Base;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using System.Reflection.Emit;
+using Google.Protobuf.WellKnownTypes;
 
 namespace BE.src.Domains.Database
 {
@@ -85,8 +87,12 @@ namespace BE.src.Domains.Database
                         entity.Property(b => b.DateBooking)
                         .IsRequired();
 
-                        entity.Property(b => b.Status)
-                        .IsRequired();
+                      entity.Property(b => b.Status)
+                      .IsRequired()
+                      .HasConversion(
+                          v=> (int) v,
+                          v=> (StatusBookingEnum) v
+                          );
 
                         entity.HasOne(b => b.User)
                         .WithMany(u => u.Bookings)
@@ -107,8 +113,12 @@ namespace BE.src.Domains.Database
                         entity.Property(bi => bi.Total)
                         .IsRequired();
 
-                        entity.Property(bi => bi.Status)
-                        .IsRequired();
+                      entity.Property(bi => bi.Status)
+                      .IsRequired()
+                      .HasConversion(
+                          v=>(int) v,
+                          v=> (StatusBookingItemEnum)v
+                          );
 
                         entity.HasOne(bi => bi.Booking)
                         .WithMany(b => b.BookingItems)
@@ -126,9 +136,13 @@ namespace BE.src.Domains.Database
                         entity.Property(e => e.Amount)
                               .IsRequired();
 
-                        entity.Property(e => e.Type)
-                              .IsRequired()
-                              .HasMaxLength(20);
+                      entity.Property(e => e.Type)
+                            .IsRequired()
+                            .HasMaxLength(20)
+                            .HasConversion(
+                                v => v.ToString(),
+                                v => v.ToEnum<TypeDepositWithdrawEnum>()
+                            );
 
                         entity.Property(e => e.Method)
                               .IsRequired()
@@ -264,8 +278,12 @@ namespace BE.src.Domains.Database
                   {
                         entity.HasKey(pr => pr.Id);
 
-                        entity.Property(pr => pr.Type)
-                        .IsRequired();
+                      entity.Property(pr => pr.Type)
+                      .IsRequired()
+                      .HasConversion(
+                          v => v.ToString(),
+                          v => v.ToEnum<PaymentRefundEnum>()
+                          );
 
                         entity.Property(pr => pr.Total)
                         .IsRequired();
@@ -337,6 +355,14 @@ namespace BE.src.Domains.Database
                   {
                         entity.HasKey(r => r.Id);
 
+                        entity.Property(r => r.TypeRoom)
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasConversion(
+                            v=> v.ToString(),
+                            v=> v.ToEnum<TypeRoomEnum>()
+                            );
+
                         entity.Property(r => r.Name)
                         .IsRequired()
                         .HasMaxLength(200);
@@ -344,8 +370,12 @@ namespace BE.src.Domains.Database
                         entity.Property(r => r.Price)
                         .IsRequired();
 
-                        entity.Property(r => r.Status)
-                        .IsRequired();
+                      entity.Property(r => r.Status)
+                      .IsRequired()
+                      .HasConversion(
+                          v=> (int) v,
+                          v=> (StatusRoomEnum) v
+                          );
 
                         entity.HasOne(r => r.Area)
                         .WithMany(a => a.Rooms)
@@ -356,8 +386,13 @@ namespace BE.src.Domains.Database
                   {
                         entity.HasKey(t => t.Id);
 
-                        entity.Property(t => t.TransactionType)
-                        .IsRequired();
+                      entity.Property(t => t.TransactionType)
+                      .IsRequired()
+                      .HasMaxLength(10)
+                      .HasConversion(
+                          v => v.ToString(),
+                          v => v.ToEnum<TypeTransactionEnum>()
+                          );
 
                         entity.Property(t => t.Total)
                         .IsRequired();

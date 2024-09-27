@@ -1,5 +1,5 @@
 using BE.src.Domains.Database;
-using BE.src.Domains.DTOs;
+using BE.src.Domains.DTOs.User;
 using BE.src.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,10 +22,10 @@ namespace BE.src.Controllers
             return await _userServ.LoginByDefault(data);
         }
 
-        // [HttpPost("GetUserByToken")]
-        // public async Task<IActionResult> GetUserByToken([FromForm] string token)
-        // {
-        //     return await _userServ.GetUserByToken(token);
-        // }
+        [HttpPost("GetUserByToken")]
+        public async Task<IActionResult> GetUserByToken([FromBody] string token)
+        {
+            return await _userServ.GetUserByToken(token);
+        }
     }
 }

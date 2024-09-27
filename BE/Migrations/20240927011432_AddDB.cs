@@ -6,164 +6,113 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BE.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateUserDOB : Migration
+    public partial class AddDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Username",
-                table: "Users",
-                type: "varchar(50)",
-                maxLength: 50,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "longtext");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Phone",
-                table: "Users",
-                type: "varchar(15)",
-                maxLength: 15,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "longtext");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Password",
-                table: "Users",
-                type: "varchar(100)",
-                maxLength: 100,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "longtext");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "Users",
-                type: "varchar(100)",
-                maxLength: 100,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "longtext");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Email",
-                table: "Users",
-                type: "varchar(100)",
-                maxLength: 100,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "longtext");
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DOB",
-                table: "Users",
-                type: "datetime(6)",
-                nullable: true,
-                oldClrType: typeof(DateTime),
-                oldType: "datetime(6)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "Roles",
-                type: "varchar(50)",
-                maxLength: 50,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "longtext");
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "AmenityServices",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Price = table.Column<float>(type: "float", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AmenityServices", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "BaseEntity",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BaseEntity", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Locations",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Address = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true),
-                    Longitude = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
-                    Latitude = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Address = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Longitude = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Latitude = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Locations", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Memberships",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Discount = table.Column<float>(type: "float", nullable: false),
                     TimeLeft = table.Column<TimeSpan>(type: "time(6)", nullable: false),
                     Price = table.Column<float>(type: "float", nullable: false),
                     Rank = table.Column<int>(type: "int", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Memberships", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
+                name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Title = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "varchar(2000)", maxLength: 2000, nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId1 = table.Column<Guid>(type: "char(36)", nullable: true),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Users_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "Users",
-                        principalColumn: "Id");
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Areas",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Name = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false),
-                    LocationId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LocationId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -175,17 +124,102 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Phone = table.Column<string>(type: "varchar(15)", maxLength: 15, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Password = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DOB = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    RoleId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Rooms",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TypeRoom = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Price = table.Column<float>(type: "float", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rooms_Areas_AreaId",
+                        column: x => x.AreaId,
+                        principalTable: "Areas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "DepositWithdraw",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Amount = table.Column<float>(type: "float", nullable: false),
+                    Type = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Method = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DepositWithdraw", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DepositWithdraw_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "MembershipUsers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    MembershipId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    MembershipId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -203,42 +237,42 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Rooms",
+                name: "Notifications",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    TypeRoom = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
-                    Price = table.Column<float>(type: "float", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Title = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "varchar(2000)", maxLength: 2000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rooms", x => x.Id);
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rooms_Areas_AreaId",
-                        column: x => x.AreaId,
-                        principalTable: "Areas",
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "UserAreaManagements",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -256,20 +290,20 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Bookings",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     TimeBooking = table.Column<TimeSpan>(type: "time(6)", nullable: false),
                     DateBooking = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,17 +321,17 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Favourites",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -315,19 +349,20 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Images",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Url = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false),
-                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Url = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -351,21 +386,20 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "RatingFeedbacks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Feedback = table.Column<string>(type: "varchar(2000)", maxLength: 2000, nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Feedback = table.Column<string>(type: "varchar(2000)", maxLength: 2000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     RatingStar = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    RoomId1 = table.Column<Guid>(type: "char(36)", nullable: true),
-                    UserId1 = table.Column<Guid>(type: "char(36)", nullable: true),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -377,36 +411,26 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RatingFeedbacks_Rooms_RoomId1",
-                        column: x => x.RoomId1,
-                        principalTable: "Rooms",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_RatingFeedbacks_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RatingFeedbacks_Users_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "BookingItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     AmountItems = table.Column<int>(type: "int", nullable: false),
                     Total = table.Column<float>(type: "float", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    BookingId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    AmenityServiceId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    BookingId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AmenityServiceId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -424,19 +448,20 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PaymentRefunds",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Type = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Total = table.Column<float>(type: "float", nullable: false),
                     PointBonus = table.Column<int>(type: "int", nullable: false),
-                    BookingId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    BookingId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -448,19 +473,19 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "RefundItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     AmountItems = table.Column<int>(type: "int", nullable: false),
                     Total = table.Column<float>(type: "float", nullable: false),
-                    PaymentRefundId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    BookingItemId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    PaymentRefundId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    BookingItemId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -478,24 +503,32 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Transactions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    TransactionType = table.Column<string>(type: "longtext", nullable: false),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TransactionType = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Total = table.Column<float>(type: "float", nullable: false),
-                    PaymentRefundId = table.Column<Guid>(type: "char(36)", nullable: true),
-                    MembershipUserId = table.Column<Guid>(type: "char(36)", nullable: true),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    PaymentRefundId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    MembershipUserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    DepositWithdrawId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transactions_DepositWithdraw_DepositWithdrawId",
+                        column: x => x.DepositWithdrawId,
+                        principalTable: "DepositWithdraw",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Transactions_MembershipUsers_MembershipUserId",
                         column: x => x.MembershipUserId,
@@ -515,7 +548,7 @@ namespace BE.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Areas_LocationId",
@@ -541,6 +574,11 @@ namespace BE.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_UserId",
                 table: "Bookings",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DepositWithdraw_UserId",
+                table: "DepositWithdraw",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -584,11 +622,6 @@ namespace BE.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_UserId1",
-                table: "Notifications",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PaymentRefunds_BookingId",
                 table: "PaymentRefunds",
                 column: "BookingId");
@@ -599,19 +632,9 @@ namespace BE.Migrations
                 column: "RoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RatingFeedbacks_RoomId1",
-                table: "RatingFeedbacks",
-                column: "RoomId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RatingFeedbacks_UserId",
                 table: "RatingFeedbacks",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RatingFeedbacks_UserId1",
-                table: "RatingFeedbacks",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefundItems_BookingItemId",
@@ -627,6 +650,12 @@ namespace BE.Migrations
                 name: "IX_Rooms_AreaId",
                 table: "Rooms",
                 column: "AreaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_DepositWithdrawId",
+                table: "Transactions",
+                column: "DepositWithdrawId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_MembershipUserId",
@@ -654,11 +683,19 @@ namespace BE.Migrations
                 name: "IX_UserAreaManagements_UserId",
                 table: "UserAreaManagements",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_RoleId",
+                table: "Users",
+                column: "RoleId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "BaseEntity");
+
             migrationBuilder.DropTable(
                 name: "Favourites");
 
@@ -684,6 +721,9 @@ namespace BE.Migrations
                 name: "BookingItems");
 
             migrationBuilder.DropTable(
+                name: "DepositWithdraw");
+
+            migrationBuilder.DropTable(
                 name: "MembershipUsers");
 
             migrationBuilder.DropTable(
@@ -702,82 +742,16 @@ namespace BE.Migrations
                 name: "Rooms");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "Areas");
 
             migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
                 name: "Locations");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Username",
-                table: "Users",
-                type: "longtext",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "varchar(50)",
-                oldMaxLength: 50,
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Phone",
-                table: "Users",
-                type: "longtext",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "varchar(15)",
-                oldMaxLength: 15,
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Password",
-                table: "Users",
-                type: "longtext",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "varchar(100)",
-                oldMaxLength: 100,
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "Users",
-                type: "longtext",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "varchar(100)",
-                oldMaxLength: 100,
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Email",
-                table: "Users",
-                type: "longtext",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "varchar(100)",
-                oldMaxLength: 100);
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "DOB",
-                table: "Users",
-                type: "datetime(6)",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                oldClrType: typeof(DateTime),
-                oldType: "datetime(6)",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "Roles",
-                type: "longtext",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "varchar(50)",
-                oldMaxLength: 50);
         }
     }
 }

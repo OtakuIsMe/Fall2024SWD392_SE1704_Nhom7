@@ -408,8 +408,9 @@ namespace BE.Migrations
                     b.Property<float>("Total")
                         .HasColumnType("float");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
@@ -534,8 +535,10 @@ namespace BE.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("TypeRoom")
-                        .HasColumnType("int");
+                    b.Property<string>("TypeRoom")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
@@ -570,7 +573,8 @@ namespace BE.Migrations
 
                     b.Property<string>("TransactionType")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
