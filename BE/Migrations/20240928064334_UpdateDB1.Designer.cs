@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BE.Migrations
 {
     [DbContext(typeof(PodDbContext))]
-    [Migration("20240927011432_AddDB")]
-    partial class AddDB
+    [Migration("20240928064334_UpdateDB1")]
+    partial class UpdateDB1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -639,6 +639,9 @@ namespace BE.Migrations
                     b.Property<string>("Username")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<float>("Wallet")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

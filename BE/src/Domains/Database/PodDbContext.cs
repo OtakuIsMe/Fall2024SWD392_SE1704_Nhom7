@@ -349,7 +349,11 @@ namespace BE.src.Domains.Database
 
                         entity.Property(r => r.Name)
                         .IsRequired()
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasConversion(
+                            v=> v.ToString(),
+                            v=> v.ToEnum<RoleEnum>()
+                            );
                   });
                   builder.Entity<Room>(entity =>
                   {
@@ -443,6 +447,9 @@ namespace BE.src.Domains.Database
 
                         entity.Property(u => u.DOB)
                         .IsRequired(false);
+                      
+                        entity.Property(u => u.Wallet)
+                        .IsRequired();
 
                         entity.HasOne(u => u.Role)
                         .WithMany(r => r.Users)
