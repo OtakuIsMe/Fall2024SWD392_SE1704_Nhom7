@@ -7,11 +7,37 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using FirebaseAdmin;
+using FirebaseAdmin.Auth;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 
 namespace BE.src.Util
 {
     public static class Utils
     {
+        static Utils()
+        {
+            try
+            {
+                if (FirebaseApp.DefaultInstance == null)
+                {
+                    string credentialPath = "Config/firebase.json";
+                    Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credentialPath);
+                    FirebaseApp.Create(new AppOptions
+                    {
+                        Credential = GoogleCredential.FromFile(credentialPath)
+                    });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                // Log the full exception details
+                Console.WriteLine($"Error during Firebase initialization: {ex}");
+                throw; // Optional: rethrow the exception to notify callers
+            }
+        }
+
         public static string GenerateJwtToken(User user)
         {
             var claims = new[]
@@ -66,6 +92,39 @@ namespace BE.src.Util
 
                 return hashString.ToString();
             }
+        }
+        public static async Task<string?> UploadImgToFirebase(IFormFile file, string name, string type)
+        {
+            try
+            {
+                var storageClient = StorageClient.Create();
+
+                using var memoryStream = new MemoryStream();
+                await file.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+
+                string bucketName = Firebase.BucketName;
+                var objectUploadOptions = new UploadObjectOptions
+                {
+                    PredefinedAcl = PredefinedObjectAcl.PublicRead
+                };
+                string fileExtension = Path.GetExtension(file.FileName);
+                string objectName = $"{type}/{name}{fileExtension}";
+
+                await storageClient.UploadObjectAsync(bucketName, objectName, null, memoryStream, objectUploadOptions);
+                string objectPublicUrl = $"https://storage.googleapis.com/{bucketName}/{objectName}";
+
+                return objectPublicUrl;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while uploading the image: {ex.Message}");
+                return null;
+            }
+        }
+        public static string ConvertToUnderscore(string input)
+        {
+            return input.Replace(" ", "_");
         }
     }
 }

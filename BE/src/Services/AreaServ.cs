@@ -2,13 +2,14 @@ using BE.src.Domains.DTOs.Area;
 using BE.src.Domains.Models;
 using BE.src.Repositories;
 using BE.src.Shared.Type;
+using BE.src.Util;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BE.src.Services
 {
     public interface IAreaServ
     {
-        Task<IActionResult> CreateArea(CreateAreaReqDTO data);
+        Task<IActionResult> CreateArea(CreateAreaRqDTO data);
     }
 
     public class AreaServ : IAreaServ
@@ -20,7 +21,7 @@ namespace BE.src.Services
             _areaRepo = areaRepo;
         }
 
-        public async Task<IActionResult> CreateArea(CreateAreaReqDTO data)
+        public async Task<IActionResult> CreateArea(CreateAreaRqDTO data)
         {
             try
             {
@@ -50,12 +51,30 @@ namespace BE.src.Services
                     }
                     else
                     {
-                        // Missing add Image to firebase
+                        foreach (IFormFile image in data.Images)
+                        {
+                            string? urlFirebase = await Utils.UploadImgToFirebase(image, Utils.ConvertToUnderscore(data.Name), "Area");
+                            if (urlFirebase == null)
+                            {
+                                return ErrorResp.BadRequest("Fail to save image to firebase");
+                            }
+                            var imageObj = new Image
+                            {
+                                Area = area,
+                                Url = urlFirebase
+                            };
+                            var isImageCreated = await _areaRepo.AddImageArea(imageObj);
+                            if (!isImageCreated)
+                            {
+                                return ErrorResp.BadRequest("Fail to save image to database");
+                            }
+                        }
                         return SuccessResp.Created("Create area success");
                     }
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return ErrorResp.BadRequest(ex.Message);
             }
         }

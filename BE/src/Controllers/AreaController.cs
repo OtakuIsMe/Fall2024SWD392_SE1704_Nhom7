@@ -15,13 +15,13 @@ namespace BE.src.Controllers
     {
         private readonly IAreaServ _areaServ;
 
-        public AreaController (IAreaServ areaServ)
+        public AreaController(IAreaServ areaServ)
         {
             _areaServ = areaServ;
         }
 
-        [HttpPost("create")]
-        public Task<IActionResult> CreateArea([FromForm] CreateAreaReqDTO data)
+        [HttpPost("Create")]
+        public Task<IActionResult> CreateArea([FromForm] CreateAreaRqDTO data)
         {
             return _areaServ.CreateArea(data);
         }

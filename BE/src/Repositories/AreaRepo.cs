@@ -1,5 +1,6 @@
 using BE.src.Domains.Database;
 using BE.src.Domains.Models;
+using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace BE.src.Repositories
@@ -8,8 +9,10 @@ namespace BE.src.Repositories
     {
         Task<bool> CreateLocation(Location location);
         Task<bool> CreateArea(Area area);
+        Task<bool> AddImageArea(Image image);
+        Task<Area?> GetAreaById(Guid areaId);
     }
-    public class AreaRepo: IAreaRepo
+    public class AreaRepo : IAreaRepo
     {
         private readonly PodDbContext _context;
 
@@ -28,6 +31,17 @@ namespace BE.src.Repositories
         {
             _context.Areas.Add(area);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> AddImageArea(Image image)
+        {
+            _context.Images.Add(image);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Area?> GetAreaById(Guid areaId)
+        {
+            return await _context.Areas.FirstOrDefaultAsync(a => a.Id == areaId);
         }
     }
 }
