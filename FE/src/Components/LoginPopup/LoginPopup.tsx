@@ -2,11 +2,15 @@ import React, { useState, } from 'react';
 import './LoginPopup.css';
 import { ApiGateway } from '../../Api/ApiGateway';
 
-const LoginPopup = ({ onClose }) => {
+interface LoginPopupProps {
+  onClose: () => void;
+}
+
+const LoginPopup: React.FC<LoginPopupProps> = ({ onClose })  => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Handle login logic here
     console.log(await ApiGateway.LoginDefault(email, password));
