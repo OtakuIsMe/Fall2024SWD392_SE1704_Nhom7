@@ -5,6 +5,6 @@ namespace BE.src.Domains.Enum
         SGL,
         TWN,
         DBL,
-        TRPL
+        TRPL,
     }
 }
