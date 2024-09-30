@@ -4,6 +4,7 @@ using BE.src.Domains.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BE.Migrations
 {
     [DbContext(typeof(PodDbContext))]
-    partial class PodDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240928064334_UpdateDB1")]
+    partial class UpdateDB1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -237,13 +240,13 @@ namespace BE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("AreaId")
+                    b.Property<Guid>("AreaId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid?>("RoomId")
+                    b.Property<Guid>("RoomId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("UpdateAt")
@@ -254,7 +257,7 @@ namespace BE.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
@@ -524,11 +527,6 @@ namespace BE.Migrations
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -679,43 +677,6 @@ namespace BE.Migrations
                     b.ToTable("UserAreaManagements");
                 });
 
-            modelBuilder.Entity("BE.src.Domains.Models.Utility", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Utilities");
-                });
-
-            modelBuilder.Entity("RoomUtility", b =>
-                {
-                    b.Property<Guid>("RoomsId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("UtilitiesId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("RoomsId", "UtilitiesId");
-
-                    b.HasIndex("UtilitiesId");
-
-                    b.ToTable("RoomUtility");
-                });
-
             modelBuilder.Entity("BE.src.Domains.Models.Area", b =>
                 {
                     b.HasOne("BE.src.Domains.Models.Location", "Location")
@@ -800,17 +761,20 @@ namespace BE.Migrations
                     b.HasOne("BE.src.Domains.Models.Area", "Area")
                         .WithMany("Images")
                         .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BE.src.Domains.Models.Room", "Room")
                         .WithMany("Images")
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BE.src.Domains.Models.User", "User")
                         .WithMany("Images")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Area");
 
@@ -969,21 +933,6 @@ namespace BE.Migrations
                     b.Navigation("Area");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RoomUtility", b =>
-                {
-                    b.HasOne("BE.src.Domains.Models.Room", null)
-                        .WithMany()
-                        .HasForeignKey("RoomsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BE.src.Domains.Models.Utility", null)
-                        .WithMany()
-                        .HasForeignKey("UtilitiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("BE.src.Domains.Models.AmenityService", b =>

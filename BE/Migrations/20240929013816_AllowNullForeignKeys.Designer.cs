@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BE.Migrations
 {
     [DbContext(typeof(PodDbContext))]
-    [Migration("20240927011432_AddDB")]
-    partial class AddDB
+    [Migration("20240929013816_AllowNullForeignKeys")]
+    partial class AllowNullForeignKeys
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -240,13 +240,13 @@ namespace BE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("AreaId")
+                    b.Property<Guid?>("AreaId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("RoomId")
+                    b.Property<Guid?>("RoomId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("UpdateAt")
@@ -257,7 +257,7 @@ namespace BE.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
@@ -640,6 +640,9 @@ namespace BE.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<float>("Wallet")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
@@ -758,20 +761,17 @@ namespace BE.Migrations
                     b.HasOne("BE.src.Domains.Models.Area", "Area")
                         .WithMany("Images")
                         .HasForeignKey("AreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("BE.src.Domains.Models.Room", "Room")
                         .WithMany("Images")
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("BE.src.Domains.Models.User", "User")
                         .WithMany("Images")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Area");
 

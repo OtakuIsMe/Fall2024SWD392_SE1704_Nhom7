@@ -10,6 +10,7 @@ namespace BE.src.Domains.Models
         public string Password { get; set; } = null!;
         public string Username { get; set; } = null!;
         public DateTime? DOB { get; set; }
+        public float Wallet {  get; set; }
 
         public Guid RoleId { get; set; }
         public Role Role { get; set; } = null!;
