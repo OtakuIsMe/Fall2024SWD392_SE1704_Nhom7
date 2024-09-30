@@ -9,8 +9,8 @@ namespace BE.src.Repositories
     public interface IRoomRepo
     {
         // Search and filter room
-        Task<Room?> SearchRoomByInput(string inputInfo);
-        Task<Room?> FilterRoomByTypeRoom(TypeRoomEnum typeRoom);
+        Task<List<Room>> SearchRoomByInput(string inputInfo);
+        Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom);
 
         // Return room detail
         Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId);
@@ -24,7 +24,7 @@ namespace BE.src.Repositories
             _context = context;
         }
 
-        public async Task<Room?> SearchRoomByInput(string inputInfo)
+        public async Task<List<Room>> SearchRoomByInput(string inputInfo)
         {
             return await _context.Rooms.Where(x => 
                                     x.Name.Contains(inputInfo) || 
@@ -40,11 +40,11 @@ namespace BE.src.Repositories
                                         .Select(i => new Image{
                                             Url = i.Url
                                         }).ToList()
-                                }).FirstOrDefaultAsync();
+                                }).ToListAsync();
         }
 
 
-        public async Task<Room?> FilterRoomByTypeRoom(TypeRoomEnum typeRoom)
+        public async Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom)
         {
             return await _context.Rooms.Where(x => x.TypeRoom.Equals(typeRoom))
                                         .Select(room => new Room{
@@ -57,7 +57,7 @@ namespace BE.src.Repositories
                                                     .Select(i => new Image{
                                                         Url = i.Url
                                                     }).ToList()
-                                        }).FirstOrDefaultAsync();
+                                        }).ToListAsync();
         }
 
         public async Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId)
