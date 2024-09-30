@@ -14,6 +14,8 @@ namespace BE.src.Domains.Models
         public User User { get; set; } = null!;
         public Guid RoomId { get; set; }
         public Room Room { get; set; } = null!;
+        public Guid MembershipUserId { get; set; }
+        public MembershipUser MembershipUser { get; set; } = null!;
         public ICollection<BookingItem> BookingItems { get; set; } = null!;
         public ICollection<PaymentRefund> PaymentRefunds { get; set; } = null!;
     }

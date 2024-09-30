@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router'
 import dayjs, { Dayjs } from 'dayjs'
 import Header from '../../../Components/Header/Header'
 import Banner2 from '../../../Assets/banner2.jpg'
@@ -50,7 +51,7 @@ const HomePage: React.FC = () => {
               <input type="datetime-local" id='end_date' className='hp_date_input' />
             </div>
           </div>
-          <button className='hp_comfirm'>Confirm</button>
+          <button className='hp_comfirm'>Check</button>
         </form>
         <ScrollDownButton ref={secondDivRef} title="Scroll Down" />
       </div>
