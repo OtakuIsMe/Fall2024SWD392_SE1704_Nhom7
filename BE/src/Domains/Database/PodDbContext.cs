@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using System.Reflection.Emit;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.AspNetCore.Connections;
 
 namespace BE.src.Domains.Database
 {
@@ -102,6 +103,10 @@ namespace BE.src.Domains.Database
                         entity.HasOne(b => b.Room)
                         .WithMany(r => r.Bookings)
                         .HasForeignKey(b => b.RoomId);
+
+                        entity.HasOne(b => b.MembershipUser)
+                        .WithMany(mu=> mu.Bookings)
+                        .HasForeignKey(b => b.MembershipUserId);
                   });
 
                   builder.Entity<BookingItem>(entity =>
@@ -249,6 +254,9 @@ namespace BE.src.Domains.Database
                   builder.Entity<MembershipUser>(entity =>
                   {
                         entity.HasKey(mu => mu.Id);
+
+                        entity.Property(mu => mu.Status)
+                        .IsRequired();
 
                         entity.HasOne(mu => mu.Membership)
                         .WithMany(m => m.MembershipUsers)

@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <Folder Include="src\Domains\DTOs\AmenityService\" />
-    <Folder Include="src\Domains\DTOs\Booking\" />
     <Folder Include="src\Domains\DTOs\Transaction\" />
   </ItemGroup>
 

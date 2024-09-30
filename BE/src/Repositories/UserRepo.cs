@@ -17,6 +17,7 @@ namespace BE.src.Repositories
         Task<bool> CreateUser(User user);
         Task<Role?> GetRoleByName(RoleEnum name);
         Task<bool> UpdateUser(User user);
+        Task<Membership?> GetMemberShipByUserId(Guid userId);
     }
     public class UserRepo : IUserRepo
     {
@@ -58,6 +59,12 @@ namespace BE.src.Repositories
         {
             _context.Users.Update(user);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Membership?> GetMemberShipByUserId(Guid userId)
+        {
+            return (await _context.MembershipUsers.Where(u => u.UserId == userId && u.Status)
+                                                .Include(mu => mu.Membership).FirstOrDefaultAsync())?.Membership;
         }
     }
 }
