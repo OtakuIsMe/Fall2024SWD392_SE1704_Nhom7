@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using BE.src.Domains.DTOs.Room;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
@@ -5,12 +6,16 @@ using BE.src.Repositories;
 using BE.src.Shared.Type;
 using BE.src.Util;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace BE.src.Services
 {
     public interface IRoomServ
     {
         Task<IActionResult> CreateRoom(CreateRoomRqDTO data);
+        Task<IActionResult> ViewRoomDetail(string hashCode);
+        Task<IActionResult> GetCommentByRoomId(Guid roomId);
     }
 
     public class RoomServ : IRoomServ
@@ -73,6 +78,41 @@ namespace BE.src.Services
                 }
             }
             catch (Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> ViewRoomDetail(string hashCode)
+        {
+            try
+            {
+                Room? room = await _roomRepo.GetRoomDetailByHashCode(hashCode);
+                if (room == null)
+                {
+                    return ErrorResp.NotFound("Cant found the room");
+                }
+                int favouriteCount = await _roomRepo.GetCountFavouriteRoom(room.Id);
+                RoomDetailRpDTO returnRoom = new()
+                {
+                    Info = room,
+                    FavouriteCount = favouriteCount
+                };
+                return SuccessResp.Ok(returnRoom);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+        public async Task<IActionResult> GetCommentByRoomId(Guid roomId)
+        {
+            try
+            {
+                List<RatingFeedback> ratingFeedbacks = await _roomRepo.GetListRatingFeedback(roomId);
+                return SuccessResp.Ok(ratingFeedbacks);
+            }
+            catch (System.Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
             }

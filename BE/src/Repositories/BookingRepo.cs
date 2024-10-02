@@ -7,11 +7,12 @@ namespace BE.src.Repositories
     {
         Task<bool> AddBooking(Booking booking);
         Task<bool> AddBookingItems(List<BookingItem> bookingItems);
+        Task<bool> UpdateBooking(Booking booking);
     }
     public class BookingRepo : IBookingRepo
     {
         private readonly PodDbContext _context;
-        public BookingRepo (PodDbContext context)
+        public BookingRepo(PodDbContext context)
         {
             _context = context;
         }
@@ -25,7 +26,13 @@ namespace BE.src.Repositories
         public async Task<bool> AddBookingItems(List<BookingItem> bookingItems)
         {
             _context.BookingItems.AddRange(bookingItems);
-            return await _context.SaveChangesAsync()>0;
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateBooking(Booking booking)
+        {
+            _context.Update(booking);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

@@ -96,6 +96,9 @@ namespace BE.src.Domains.Database
                             v => (StatusBookingEnum)v
                             );
 
+                        entity.Property(b => b.Total)
+                        .IsRequired();
+
                         entity.HasOne(b => b.User)
                         .WithMany(u => u.Bookings)
                         .HasForeignKey(b => b.UserId);
@@ -105,7 +108,7 @@ namespace BE.src.Domains.Database
                         .HasForeignKey(b => b.RoomId);
 
                         entity.HasOne(b => b.MembershipUser)
-                        .WithMany(mu=> mu.Bookings)
+                        .WithMany(mu => mu.Bookings)
                         .HasForeignKey(b => b.MembershipUserId);
                   });
 
@@ -203,8 +206,8 @@ namespace BE.src.Domains.Database
                         .IsRequired(false);
 
                         entity.HasOne(i => i.User)
-                        .WithMany(u => u.Images)
-                        .HasForeignKey(i => i.UserId)
+                        .WithOne(u => u.Image)
+                        .HasForeignKey<Image>(i => i.UserId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
 
