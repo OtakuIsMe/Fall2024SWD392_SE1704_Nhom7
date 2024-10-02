@@ -33,7 +33,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div id='hp'>
-      <Header />
+      <Header isTransparent={true}/>
       <div ref={firstDivRef} className='hp_banner_container hp_section'>
         <div className="hp_banner"></div>
         <div className='hp_welcome'>
