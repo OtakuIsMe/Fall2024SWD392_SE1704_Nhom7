@@ -1,0 +1,80 @@
+#header {
+    width: 100%;    
+    height: fit-content;
+
+    padding: 40px 20px;
+    
+    display: flex;
+    justify-content: space-around   ;
+
+    position: fixed;
+    top: 0px;
+    z-index: 2;
+
+    color: aliceblue;
+}
+
+#header > .logo {
+    font-size: xx-large;
+    font-weight: bold;
+    font-family: "Playfair Display", times, serif;
+    cursor: pointer;
+}
+
+#header > .list {
+    display: flex;
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0; 
+}
+
+#header > .list li {
+    display: inline;
+    margin: auto 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#header > .account {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#header > .account button {
+    position: relative;
+    height: 40px;
+    border: 1px solid aliceblue;
+    font-size: 16px;
+    background-color: transparent;
+    color: aliceblue;
+    transition: all .2s;
+}
+
+#header > .account button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background-color: aliceblue;
+    transition: all .2s;
+    z-index: 0;
+}
+
+#header > .account > .login:hover {
+    color: black;
+}
+
+#header > .account > .register:hover {
+    color: black;
+}
+
+#header > .account > .login:hover::before{
+    width: 100%;
+}
+
+#header > .account > .register:hover::before{
+    width: 100%;
+}
