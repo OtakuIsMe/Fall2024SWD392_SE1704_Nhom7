@@ -30,6 +30,8 @@ namespace BE.src.Repositories
                                     x.Name.Contains(inputInfo) || 
                                     x.Price.ToString().Equals(inputInfo) || 
                                     x.Area.Name.Contains(inputInfo))
+                                .Include(room => room.Images)
+                                .Include(room => room.Area)
                                 .Select(room => new Room{
                                     Id = room.Id,
                                     Name = room.Name,
@@ -47,6 +49,8 @@ namespace BE.src.Repositories
         public async Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom)
         {
             return await _context.Rooms.Where(x => x.TypeRoom.Equals(typeRoom))
+                                        .Include(room => room.Images)
+                                        .Include(room => room.Area)
                                         .Select(room => new Room{
                                                 Id = room.Id,
                                                 Name = room.Name,
