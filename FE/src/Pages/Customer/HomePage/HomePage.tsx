@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router'
 import dayjs, { Dayjs } from 'dayjs'
 import Header from '../../../Components/Header/Header'
 import Banner2 from '../../../Assets/banner2.jpg'
+import Office1 from '../../../Assets/office1.jpg'
+import Office2 from '../../../Assets/office2.jpg'
+import Office3 from '../../../Assets/office3.jpg'
 import Worker from '../../../Assets/working.jpg'
 import PB from '../../../Assets/p&b.png'
 import Membership from '../../../Assets/membership.png'
@@ -27,6 +30,12 @@ const HomePage: React.FC = () => {
   const thirdDivRef   = useRef<HTMLDivElement | null>(null);
   const fourthDivRef  = useRef<HTMLDivElement | null>(null);
 
+  const officeList =  [
+    {img: Office1, location: 'Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM'},
+    {img: Office2, location: 'Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM'},
+    {img: Office3, location: 'Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM'},
+  ]
+  
   useEffect(() => {
     setMaxDate(date.add(30, 'day'))
   }, [])
@@ -75,24 +84,18 @@ const HomePage: React.FC = () => {
       <div ref={thirdDivRef} className="hp_area_display hp_section">
         <h1>Location</h1>
         <div className="hp_area_wrapper">
-          <div className="area_card card1">
-            <div className="area_info">
-              <h3>Location</h3>
-              <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
+          {officeList.map<React.ReactNode>((office, index) => (
+            <div 
+              key={index} 
+              className={`area_card card${index + 1}`} 
+              style={{backgroundImage: `url(${office.img})`}}
+              >
+              <div className="area_info">
+                <h3>Location</h3>
+                <p>{office.location}</p>
+              </div>
             </div>
-          </div>
-          <div className="area_card card2">
-            <div className="area_info">
-              <h3>Location</h3>
-              <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
-            </div>
-          </div>
-          <div className="area_card card3">
-            <div className="area_info">
-              <h3>Location</h3>
-              <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
-            </div>
-          </div>
+          ))}
         </div>
         <div className="hp_down_page">
           <ScrollDownButton ref={fourthDivRef} title="Scroll Down"/>
