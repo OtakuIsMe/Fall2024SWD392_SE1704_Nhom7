@@ -8,6 +8,7 @@ namespace BE.src.Domains.Models
     {
         public TimeSpan TimeBooking { get; set; }
         public DateTime DateBooking { get; set; }
+        public float Total { get; set; }
         public StatusBookingEnum Status { get; set; }
 
         public Guid UserId { get; set; }

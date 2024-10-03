@@ -20,5 +20,16 @@ namespace BE.src.Controllers
         {
             return await _roomServ.CreateRoom(data);
         }
+        [HttpGet("ViewDetail/{hashCode:string}")]
+        public async Task<IActionResult> ViewRoomDetail(string hashCode)
+        {
+            return await _roomServ.ViewRoomDetail(hashCode);
+        }
+
+        [HttpGet("ViewDetail/{roomId:guid}")]
+        public async Task<IActionResult> GetComment(Guid roomId)
+        {
+            return await _roomServ.GetCommentByRoomId(roomId);
+        }
     }
 }

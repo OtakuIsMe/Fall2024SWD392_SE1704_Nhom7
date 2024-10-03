@@ -14,7 +14,7 @@ interface HeaderProps {
 
 gsap.registerPlugin(ScrollTrigger, CSSRulePlugin);
 
-const Header : React.FC<HeaderProps> = ({isTransparent}) => {
+const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const divRef1 = useRef<HTMLDivElement | null>(null);
   const divRef2 = useRef<HTMLDivElement | null>(null);
 
@@ -39,8 +39,8 @@ const Header : React.FC<HeaderProps> = ({isTransparent}) => {
   };
 
   useEffect(() => {
-    if (divRef1.current) {      
-      if(isTransparent){
+    if (divRef1.current) {
+      if (isTransparent) {
         gsap.to(
           divRef1.current,
           {
@@ -62,7 +62,7 @@ const Header : React.FC<HeaderProps> = ({isTransparent}) => {
           gsap.to(childElements, {
             border: 'black',
             color: 'black',
-            scrollTrigger:{
+            scrollTrigger: {
               trigger: divRef1.current,
               start: 'bottom -0%',
               end: 'bottom -10%',
@@ -73,11 +73,11 @@ const Header : React.FC<HeaderProps> = ({isTransparent}) => {
 
           gsap.to(beforeRule, {
             backgroundColor: 'black',
-            scrollTrigger:{
+            scrollTrigger: {
               trigger: divRef1.current,
               start: 'bottom -0%',
               end: 'bottom -10%',
-              toggleActions: 'play none none reverse', 
+              toggleActions: 'play none none reverse',
               scrub: true,
             },
           })
@@ -89,7 +89,7 @@ const Header : React.FC<HeaderProps> = ({isTransparent}) => {
               gsap.to(child, {
                 color: 'white',
               });
-    
+
               // Animate the ::before pseudo-element on hover
               gsap.to(beforeRule, {
                 width: '100%',
@@ -122,50 +122,50 @@ const Header : React.FC<HeaderProps> = ({isTransparent}) => {
         );
         if (divRef2.current) {
           const childElements = divRef2.current.querySelectorAll('.button');
-          gsap.fromTo(childElements, 
+          gsap.fromTo(childElements,
             {
               border: 'black',
               color: 'black',
             },
             {
-            border: 'black',
-            color: 'black',
-            scrollTrigger:{
-              trigger: divRef1.current,
-              start: 'bottom -0%',
-              end: 'bottom -10%',
-              toggleActions: 'play none none none',
-              scrub: true,
-            },
-          })
-          gsap.fromTo(beforeRule, 
+              border: 'black',
+              color: 'black',
+              scrollTrigger: {
+                trigger: divRef1.current,
+                start: 'bottom -0%',
+                end: 'bottom -10%',
+                toggleActions: 'play none none none',
+                scrub: true,
+              },
+            })
+          gsap.fromTo(beforeRule,
             {
               backgroundColor: 'black',
             },
             {
-            backgroundColor: 'black',
-            scrollTrigger:{
-              trigger: divRef1.current,
-              start: 'bottom -0%',
-              end: 'bottom -10%',
-              toggleActions: 'play none none none', 
-              scrub: true,
-            },
-          })
+              backgroundColor: 'black',
+              scrollTrigger: {
+                trigger: divRef1.current,
+                start: 'bottom -0%',
+                end: 'bottom -10%',
+                toggleActions: 'play none none none',
+                scrub: true,
+              },
+            })
           childElements.forEach((child) => {
             // Hover animation on mouse enter
             child.addEventListener('mouseenter', () => {
               // Animate the child on hover
-              gsap.fromTo(child, 
+              gsap.fromTo(child,
                 {
                   color: 'white',
                 },
                 {
                   color: 'white',
                 });
-    
+
               // Animate the ::before pseudo-element on hover
-              gsap.fromTo(beforeRule, 
+              gsap.fromTo(beforeRule,
                 {
                   width: '100%'
                 },

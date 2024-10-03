@@ -1,0 +1,11 @@
+#room-detail-page {
+    background-color: black;
+}
+
+#room-detail-page .header-spacing {
+    padding: 120px 0 0 0;
+}
+
+#room-detail-page .room-detail {
+    padding-top: 40px;
+}
