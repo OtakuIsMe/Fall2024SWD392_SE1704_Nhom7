@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, TextField, Checkbox, FormControlLabel, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close'; // Sử dụng icon đóng từ Material-UI
 
 interface LoginPopupProps {
   onClose: () => void;
@@ -32,7 +33,12 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ onClose }) => {
 
   return (
     <Dialog open={true} onClose={onClose}>
-      <DialogTitle>Đăng nhập</DialogTitle>
+      <DialogTitle style={{ textAlign: "center", fontSize: "58px" }}>
+        Đăng nhập
+        <Button onClick={onClose} style={{ position: 'absolute', right: '10px', top: '10px', border: 'none', color: 'gray' }}>
+          <CloseIcon />
+        </Button>
+      </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <TextField
@@ -62,8 +68,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ onClose }) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Hủy</Button>
-          <Button type="submit" color="primary">Đăng nhập</Button>
+          <Button type="submit" color="primary" style={{ margin: "auto" }}>Đăng nhập</Button>
         </DialogActions>
       </form>
     </Dialog>
