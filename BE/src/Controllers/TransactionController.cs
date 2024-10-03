@@ -15,10 +15,10 @@ namespace BE.src.Controllers
             _transactionServ = transactionServ;
         }
 
-        [HttpPost("payment-cod")]
-        public async Task<IActionResult> PaymentByCod([FromBody] Guid bookingId)
-        {
+        // [HttpPost("payment-cod")]
+        // public async Task<IActionResult> PaymentByCod([FromBody] Guid bookingId)
+        // {
 
-        }
+        // }
     }
 }

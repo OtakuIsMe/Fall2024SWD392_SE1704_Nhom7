@@ -7,9 +7,78 @@ import room3 from '../../../Assets/room3.jpg'
 import room4 from '../../../Assets/room4.jpg'
 import { FaStar } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
+import { FaWifi } from "react-icons/fa";
+import { FaRegLightbulb } from "react-icons/fa";
+import { PiOfficeChair } from "react-icons/pi";
+import { GiTheaterCurtains } from "react-icons/gi";
+import { SiSocketdotio } from "react-icons/si";
+import { GiDesk } from "react-icons/gi";
+import { MdRoomService } from "react-icons/md";
+import { FaTools } from "react-icons/fa";
+import { FaTv } from "react-icons/fa";
+import { FaChalkboard } from "react-icons/fa";
+import { TbAirConditioning } from "react-icons/tb";
+import { GiWaterTank } from "react-icons/gi";
+import { FaRegClock } from "react-icons/fa";
+import { CiCalendar } from "react-icons/ci";
+import { RxCross2 } from "react-icons/rx";
+import { MdOutlineFoodBank } from "react-icons/md";
+import { RiDrinks2Fill } from "react-icons/ri";
+import { MdHomeRepairService } from "react-icons/md";
 
 const RoomDetail = () => {
   const [infoSelected, setInfoSelected] = useState("info-container")
+
+  const utilities = [
+    {
+      id: '1',
+      name: "High-speed Wi-Fi"
+    },
+    {
+      id: '2',
+      name: "Adjustable lights"
+    },
+    {
+      id: '3',
+      name: "Ergonomic chair"
+    },
+    {
+      id: '4',
+      name: "Curtains"
+    },
+    {
+      id: '5',
+      name: "Standard sockets"
+    },
+    {
+      id: '6',
+      name: "Premium table desk"
+    },
+    {
+      id: '7',
+      name: "Service benefits"
+    },
+    {
+      id: '8',
+      name: "Shared utilities"
+    },
+    {
+      id: '9',
+      name: "TV"
+    },
+    {
+      id: '10',
+      name: "Whiteboard"
+    },
+    {
+      id: '11',
+      name: "Air conditioning"
+    },
+    {
+      id: '12',
+      name: "Hot water dispenser"
+    }
+  ]
 
   const handleNavbarClick = (type: string) => {
     setInfoSelected(type);
@@ -33,6 +102,35 @@ const RoomDetail = () => {
       process2?.classList.add("selected");
     }
   }, [infoSelected])
+
+  function iconReturn(id: string) {
+    switch (id) {
+      case '1':
+        return (<FaWifi />)
+      case '2':
+        return (<FaRegLightbulb />)
+      case '3':
+        return (<PiOfficeChair />)
+      case '4':
+        return (<GiTheaterCurtains />)
+      case '5':
+        return (<SiSocketdotio />)
+      case '6':
+        return (<GiDesk />)
+      case '7':
+        return (<MdRoomService />)
+      case '8':
+        return (<FaTools />)
+      case '9':
+        return (<FaTv />)
+      case '10':
+        return (<FaChalkboard />)
+      case '11':
+        return (<TbAirConditioning />)
+      case '12':
+        return (<GiWaterTank />)
+    }
+  }
 
   return (
     <div id="room-detail-page">
@@ -80,13 +178,20 @@ const RoomDetail = () => {
                   <div className="utilities-container">
                     <p className="title">Các tiện nghi</p>
                     <div className="utilities">
-
+                      {utilities.map((utility, index) => (
+                        <div className="utility" key={index}>
+                          {iconReturn(utility.id)}
+                          <span className="utility-name">
+                            {utility.name}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                   <div className="description-container">
-                    <p className="title">Mô tả</p>
+                    <p className="title">Mô tả không gian làm việc</p>
                     <p className="description">
-
+                      Chào mừng bạn đến với không gian làm việc lý tưởng, nơi mà sự sáng tạo và năng suất được khơi dậy. Nằm ở vị trí trung tâm, không gian này được thiết kế để mang đến cảm giác thoải mái và đầy cảm hứng cho tất cả mọi người.
                     </p>
                   </div>
                 </div>
@@ -107,9 +212,91 @@ const RoomDetail = () => {
               </React.Fragment>
             )}
           </div>
-
           <div className="room-booking">
+            <p className="price-booking">50k/h</p>
+            <div className="booking-detail">
+              <div className="book-interval">
+                <div className="check-in box-time">
+                  <p className='title'> CHECK-IN</p>
+                  <p className="time-oclock">From 16:00</p>
+                </div>
+                <div className="check-out box-time">
+                  <p className='title'> CHECK-OUT</p>
+                  <p className="time-oclock">To 16:55</p>
+                </div>
+              </div>
+              <div className="hour-booking date">
+                <p className='title'>DATE STAY IN ROOM </p>
+                <span>10/04/2024 <CiCalendar /></span>
+              </div>
+              <div className="hour-booking date">
+                <p className='title'>TOTAL TIME STAY IN ROOM </p>
+                <span>1 <FaRegClock /></span>
+              </div>
+            </div>
+            <div className="total">
+              <p className="title">Your Price Sumary</p>
+              <div className="Room-price line">
+                <span className='title-result'>
+                  Room:
+                </span>
+                <span className='results'>
+                  100K X 1h
+                </span>
+              </div>
+              <div className="services-price line">
+                <span className='title-result'>
+                  Services:
+                </span>
+                <span className='results'>
+                  60K
+                </span>
+              </div>
+              <div className="membsership-price line">
+                <span className='title-result'>
+                  Membership:
+                </span>
+                <span className='results'>
+                  5%
+                </span>
+              </div>
+              <div className="total-price line">
+                <span className='title-result'>
+                  Total Price:
+                </span>
+                <span className='results'>
+                  152K
+                </span>
+              </div>
+            </div>
+            <button className='service-btn but'>Additional Services</button>
+            <button className='book-btn but'>Request To Book</button>
+          </div>
+        </div>
+      </div>
+      <div className="service-popup">
+        <div className="service-board">
+          <div className="title-close">
+            <div>
+              <p className="title">
+                Additional Services
+              </p>
+              <p className='short-title'>Enhance your experience with our curated range of premium services tailored to meet your unique needs.</p>
+            </div>
+            <RxCross2 />
+          </div>
+          <div className="service-content">
+            <div className="nav-bar">
+              <div className="nav food"><MdOutlineFoodBank /> Food</div>
+              <div className="nav drink"><RiDrinks2Fill /> Drink</div>
+              <div className="nav amenity"><MdHomeRepairService /> Amenity</div>
+            </div>
+            <div className="services">
 
+            </div>
+            <div className="booking-service">
+
+            </div>
           </div>
         </div>
       </div>
