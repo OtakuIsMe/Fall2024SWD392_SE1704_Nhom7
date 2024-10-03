@@ -9,7 +9,7 @@ import './Header.css';
 
 gsap.registerPlugin(ScrollTrigger, CSSRulePlugin);
 
-const Header : React.FC = () => {
+const Header: React.FC = () => {
   const divRef1 = useRef<HTMLDivElement | null>(null);
   const divRef2 = useRef<HTMLDivElement | null>(null);
 
@@ -34,7 +34,7 @@ const Header : React.FC = () => {
   };
 
   useEffect(() => {
-    if (divRef1.current) {      
+    if (divRef1.current) {
       gsap.to(
         divRef1.current,
         {
@@ -56,7 +56,7 @@ const Header : React.FC = () => {
         gsap.to(childElements, {
           border: 'black',
           color: 'black',
-          scrollTrigger:{
+          scrollTrigger: {
             trigger: divRef1.current,
             start: 'bottom -0%',
             end: 'bottom -10%',
@@ -66,11 +66,11 @@ const Header : React.FC = () => {
         })
         gsap.to(beforeRule, {
           backgroundColor: 'black',
-          scrollTrigger:{
+          scrollTrigger: {
             trigger: divRef1.current,
             start: 'bottom -0%',
             end: 'bottom -10%',
-            toggleActions: 'play none none reverse', 
+            toggleActions: 'play none none reverse',
             scrub: true,
           },
         })
@@ -81,7 +81,7 @@ const Header : React.FC = () => {
             gsap.to(child, {
               color: 'white',
             });
-  
+
             // Animate the ::before pseudo-element on hover
             gsap.to(beforeRule, {
               width: '100%',
