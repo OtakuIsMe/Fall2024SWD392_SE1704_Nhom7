@@ -10,6 +10,7 @@ namespace BE.src.Services
     public interface IBookingServ
     {
         Task<IActionResult> BookingRoom(BookingRoomRqDTO data);
+        Task<IActionResult> ViewBookingListOfRoom(Guid roomId);
     }
 
     public class BookingServ : IBookingServ
@@ -99,6 +100,19 @@ namespace BE.src.Services
                 return SuccessResp.Ok("Booking room success");
             }
             catch (Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> ViewBookingListOfRoom(Guid roomId)
+        {
+            try
+            {
+                List<Booking> bookings = await _bookingRepo.ViewBookingOfRoomInFuture(roomId);
+                return SuccessResp.Ok(bookings);
+            }
+            catch (System.Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
             }
