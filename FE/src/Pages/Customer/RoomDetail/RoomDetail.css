@@ -1,11 +1,125 @@
-#room-detail-page {
-    background-color: black;
-}
-
-#room-detail-page .header-spacing {
-    padding: 120px 0 0 0;
-}
-
 #room-detail-page .room-detail {
-    padding-top: 40px;
+    padding: 140px 200px 0 200px;
+    height: 1000px;
 }
+
+#room-detail-page .room-detail .room-images {
+    display: flex;
+    height: 700px;
+}
+
+#room-detail-page .room-detail .room-images .main-image {
+    flex: 7;
+    height: 100%;
+    padding-right: 8px;
+}
+
+#room-detail-page .room-detail .room-images .others-image {
+    flex: 3;
+    height: 100%;
+    padding-left: 8px;
+}
+
+#room-detail-page .room-detail .room-images .main-image {
+    height: 100%;
+    padding: 8px;
+}
+
+#room-detail-page .room-detail .room-images .main-image img {
+    height: calc(100% - 16px);
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 30px;
+}
+
+#room-detail-page .room-detail .room-images .child-image {
+    height: calc(33.33% - 16px);
+    padding: 8px 0;
+}
+
+#room-detail-page .room-detail .room-images .child-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 20px;
+}
+
+#room-detail-page .room-detail-container {
+    display: flex;
+}
+
+#room-detail-page .room-detail-container .room-info {
+    flex: 7;
+    padding-left: 8px;
+}
+
+#room-detail-page .room-detail-container .room-booking {
+    flex: 3;
+    padding-left: 8px;
+}
+
+#room-detail-page .room-detail-container .room-info .name-ratings {
+    position: relative;
+    padding-bottom: 10px;
+}
+
+#room-detail-page .room-detail-container .room-info .room-name {
+    font-size: 36px;
+    font-weight: 600;
+    margin: 0;
+    padding: 15px 0 10px 0;
+}
+
+#room-detail-page .room-detail-container .room-info .ratings-area {
+    display: flex;
+    align-items: center;
+}
+
+#room-detail-page .room-detail-container .room-info .ratings-area .star {
+    color: rgb(255, 145, 0);
+    margin-right: 5px;
+    font-weight: 700;
+}
+
+#room-detail-page .room-detail-container .room-info .ratings-area .dot {
+    font-size: 8px;
+    margin: 0 5px;
+}
+
+#room-detail-page .room-detail-container .room-info .nav-bar {
+    display: grid;
+    position: relative;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#room-detail-page .room-detail-container .room-info .nav-bar::after {
+    content: '';
+    background-color: #e0e0e0;
+    height: 1px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 100%;
+}
+
+#room-detail-page .room-detail-container .room-info .nav-bar .nav {
+    padding: 15px 0;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+}
+
+#room-detail-page .room-detail-container .room-info .nav-bar .nav.selected::after {
+    content: '';
+    background-color: rgb(255, 145, 0);
+    height: 3px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: calc(100% - 3px);
+}
+
+#room-detail-page .room-detail-container .room-info .info-room p {}
