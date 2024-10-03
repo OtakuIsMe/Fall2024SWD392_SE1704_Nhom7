@@ -1,34 +1,33 @@
-import React, { useState, useEffect, useRef } from 'react'
-import dayjs, { Dayjs } from 'dayjs'
-import Header from '../../../Components/Header/Header'
-import Banner2 from '../../../Assets/banner2.jpg'
-import Worker from '../../../Assets/working.jpg'
-import PB from '../../../Assets/p&b.png'
-import Membership from '../../../Assets/membership.png'
-import WorkPod from '../../../Assets/workpod.png'
-import Meeting from '../../../Assets/meeting.png'
+import React, { useState, useEffect, useRef } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import { useNavigate } from 'react-router-dom'; // Sử dụng useNavigate thay cho useHistory
+import Header from '../../../Components/Header/Header';
+import Banner2 from '../../../Assets/banner2.jpg';
+import Worker from '../../../Assets/working.jpg';
+import PB from '../../../Assets/p&b.png';
+import Membership from '../../../Assets/membership.png';
+import WorkPod from '../../../Assets/workpod.png';
+import Meeting from '../../../Assets/meeting.png';
 import ScrollDownButton from '../../../Components/ScrollDownButton/ScrollDownButton';
-import './HomePage.css'
+import './HomePage.css';
 
 const HomePage: React.FC = () => {
+  const [date, setDate] = useState<Dayjs>(dayjs());
+  const navigate = useNavigate(); // useNavigate để thay thế cho useHistory
 
-  const [date, setdate] = useState<Dayjs>(dayjs())
-  const [maxDate, setMaxDate] = useState<Dayjs>(dayjs())
-  const [minate, setMinDate] = useState<Dayjs>(dayjs())
-  const [mouseInCard1, setMouseInCard1] = useState(false)
-  const [mouseInCard2, setMouseInCard2] = useState(false)
-  const [mouseInCard3, setMouseInCard3] = useState(false)
+  const firstDivRef = useRef<HTMLDivElement | null>(null);
+  const secondDivRef = useRef<HTMLDivElement | null>(null);
+  const thirdDivRef = useRef<HTMLDivElement | null>(null);
+  const fourthDivRef = useRef<HTMLDivElement | null>(null);
 
-  const [user, setUser] = useState([]);
-
-  const firstDivRef   = useRef<HTMLDivElement | null>(null);
-  const secondDivRef  = useRef<HTMLDivElement | null>(null);
-  const thirdDivRef   = useRef<HTMLDivElement | null>(null);
-  const fourthDivRef  = useRef<HTMLDivElement | null>(null);
+  const navigateToDetails = (locationId: string) => {
+    navigate(`/areadetails/${locationId}`); // Sử dụng navigate thay vì push
+  };
 
   useEffect(() => {
-    setMaxDate(date.add(30, 'day'))
-  }, [])
+    // Cập nhật ngày tháng sử dụng dayjs
+    setDate(currentDate => currentDate.add(30, 'day'));
+  }, []);
 
   return (
     <div id='hp'>
@@ -42,15 +41,15 @@ const HomePage: React.FC = () => {
         <form className="hp_search">
           <div className="hp_input_container">
             <div className='hp_search_input start'>
-              <label htmlFor="start_date"><p>From</p></label>
+              <label htmlFor="start_date">From</label>
               <input type="datetime-local" id='start_date' className='hp_date_input' />
             </div>
             <div className='hp_search_input end'>
-              <label htmlFor="end_date"><p>To</p></label>
+              <label htmlFor="end_date">To</label>
               <input type="datetime-local" id='end_date' className='hp_date_input' />
             </div>
           </div>
-          <button className='hp_comfirm'>Confirm</button>
+          <button className='hp_confirm'>Confirm</button>
         </form>
         <ScrollDownButton ref={secondDivRef} title="Scroll Down" />
       </div>
@@ -74,19 +73,19 @@ const HomePage: React.FC = () => {
       <div ref={thirdDivRef} className="hp_area_display hp_section">
         <h1>Location</h1>
         <div className="hp_area_wrapper">
-          <div className="area_card card1">
+          <div className="area_card card1" onClick={() => navigateToDetails('1')}>
             <div className="area_info">
               <h3>Location</h3>
               <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
             </div>
           </div>
-          <div className="area_card card2">
+          <div className="area_card card2" onClick={() => navigateToDetails('2')}>
             <div className="area_info">
               <h3>Location</h3>
               <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
             </div>
           </div>
-          <div className="area_card card3">
+          <div className="area_card card3" onClick={() => navigateToDetails('3')}>
             <div className="area_info">
               <h3>Location</h3>
               <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
@@ -138,11 +137,11 @@ const HomePage: React.FC = () => {
           </div>
         </div>
         <div className="room_type_list">
-          
+          // Additional content if needed
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

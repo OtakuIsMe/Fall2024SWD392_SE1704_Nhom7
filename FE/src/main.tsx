@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './Pages/Customer/HomePage/HomePage';
 import UserPage from './Pages/Customer/UserPage/UserPage';
 import './index.css';
+import AreaDetails from './Pages/Customer/AreaDetail/AreaDetail';
 
 
 createRoot(document.getElementById('root')!).render(
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/areadetails/:locationId" element={<AreaDetails />} />
       </Routes>
     </Router>
   </StrictMode>,
