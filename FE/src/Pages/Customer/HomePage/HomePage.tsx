@@ -16,6 +16,8 @@ import './HomePage.css'
 
 const HomePage: React.FC = () => {
 
+  const navigate = useNavigate()
+
   const [date, setdate] = useState<Dayjs>(dayjs())
   const [maxDate, setMaxDate] = useState<Dayjs>(dayjs())
   const [minate, setMinDate] = useState<Dayjs>(dayjs())
@@ -36,6 +38,14 @@ const HomePage: React.FC = () => {
     {img: Office3, location: 'Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM'},
   ]
   
+  const search = () => {
+    if(true){
+      navigate('/rooms')
+    }else{
+      navigate('/roomDetail/:1')
+    }
+  }
+
   useEffect(() => {
     setMaxDate(date.add(30, 'day'))
   }, [])
@@ -60,7 +70,7 @@ const HomePage: React.FC = () => {
               <input type="datetime-local" id='end_date' className='hp_date_input' />
             </div>
           </div>
-          <button className='hp_comfirm'>Check</button>
+          <button className='hp_comfirm' onClick={() => search()}>Check</button>
         </form>
         <ScrollDownButton ref={secondDivRef} title="Scroll Down" />
       </div>

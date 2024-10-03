@@ -1,0 +1,77 @@
+#rooms > .filter-bar {
+    height: 80px;
+    width: 100%;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-family: "Playfair Display", times, serif;
+
+    gap: 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+#rooms > .filter-bar div {
+    display: flex;
+}
+
+#rooms > .filter-bar div.date-container {
+    gap: 20px;
+}
+
+#rooms > .filter-bar div select {
+    border: none;
+    font-size: 15px;
+    font-family:  "Playfair Display", times, serif;
+}
+
+#rooms > .filter-bar div select:focus {
+    outline-width: 0;
+}
+
+#rooms > .filter-bar div.date-container > .search_input {
+    display: flex;
+    gap: 10px;
+}
+
+#rooms > .filter-bar div.date-container > .search_input > input {
+    border: none;
+}
+
+#rooms > .filter-bar div.date-container > .search_input > input:focus {
+    outline-width: 0;
+}
+
+#rooms > .filter-bar > .filter-btn {
+    border: gray 1px solid;
+    padding: 3px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#rooms > .filter-bar > .filter-btn:hover {
+    background-color: gray;
+    color: aliceblue;
+}
+
+#rooms > .room-list-container {
+    min-height: 100vh;
+    width: 100%;
+}
+
+#rooms > .room-list-container > .room-list {
+    height: 100%;
+    padding: 0 300px;
+    background-color: #ebebeb;
+}
+
+#rooms > .room-list-container > .room-list > .list {
+    min-height: 100%;
+    height: fit-content;
+    background-color: white;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
