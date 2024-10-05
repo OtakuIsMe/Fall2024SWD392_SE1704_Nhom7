@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router'
 import Header from '../../../Components/Header/Header'
 import './RoomDetail.css'
 import room1 from '../../../Assets/room1.jpg'
@@ -25,9 +26,11 @@ import { RxCross2 } from "react-icons/rx";
 import { MdOutlineFoodBank } from "react-icons/md";
 import { RiDrinks2Fill } from "react-icons/ri";
 import { MdHomeRepairService } from "react-icons/md";
+import { TbCurrencyDong } from "react-icons/tb";
 
 const RoomDetail = () => {
   const [infoSelected, setInfoSelected] = useState("info-container")
+  const [typeServiceSelected, setTypeServiceSelected] = useState("food");
 
   const utilities = [
     {
@@ -103,6 +106,79 @@ const RoomDetail = () => {
     }
   }, [infoSelected])
 
+  const food = [
+    {
+      id: "1",
+      name: "Trứng cá tầm",
+      price: 20,
+    },
+    {
+      id: "2",
+      name: "Bò wagyu",
+      price: 50,
+    },
+    {
+      id: "3",
+      name: "Nấm truffles",
+      price: 40,
+    },
+    {
+      id: "4",
+      name: "Cua hoàng đế",
+      price: 30,
+    }
+  ]
+  const drink = [
+    {
+      id: "1",
+      name: "Isabella’s Islay Whisky",
+      price: 2,
+    },
+    {
+      id: "2",
+      name: "Billionaire Vodka",
+      price: 5,
+    },
+    {
+      id: "3",
+      name: "The Macallan Valerio Adami 1926",
+      price: 3,
+    },
+    {
+      id: "4",
+      name: "Dictador M-City Golden Cities Series",
+      price: 4,
+    },
+    {
+      id: "5",
+      name: "Water",
+      price: 200,
+    },
+  ]
+
+  useEffect(() => {
+    try {
+      let process1 = document.querySelector(".active");
+      process1?.classList.remove("active")
+    } catch (error) {
+      console.log(error);
+    }
+    if (typeServiceSelected === "food") {
+      let process2 = document.querySelector(".food");
+      process2?.classList.add("active");
+    } else if (typeServiceSelected === "drink") {
+      let process2 = document.querySelector(".drink");
+      process2?.classList.add("active");
+    } else if (typeServiceSelected === "amenity") {
+      let process2 = document.querySelector(".amenity");
+      process2?.classList.add("active");
+    }
+  }, [typeServiceSelected])
+
+  const handleServiceNavbar = (type: string) => {
+    setTypeServiceSelected(type);
+  }
+
   function iconReturn(id: string) {
     switch (id) {
       case '1':
@@ -130,6 +206,22 @@ const RoomDetail = () => {
       case '12':
         return (<GiWaterTank />)
     }
+  }
+
+  interface CardPSevice {
+    img: string,
+    name: string,
+    price: number
+  }
+
+  const Card: React.FC<CardPSevice> = ({ img, name, price }) => {
+    return (
+      <div className="card">
+        <img src={img} alt="" className="service-image" />
+        <p className="name">{name}</p>
+        <p className="price">{price}<TbCurrencyDong /></p>
+      </div>
+    )
   }
 
   return (
@@ -286,13 +378,32 @@ const RoomDetail = () => {
             <RxCross2 />
           </div>
           <div className="service-content">
-            <div className="nav-bar">
-              <div className="nav food"><MdOutlineFoodBank /> Food</div>
-              <div className="nav drink"><RiDrinks2Fill /> Drink</div>
-              <div className="nav amenity"><MdHomeRepairService /> Amenity</div>
-            </div>
-            <div className="services">
-
+            <div className="services-container">
+              <div className="nav-bar">
+                <div className="nav food active"
+                  onClick={() => {
+                    handleServiceNavbar("food");
+                  }}>
+                  <MdOutlineFoodBank /> Food
+                </div>
+                <div className="nav drink"
+                  onClick={() => {
+                    handleServiceNavbar("drink");
+                  }}>
+                  <RiDrinks2Fill /> Drink
+                </div>
+                <div className="nav amenity"
+                  onClick={() => {
+                    handleServiceNavbar("amenity");
+                  }}>
+                  <MdHomeRepairService /> Amenity
+                </div>
+              </div>
+              <div className="services">
+                {typeServiceSelected === "food" && (
+                  
+                )}
+              </div>
             </div>
             <div className="booking-service">
 
