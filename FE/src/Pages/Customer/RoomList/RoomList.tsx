@@ -8,29 +8,29 @@ import './RoomList.css'
 import Header from '../../../Components/Header/Header'
 import Card from '../../../Components/Card/Card';
 
-const locations =[
-  {value: 'Location1', label: 'Location1'},
-  {value: 'Location2', label: 'Location2'},
-  {value: 'Location3', label: 'Location3'},
+const locations = [
+  { value: 'Location1', label: 'Location1' },
+  { value: 'Location2', label: 'Location2' },
+  { value: 'Location3', label: 'Location3' },
 ]
 
-const types =[
-  {value: 'Type1', label: 'Type1'},
-  {value: 'Type2', label: 'Type2'},
-  {value: 'Type3', label: 'Type3'},
+const types = [
+  { value: 'Type1', label: 'Type1' },
+  { value: 'Type2', label: 'Type2' },
+  { value: 'Type3', label: 'Type3' },
 ]
 
 const rooms = [
-  {id: '1', img: POD1, type: 'Single POD 1',   price: 50 },
-  {id: '2', img: POD2, type: 'Double POD 1',   price: 80 },
-  {id: '3', img: POD4, type: 'Four POD 1',     price: 90 },
-  {id: '4', img: POD8, type: 'Meeting POD 1',  price: 120 },
-  {id: '5', img: POD1, type: 'Single POD 1',   price: 50 },
-  {id: '6', img: POD2, type: 'Double POD 1',   price: 80 },
-  {id: '7', img: POD4, type: 'Four POD 1',     price: 90 },
+  { id: '1', img: POD1, type: 'Single POD 1', price: 50 },
+  { id: '2', img: POD2, type: 'Double POD 1', price: 80 },
+  { id: '3', img: POD4, type: 'Four POD 1', price: 90 },
+  { id: '4', img: POD8, type: 'Meeting POD 1', price: 120 },
+  { id: '5', img: POD1, type: 'Single POD 1', price: 50 },
+  { id: '6', img: POD2, type: 'Double POD 1', price: 80 },
+  { id: '7', img: POD4, type: 'Four POD 1', price: 90 },
 ]
 
-const RoomList:React.FC = () => {
+const RoomList: React.FC = () => {
 
   const [roomList, setRoomList] = useState(rooms);
   const [filterOps, setFilterOps] = useState({
@@ -58,10 +58,10 @@ const RoomList:React.FC = () => {
 
   return (
     <>
-      <Header isTransparent={false}/>
+      <Header isTransparent={false} />
       <div id="rooms">
         <div className="filter-bar">
-          <div className="filter-btn"><FilterAltOutlinedIcon/>Filter</div>
+          <div className="filter-btn"><FilterAltOutlinedIcon />Filter</div>
           <div className="location-container">
             <p>Location</p>
             <div className="select">
@@ -69,7 +69,7 @@ const RoomList:React.FC = () => {
                 <label htmlFor={loc.label}>
                   <div className='choose' key={index}>
                     {loc.label}
-                    <input id={loc.label} type='checkbox'/>
+                    <input id={loc.label} type='checkbox' />
                   </div>
                 </label>
               ))}
@@ -82,7 +82,7 @@ const RoomList:React.FC = () => {
                 <label htmlFor={ty.label}>
                   <div className='choose' key={index}>
                     {ty.label}
-                    <input id={ty.label} type='checkbox'/>
+                    <input id={ty.label} type='checkbox' />
                   </div>
                 </label>
               ))}

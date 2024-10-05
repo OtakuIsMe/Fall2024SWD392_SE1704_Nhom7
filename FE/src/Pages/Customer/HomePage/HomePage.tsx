@@ -27,21 +27,25 @@ const HomePage: React.FC = () => {
 
   const [user, setUser] = useState([]);
 
-  const firstDivRef   = useRef<HTMLDivElement | null>(null);
-  const secondDivRef  = useRef<HTMLDivElement | null>(null);
-  const thirdDivRef   = useRef<HTMLDivElement | null>(null);
-  const fourthDivRef  = useRef<HTMLDivElement | null>(null);
+  const firstDivRef = useRef<HTMLDivElement | null>(null);
+  const secondDivRef = useRef<HTMLDivElement | null>(null);
+  const thirdDivRef = useRef<HTMLDivElement | null>(null);
+  const fourthDivRef = useRef<HTMLDivElement | null>(null);
 
-  const officeList =  [
-    {img: Office1, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
-    {img: Office2, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
-    {img: Office3, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
+  const navigateToDetails = (locationId: string) => {
+    navigate(`/areadetails/${locationId}`); // Sử dụng navigate thay vì push
+  };
+
+  const officeList = [
+    { img: Office1, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City' },
+    { img: Office2, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City' },
+    { img: Office3, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City' },
   ]
-  
+
   const search = () => {
-    if(true){
+    if (true) {
       navigate('/rooms')
-    }else{
+    } else {
       navigate('/roomDetail/:1')
     }
   }
@@ -52,7 +56,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div id='hp'>
-      <Header isTransparent={true}/>
+      <Header isTransparent={true} />
       <div ref={firstDivRef} className='hp_banner_container hp_section'>
         <div className="hp_banner"></div>
         <div className='hp_welcome'>
@@ -83,23 +87,24 @@ const HomePage: React.FC = () => {
         </div>
         <div className="hp_welcome_right hp_welcome_content">
           <div className="hp_welcome_right_inner hp_welcome_content_inner">
-            <img className='main' src={Banner2} alt="banner" height={424} width={600}/>
-            <img className='sub' src={Worker} alt="banner" height={200} width={200}/>
+            <img className='main' src={Banner2} alt="banner" height={424} width={600} />
+            <img className='sub' src={Worker} alt="banner" height={200} width={200} />
           </div>
         </div>
         <div className="hp_welcome_footer">
-          <ScrollDownButton ref={thirdDivRef} title="Scroll Down"/>
+          <ScrollDownButton ref={thirdDivRef} title="Scroll Down" />
         </div>
       </div>
       <div ref={thirdDivRef} className="hp_area_display hp_section">
         <h1>Location</h1>
         <div className="hp_area_wrapper">
           {officeList.map<React.ReactNode>((office, index) => (
-            <div 
-              key={index} 
-              className={`area_card card${index + 1}`} 
-              style={{backgroundImage: `url(${office.img})`}}
-              >
+            <div
+              key={index}
+              className={`area_card card${index + 1}`}
+              onClick={() => { navigateToDetails(`${index + 1}`) }}
+              style={{ backgroundImage: `url(${office.img})` }}
+            >
               <div className="area_info">
                 <h3>Location</h3>
                 <p>{office.location}</p>
@@ -108,51 +113,51 @@ const HomePage: React.FC = () => {
           ))}
         </div>
         <div className="hp_down_page">
-          <ScrollDownButton ref={fourthDivRef} title="Scroll Down"/>
+          <ScrollDownButton ref={fourthDivRef} title="Scroll Down" />
         </div>
       </div>
       <div ref={fourthDivRef} className="hp_room_display hp_section">
         <h1>Our Workspace</h1>
         <div className="room_type_wrapper">
-          <div className="hp_room" style={{backgroundColor: '#FEF3CE'}}>
+          <div className="hp_room" style={{ backgroundColor: '#FEF3CE' }}>
             <div className="room_desc">
               <h2>F&B space</h2>
               <p>An open space with a diverse menu of food and drinks, featuring a modern and airy design, it is an ideal place to meet and chat with partners and colleagues.</p>
             </div>
-            <div className="image_container" style={{backgroundColor: 'white'}}>
+            <div className="image_container" style={{ backgroundColor: 'white' }}>
               <img src={PB} alt="" />
             </div>
           </div>
-          <div className="hp_room" style={{backgroundColor: '#FDFBFA'}}>
+          <div className="hp_room" style={{ backgroundColor: '#FDFBFA' }}>
             <div className="room_desc">
               <h2>Membership area</h2>
               <p>A professional workspace for individuals and organizations. Members have access to premium desks, ergonomic chairs, smart check-in systems, and many other amenities to support their work.</p>
             </div>
-            <div className="image_container" style={{backgroundColor: 'white'}}>
+            <div className="image_container" style={{ backgroundColor: 'white' }}>
               <img src={Membership} alt="" />
             </div>
           </div>
-          <div className="hp_room" style={{backgroundColor: '#FDFBFA'}}>
+          <div className="hp_room" style={{ backgroundColor: '#FDFBFA' }}>
             <div className="room_desc">
               <h2>WorkPod</h2>
               <p>A quiet and private space with a soundproofing and acoustic treatment system that blocks up to 70% of external noise, suitable for tasks requiring high concentration and confidentiality: interviews, online meetings, consultations, etc.</p>
             </div>
-            <div className="image_container" style={{backgroundColor: 'white'}}>
+            <div className="image_container" style={{ backgroundColor: 'white' }}>
               <img src={WorkPod} alt="" />
             </div>
           </div>
-          <div className="hp_room" style={{backgroundColor: '#FEF3CE'}}>
+          <div className="hp_room" style={{ backgroundColor: '#FEF3CE' }}>
             <div className="room_desc">
               <h2>Meeting room</h2>
               <p>The meeting rooms, with various capacities (4-10 people), are equipped with modern facilities and surrounded by lush greenery, making meetings both professional and inspiring.</p>
             </div>
-            <div className="image_container" style={{backgroundColor: 'white'}}>
+            <div className="image_container" style={{ backgroundColor: 'white' }}>
               <img src={Meeting} alt="" />
             </div>
           </div>
         </div>
         <div className="room_type_list">
-          
+
         </div>
       </div>
     </div>

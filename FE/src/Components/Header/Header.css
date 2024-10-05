@@ -14,34 +14,34 @@
     color: aliceblue;
 }
 
-#header > .logo {
+#header>.logo {
     font-size: xx-large;
     font-weight: bold;
     font-family: "Playfair Display", times, serif;
     cursor: pointer;
 }
 
-#header > .list {
+#header>.list {
     display: flex;
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-#header > .list li {
+#header>.list li {
     display: inline;
     margin: auto 20px;
     font-size: 16px;
     cursor: pointer;
 }
 
-#header > .account {
+#header>.account {
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-#header > .account button {
+#header>.account button {
     position: relative;
     height: 40px;
     border: 1px solid aliceblue;
@@ -52,7 +52,7 @@
     font-family: "Playfair Display", times, serif;
 }
 
-#header > .account button::before {
+#header>.account button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -64,18 +64,18 @@
     z-index: 0;
 }
 
-#header > .account > .login:hover {
+#header>.account>.login:hover {
     color: black;
 }
 
-#header > .account > .register:hover {
+#header>.account>.register:hover {
     color: black;
 }
 
-#header > .account > .login:hover::before {
+#header>.account>.login:hover::before {
     width: 100%;
 }
 
-#header > .account > .register:hover::before {
+#header>.account>.register:hover::before {
     width: 100%;
 }

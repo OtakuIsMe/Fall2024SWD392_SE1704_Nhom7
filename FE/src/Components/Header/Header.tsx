@@ -5,6 +5,8 @@ import RegisterPopup from "../RegisterPopup/RegisterPopup";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CSSRulePlugin } from 'gsap/CSSRulePlugin';
+import { Button, IconButton, Menu, MenuItem } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Header.css';
 
 // Define the props type
@@ -18,13 +20,13 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const navigate = useNavigate();
 
   const navbar = [
-    {name: 'Home', link: '/'},
-    {name: 'Location', link: '/areas'},
-    {name: 'Room', link: '/rooms'},
-    {name: 'About us', link: '/aboutUs'},
-    {name: 'Membership', link: '/membership'},
+    { name: 'Home', link: '/' },
+    { name: 'Location', link: '/areas' },
+    { name: 'Room', link: '/rooms' },
+    { name: 'About us', link: '/aboutUs' },
+    { name: 'Membership', link: '/membership' },
   ]
-  
+
   const divRef1 = useRef<HTMLDivElement | null>(null);
   const divRef2 = useRef<HTMLDivElement | null>(null);
 
@@ -32,6 +34,9 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const handleLoginClick = () => {
     setIsLoginOpen(true);
@@ -41,12 +46,35 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
     setIsRegisterOpen(true);
   };
 
+  const handleLogoutClick = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    setAnchorEl(null);
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const closePopup = () => {
     setIsLoginOpen(false);
     setIsRegisterOpen(false);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   };
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
     if (divRef1.current) {
       if (isTransparent) {
         gsap.to(
@@ -193,13 +221,33 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
     <div id="header" ref={divRef1}>
       <div className="logo">WorkChill</div>
       <ul className="list">
-        {navbar.map((nav, index) => (
-          <li key={index} onClick={() => navigate(`${nav.link}`)}>{nav.name}</li>
-        ))}
+        <li>Trang chủ</li>
+        <li>Địa điểm</li>
+        <li>Phòng</li>
+        <li>Về Chúng Tôi</li>
+        <li>Gói Thành Viên</li>
       </ul>
       <div ref={divRef2} className="account">
-        <button className="login button" onClick={handleLoginClick}>Log in</button>
-        <button className="register button" onClick={handleRegisterClick}>Register</button>
+        {user ? (
+          <>
+            <IconButton onClick={handleMenu} color="inherit">
+              <AccountCircleIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>{user.name}</MenuItem>
+              <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
+            </Menu>
+          </>
+        ) : (
+          <>
+            <Button className="login button" onClick={handleLoginClick}>Log in</Button>
+            <Button className="register button" onClick={handleRegisterClick}>Register</Button>
+          </>
+        )}
       </div>
       {isLoginOpen && <LoginPopup onClose={closePopup} />}
       {isRegisterOpen && <RegisterPopup onClose={closePopup} />}
