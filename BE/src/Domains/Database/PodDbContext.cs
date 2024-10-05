@@ -217,15 +217,13 @@ namespace BE.src.Domains.Database
 
                         entity.Property(l => l.Address)
                         .IsRequired(false)
-                        .HasMaxLength(500);
+                        .HasMaxLength(300);
 
                         entity.Property(l => l.Longitude)
-                        .IsRequired(false)
-                        .HasMaxLength(50);
+                        .IsRequired();
 
                         entity.Property(l => l.Latitude)
-                        .IsRequired(false)
-                        .HasMaxLength(50);
+                        .IsRequired();
 
                         entity.HasOne(l => l.Area)
                         .WithOne(a => a.Location)

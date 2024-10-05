@@ -16,11 +16,11 @@ namespace BE.src.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateRoom(CreateRoomRqDTO data)
+        public async Task<IActionResult> CreateRoom([FromForm] CreateRoomRqDTO data)
         {
             return await _roomServ.CreateRoom(data);
         }
-        [HttpGet("ViewDetail/{hashCode:string}")]
+        [HttpGet("ViewDetail/{hashCode}")]
         public async Task<IActionResult> ViewRoomDetail(string hashCode)
         {
             return await _roomServ.ViewRoomDetail(hashCode);

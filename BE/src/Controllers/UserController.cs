@@ -1,6 +1,7 @@
 using BE.src.Domains.Database;
 using BE.src.Domains.DTOs.User;
 using BE.src.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,11 @@ namespace BE.src.Controllers
         {
             return await _userServ.ResetPassword(data);
         }
-
+        [HttpGet("AutoGenerate")]
+        public async Task<IActionResult> Generate()
+        {
+            var newId = Guid.NewGuid();
+            return Ok(new { id = newId });
+        }
     }
 }

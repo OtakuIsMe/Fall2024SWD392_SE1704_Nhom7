@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BE.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateDB1 : Migration
+    public partial class ChangeLocationType : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,12 +50,10 @@ namespace BE.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Address = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
+                    Address = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Longitude = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Latitude = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Longitude = table.Column<float>(type: "float", nullable: true),
+                    Latitude = table.Column<float>(type: "float", nullable: true),
                     CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
@@ -98,6 +96,22 @@ namespace BE.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Utilities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Utilities", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -170,6 +184,8 @@ namespace BE.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Price = table.Column<float>(type: "float", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     AreaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
@@ -217,6 +233,7 @@ namespace BE.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     MembershipId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
@@ -294,37 +311,6 @@ namespace BE.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Bookings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TimeBooking = table.Column<TimeSpan>(type: "time(6)", nullable: false),
-                    DateBooking = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Bookings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Bookings_Rooms_RoomId",
-                        column: x => x.RoomId,
-                        principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Bookings_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Favourites",
                 columns: table => new
                 {
@@ -359,9 +345,9 @@ namespace BE.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Url = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoomId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    AreaId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
@@ -413,6 +399,70 @@ namespace BE.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RatingFeedbacks_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "RoomUtility",
+                columns: table => new
+                {
+                    RoomsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UtilitiesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoomUtility", x => new { x.RoomsId, x.UtilitiesId });
+                    table.ForeignKey(
+                        name: "FK_RoomUtility_Rooms_RoomsId",
+                        column: x => x.RoomsId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RoomUtility_Utilities_UtilitiesId",
+                        column: x => x.UtilitiesId,
+                        principalTable: "Utilities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TimeBooking = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    DateBooking = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Total = table.Column<float>(type: "float", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    MembershipUserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_MembershipUsers_MembershipUserId",
+                        column: x => x.MembershipUserId,
+                        principalTable: "MembershipUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -568,6 +618,11 @@ namespace BE.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bookings_MembershipUserId",
+                table: "Bookings",
+                column: "MembershipUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_RoomId",
                 table: "Bookings",
                 column: "RoomId");
@@ -605,7 +660,8 @@ namespace BE.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Images_UserId",
                 table: "Images",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MembershipUsers_MembershipId",
@@ -651,6 +707,11 @@ namespace BE.Migrations
                 name: "IX_Rooms_AreaId",
                 table: "Rooms",
                 column: "AreaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoomUtility_UtilitiesId",
+                table: "RoomUtility",
+                column: "UtilitiesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_DepositWithdrawId",
@@ -713,6 +774,9 @@ namespace BE.Migrations
                 name: "RefundItems");
 
             migrationBuilder.DropTable(
+                name: "RoomUtility");
+
+            migrationBuilder.DropTable(
                 name: "Transactions");
 
             migrationBuilder.DropTable(
@@ -722,10 +786,10 @@ namespace BE.Migrations
                 name: "BookingItems");
 
             migrationBuilder.DropTable(
-                name: "DepositWithdraw");
+                name: "Utilities");
 
             migrationBuilder.DropTable(
-                name: "MembershipUsers");
+                name: "DepositWithdraw");
 
             migrationBuilder.DropTable(
                 name: "PaymentRefunds");
@@ -734,13 +798,16 @@ namespace BE.Migrations
                 name: "AmenityServices");
 
             migrationBuilder.DropTable(
-                name: "Memberships");
-
-            migrationBuilder.DropTable(
                 name: "Bookings");
 
             migrationBuilder.DropTable(
+                name: "MembershipUsers");
+
+            migrationBuilder.DropTable(
                 name: "Rooms");
+
+            migrationBuilder.DropTable(
+                name: "Memberships");
 
             migrationBuilder.DropTable(
                 name: "Users");

@@ -47,9 +47,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<IUserServ, UserServ>();
 builder.Services.AddScoped<IAreaServ, AreaServ>();
+builder.Services.AddScoped<IRoomServ, RoomServ>();
+builder.Services.AddScoped<IBookingServ, BookingServ>();
+builder.Services.AddScoped<IAmenityServiceServ, AmenityServiceServ>();
+builder.Services.AddScoped<ITransactionServ, TrasactionServ>();
 
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IAreaRepo, AreaRepo>();
+builder.Services.AddScoped<IRoomRepo, RoomRepo>();
+builder.Services.AddScoped<IBookingRepo, BookingRepo>();
+builder.Services.AddScoped<IAmenityServiceRepo, AmenityServiceRepo>();
+builder.Services.AddScoped<ITransactionRepo, TrasactionRepo>();
 
 builder.Services.AddDbContext<PodDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),

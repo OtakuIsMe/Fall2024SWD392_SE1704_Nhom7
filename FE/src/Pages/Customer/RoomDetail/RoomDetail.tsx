@@ -400,9 +400,9 @@ const RoomDetail = () => {
                 </div>
               </div>
               <div className="services">
-                {typeServiceSelected === "food" && (
+                {/* {typeServiceSelected === "food" && (
                   
-                )}
+                )} */}
               </div>
             </div>
             <div className="booking-service">
