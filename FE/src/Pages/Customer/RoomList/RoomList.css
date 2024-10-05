@@ -1,38 +1,87 @@
+#rooms {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+}
+
 #rooms > .filter-bar {
-    height: 80px;
+    height: 80vh;
     width: 100%;
+    padding: 35px 0;
     
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    font-family: "Playfair Display", times, serif;
+    flex-direction: column;
 
-    gap: 20px;
-    border-bottom: 1px solid #ccc;
+    font-size: 16px;
+
+    gap: 10px;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 #rooms > .filter-bar div {
     display: flex;
 }
 
+#rooms > .filter-bar > .location-container,
+#rooms > .filter-bar > .type-container{
+    margin: 0 25px;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid gray;
+}
+
+#rooms > .filter-bar > .location-container p ,
+#rooms > .filter-bar > .type-container p {
+    margin: 0 0 10px 0;
+
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+#rooms > .filter-bar .select {
+    display: flex;
+    flex-direction: column;
+}
+
+#rooms > .filter-bar .select > label > .choose {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+#rooms > .filter-bar .select > label > .choose:hover {
+    background-color: rgb(230, 230, 230);
+}
+
 #rooms > .filter-bar div.date-container {
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 25px;
 }
 
-#rooms > .filter-bar div select {
-    border: none;
-    font-size: 15px;
-    font-family:  "Playfair Display", times, serif;
-}
+#rooms > .filter-bar div.date-container > p {
+    margin: 0 0 10px 0;
 
-#rooms > .filter-bar div select:focus {
-    outline-width: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
 }
 
 #rooms > .filter-bar div.date-container > .search_input {
     display: flex;
+    flex-direction: column;
     gap: 10px;
+    padding: 0 10px;
+}
+
+#rooms > .filter-bar div.date-container > .search_input > label p {
+    margin: 0 0 5px 0;
+
+    font-size: 1rem;
+    font-weight: bold;
 }
 
 #rooms > .filter-bar div.date-container > .search_input > input {
@@ -43,17 +92,18 @@
     outline-width: 0;
 }
 
-#rooms > .filter-bar > .filter-btn {
-    border: gray 1px solid;
-    padding: 3px;
-    border-radius: 3px;
-    cursor: pointer;
-}
+ #rooms > .filter-bar > .filter-btn {
+    padding-bottom: 10px;
+    margin: 0 25px;
+    border-bottom: 1px solid gray;
 
-#rooms > .filter-bar > .filter-btn:hover {
-    background-color: gray;
-    color: aliceblue;
-}
+    display: flex;
+    align-items: center;
+
+    font-size: 24px;
+    font-weight: bold;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+} 
 
 #rooms > .room-list-container {
     min-height: 100vh;
@@ -62,16 +112,15 @@
 
 #rooms > .room-list-container > .room-list {
     height: 100%;
-    padding: 0 300px;
     background-color: #ebebeb;
 }
 
 #rooms > .room-list-container > .room-list > .list {
-    min-height: 100%;
     height: fit-content;
+    
+    display: grid;
+    grid-template-columns: 250px 250px 250px 250px;
     background-color: white;
     padding: 25px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    gap: 30px;
 }

@@ -18,11 +18,11 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const navigate = useNavigate();
 
   const navbar = [
-    {name: 'Trang chủ', link: '/'},
-    {name: 'Địa điểm', link: '/areas'},
-    {name: 'Phòng', link: '/rooms'},
-    {name: 'Về Chúng Tôi', link: '/aboutUs'},
-    {name: 'Gói Thành Viên', link: '/membership'},
+    {name: 'Home', link: '/'},
+    {name: 'Location', link: '/areas'},
+    {name: 'Room', link: '/rooms'},
+    {name: 'About us', link: '/aboutUs'},
+    {name: 'Membership', link: '/membership'},
   ]
   
   const divRef1 = useRef<HTMLDivElement | null>(null);

@@ -33,9 +33,9 @@ const HomePage: React.FC = () => {
   const fourthDivRef  = useRef<HTMLDivElement | null>(null);
 
   const officeList =  [
-    {img: Office1, location: 'Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM'},
-    {img: Office2, location: 'Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM'},
-    {img: Office3, location: 'Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM'},
+    {img: Office1, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
+    {img: Office2, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
+    {img: Office3, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
   ]
   
   const search = () => {

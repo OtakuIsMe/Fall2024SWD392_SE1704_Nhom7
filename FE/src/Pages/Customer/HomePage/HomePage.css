@@ -252,6 +252,7 @@
     justify-content: end;
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: 50% 50%;
     overflow: hidden;
     z-index: 0;
 }
@@ -260,18 +261,6 @@
     transition: all .3s;
     transform: translateY(150%);
     z-index: 2;
-}
-
-#hp > .hp_area_display > .hp_area_wrapper > .card1 {
-    background-color: #f77c73;
-}
-
-#hp > .hp_area_display > .hp_area_wrapper > .card2 {
-    background-color: #6cbdff;
-}
-
-#hp > .hp_area_display > .hp_area_wrapper > .card3 {
-    background-color: #71ff76;
 }
 
 #hp > .hp_area_display > .hp_area_wrapper > .card1::before {
@@ -343,7 +332,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 100px 80px;
+    padding: 100px 0;
     background: #F2F4FB;
 }
 
