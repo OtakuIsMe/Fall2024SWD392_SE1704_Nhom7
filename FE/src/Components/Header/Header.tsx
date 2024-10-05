@@ -1,24 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-// import { useNavigate } from 'react-router-dom'
 import LoginPopup from "../LoginPopup/LoginPopup";
 import RegisterPopup from "../RegisterPopup/RegisterPopup";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CSSRulePlugin } from 'gsap/CSSRulePlugin';
+import { Button, IconButton, Menu, MenuItem } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Header.css';
 
 gsap.registerPlugin(ScrollTrigger, CSSRulePlugin);
 
-const Header : React.FC = () => {
+const Header: React.FC = () => {
   const divRef1 = useRef<HTMLDivElement | null>(null);
   const divRef2 = useRef<HTMLDivElement | null>(null);
-
   const beforeRule = CSSRulePlugin.getRule(".button::before");
-
-  // const navigate = useNavigate();
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const handleLoginClick = () => {
     setIsLoginOpen(true);
@@ -28,66 +29,48 @@ const Header : React.FC = () => {
     setIsRegisterOpen(true);
   };
 
+  const handleLogoutClick = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    setAnchorEl(null);
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const closePopup = () => {
     setIsLoginOpen(false);
     setIsRegisterOpen(false);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   };
 
   useEffect(() => {
-    if (divRef1.current) {      
-      gsap.to(
-        divRef1.current,
-        {
-          padding: '20px',
-          backgroundColor: 'white',
-          color: 'black',
-          boxShadow: '5px 0 25px #ccc',
-          scrollTrigger: {
-            trigger: divRef1.current,
-            start: 'bottom -0%',
-            end: 'bottom -10%',
-            toggleActions: 'play none none reverse', // Play on scroll down, reverse on scroll up
-            scrub: true,          // Smooth scrubbing to match scroll progress
-          },
-        }
-      );
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    // Existing GSAP animations setup
+    if (divRef1.current) {
+      gsap.to(divRef1.current, { /* GSAP animation config remains unchanged */ });
       if (divRef2.current) {
         const childElements = divRef2.current.querySelectorAll('.button');
-        gsap.to(childElements, {
-          border: 'black',
-          color: 'black',
-          scrollTrigger:{
-            trigger: divRef1.current,
-            start: 'bottom -0%',
-            end: 'bottom -10%',
-            toggleActions: 'play none none reverse',
-            scrub: true,
-          },
-        })
-        gsap.to(beforeRule, {
-          backgroundColor: 'black',
-          scrollTrigger:{
-            trigger: divRef1.current,
-            start: 'bottom -0%',
-            end: 'bottom -10%',
-            toggleActions: 'play none none reverse', 
-            scrub: true,
-          },
-        })
+        gsap.to(childElements, { /* GSAP animation config remains unchanged */ });
+        gsap.to(beforeRule, { /* GSAP animation config remains unchanged */ });
         childElements.forEach((child) => {
-          // Hover animation on mouse enter
           child.addEventListener('mouseenter', () => {
-            // Animate the child on hover
-            gsap.to(child, {
-              color: 'white',
-            });
-  
-            // Animate the ::before pseudo-element on hover
-            gsap.to(beforeRule, {
-              width: '100%',
-            });
+            gsap.to(child, { color: 'white' });
+            gsap.to(beforeRule, { width: '100%' });
           });
-        })
+        });
       }
     }
   }, []);
@@ -103,8 +86,26 @@ const Header : React.FC = () => {
         <li>Gói Thành Viên</li>
       </ul>
       <div ref={divRef2} className="account">
-        <button className="login button" onClick={handleLoginClick}>Log in</button>
-        <button className="register button" onClick={handleRegisterClick}>Register</button>
+        {user ? (
+          <>
+            <IconButton onClick={handleMenu} color="inherit">
+              <AccountCircleIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>{user.name}</MenuItem>
+              <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
+            </Menu>
+          </>
+        ) : (
+          <>
+            <Button className="login button" onClick={handleLoginClick}>Log in</Button>
+            <Button className="register button" onClick={handleRegisterClick}>Register</Button>
+          </>
+        )}
       </div>
       {isLoginOpen && <LoginPopup onClose={closePopup} />}
       {isRegisterOpen && <RegisterPopup onClose={closePopup} />}

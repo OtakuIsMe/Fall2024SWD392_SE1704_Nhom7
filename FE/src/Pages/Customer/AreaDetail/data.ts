@@ -5,7 +5,7 @@ export const locations: Location[] = [
   {
     id: '1',
     name: 'Địa Điểm A',
-    imageUrl: '/path/to/image-a.jpg',
+    imageUrl: '/',
     description: 'Mô tả địa điểm A.',
     reviews: [
       { user: 'User 1', comment: 'Tuyệt vời!' },
