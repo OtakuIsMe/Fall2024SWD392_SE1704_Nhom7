@@ -29,7 +29,7 @@ namespace BE.src.Repositories
 
         public async Task<User?> GetUserByLogin(LoginRqDTO data)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == data.Email || u.Username == data.Email && u.Password == Utils.HashObject<string>(data.Password));
+            return await _context.Users.FirstOrDefaultAsync(u => (u.Email == data.Email || u.Username == data.Email) && u.Password == Utils.HashObject<string>(data.Password));
         }
 
         public async Task<User?> GetUserById(Guid userId)

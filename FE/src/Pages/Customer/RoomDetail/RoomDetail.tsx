@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import Header from '../../../Components/Header/Header'
+import { ApiGateway } from '../../../Api/ApiGateway'
 import './RoomDetail.css'
 import room1 from '../../../Assets/room1.jpg'
 import room2 from '../../../Assets/room2.jpg'
@@ -86,6 +87,13 @@ const RoomDetail = () => {
   const handleNavbarClick = (type: string) => {
     setInfoSelected(type);
   }
+
+  const { roomHashing } = useParams();
+  useEffect(() => {
+    if (roomHashing != null) {
+      ApiGateway.GetRoomDetail(roomHashing);
+    }
+  }, [])
 
   useEffect(() => {
     try {

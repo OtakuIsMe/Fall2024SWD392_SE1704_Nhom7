@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom'
 import LoginPopup from "../LoginPopup/LoginPopup";
 import RegisterPopup from "../RegisterPopup/RegisterPopup";
@@ -8,6 +8,7 @@ import { CSSRulePlugin } from 'gsap/CSSRulePlugin';
 import { Button, IconButton, Menu, MenuItem } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Header.css';
+import { AuthenContext } from '../AuthenContext';
 
 // Define the props type
 interface HeaderProps {
@@ -34,7 +35,11 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  const context = useContext(AuthenContext);
+  if (!context) {
+    throw new Error("useAuthenContext must be used within an AuthenProvider");
+  }
+  const { user, logout } = context;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -47,9 +52,9 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   };
 
   const handleLogoutClick = () => {
-    localStorage.removeItem('user');
-    setUser(null);
+    logout();
     setAnchorEl(null);
+    window.location.href = '/';
   };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -63,18 +68,9 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const closePopup = () => {
     setIsLoginOpen(false);
     setIsRegisterOpen(false);
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-
     if (divRef1.current) {
       if (isTransparent) {
         gsap.to(
@@ -221,11 +217,9 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
     <div id="header" ref={divRef1}>
       <div className="logo">WorkChill</div>
       <ul className="list">
-        <li>Trang chủ</li>
-        <li>Địa điểm</li>
-        <li>Phòng</li>
-        <li>Về Chúng Tôi</li>
-        <li>Gói Thành Viên</li>
+        {navbar.map((nav, index) => (
+          <li key={index} onClick={() => navigate(`${nav.link}`)}>{nav.name}</li>
+        ))}
       </ul>
       <div ref={divRef2} className="account">
         {user ? (
@@ -238,7 +232,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>{user.name}</MenuItem>
+              <MenuItem onClick={handleClose}>{user.username}</MenuItem>
               <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
             </Menu>
           </>

@@ -1,6 +1,8 @@
+using BE.src.Domains;
 using BE.src.Domains.Database;
 using BE.src.Domains.DTOs.User;
 using BE.src.Services;
+using BE.src.Util;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +28,9 @@ namespace BE.src.Controllers
         }
 
         [HttpPost("GetUserByToken")]
-        public async Task<IActionResult> GetUserByToken([FromBody] string token)
+        public async Task<IActionResult> GetUserByToken([FromBody] GetUserByTokenRqDTO data)
         {
-            return await _userServ.GetUserByToken(token);
+            return await _userServ.GetUserByToken(data.Token);
         }
 
         [HttpPost("Register")]
@@ -47,6 +49,12 @@ namespace BE.src.Controllers
         {
             var newId = Guid.NewGuid();
             return Ok(new { id = newId });
+        }
+        [HttpPost("ConvertToHash")]
+        public async Task<IActionResult> Convert([FromBody] string id)
+        {
+            var hashCode = Utils.HashObject<string>(id);
+            return Ok(new { hashing = hashCode });
         }
     }
 }
