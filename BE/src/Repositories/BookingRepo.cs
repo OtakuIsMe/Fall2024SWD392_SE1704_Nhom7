@@ -12,7 +12,7 @@ namespace BE.src.Repositories
         Task<Room?> GetRoomById(Guid roomId);
 
         // Return book status of room
-        Task<List<RoomStatusDto>> GetRoomStatus(StatusRoomEnum status, TimeSpan startDay, TimeSpan endDay, DateTime startDate, DateTime endDate);
+        Task<List<RoomStatusDto>> GetRoomStatus(DateTime startDate, DateTime endDate);
     }
 
     public class BookingRepo : IBookingRepo
@@ -29,19 +29,16 @@ namespace BE.src.Repositories
             return await _context.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
         }
 
-        public async Task<List<RoomStatusDto>> GetRoomStatus(StatusRoomEnum status, TimeSpan startDay, TimeSpan endDay, DateTime startDate, DateTime endDate)
+        public async Task<List<RoomStatusDto>> GetRoomStatus(DateTime startDate, DateTime endDate)
         {
             var roomBookings = await _context.Bookings
-                .Where(b => b.Room.Status == status 
+                .Where(b => b.Room.Status == 0 
                             && ((b.DateBooking >= startDate && b.DateBooking <= endDate) 
-                                || (b.TimeBooking >= startDay && b.TimeBooking <= endDay)
                                 || (b.DateBooking <= startDate && b.DateBooking >= endDate))) 
                 .Select(b => new RoomStatusDto
                 {
                     RoomId = b.RoomId,
-                    IsRented = b.Room.Status == status,
-                    StartDay = startDay,
-                    EndDay = endDay,
+                    IsRented = b.Room.Status,
                     StartDate = startDate,
                     EndDate = endDate
                 }).ToListAsync();

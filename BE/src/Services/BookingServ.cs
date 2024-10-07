@@ -8,7 +8,7 @@ namespace BE.src.Services
     public interface IBookingServ
     {
         // Return book status of room
-        Task<IActionResult> GetRoomStatusAsync(StatusRoomEnum status, TimeSpan startDay, TimeSpan endDay, DateTime startDate, DateTime endDate);
+        Task<IActionResult> GetRoomStatusAsync(DateTime startDate, DateTime endDate);
     }
 
     public class BookingServ : IBookingServ
@@ -20,9 +20,9 @@ namespace BE.src.Services
             _repository = repository;
         }
 
-        public async Task<IActionResult> GetRoomStatusAsync(StatusRoomEnum status, TimeSpan startDay, TimeSpan endDay, DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> GetRoomStatusAsync(DateTime startDate, DateTime endDate)
         {
-            var roomStatus = await _repository.GetRoomStatus(status, startDay, endDay, startDate, endDate);
+            var roomStatus = await _repository.GetRoomStatus(startDate, endDate);
 
             if (roomStatus == null)
             {

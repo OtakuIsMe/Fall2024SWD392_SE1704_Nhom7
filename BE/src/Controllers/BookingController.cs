@@ -15,9 +15,9 @@ namespace BE.src.Controllers
         }
 
         [HttpGet("status")]
-        public async Task<IActionResult> GetRoomStatusAsync(StatusRoomEnum status, TimeSpan startDay, TimeSpan endDay, DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> GetRoomStatusAsync(DateTime startDate, DateTime endDate)
         {
-            return await _service.GetRoomStatusAsync(status, startDay, endDay, startDate, endDate);
+            return await _service.GetRoomStatusAsync(startDate, endDate);
         }
     }
 }
