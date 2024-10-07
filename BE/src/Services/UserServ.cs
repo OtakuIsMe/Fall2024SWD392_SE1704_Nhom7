@@ -165,7 +165,7 @@ namespace BE.src.Services
         {
             try
             {
-                var user = await _userRepo.GetUserById(userId);
+                var user = await _userRepo.ViewProfileByUserId(userId);
                 if (user == null)
                 {
                     return ErrorResp.NotFound("Not found this user");
