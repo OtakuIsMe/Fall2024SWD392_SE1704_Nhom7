@@ -5,6 +5,7 @@ using BE.src.Shared.Type;
 using Microsoft.AspNetCore.Mvc;
 using BE.src.Util;
 using BE.src.Domains.Enum;
+using BE.src.Domains.DTOs.Room;
 
 namespace BE.src.Services
 {
@@ -17,14 +18,19 @@ namespace BE.src.Services
         // Return room detail
         Task<IActionResult> ViewRoomDetail(Guid roomId);
         Task<IActionResult> ViewRoomsByArea(Guid areaId);
+
+        Task<IActionResult> CreateRoom(CreateRoomRqDTO data);
+        Task<IActionResult> ViewRoomDetail(string hashCode);
+        Task<IActionResult> GetCommentByRoomId(Guid roomId);
     }
     public class RoomServ : IRoomServ
     {
         private readonly IRoomRepo _roomRepo;
-
-        public RoomServ(IRoomRepo roomRepo)
+        private readonly IAreaRepo _areaRepo;
+        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo)
         {
             _roomRepo = roomRepo;
+            _areaRepo = areaRepo;
         }
 
         public async Task<IActionResult> GetRoomBySearchInput(string inputInfo)
@@ -79,37 +85,6 @@ namespace BE.src.Services
             {
                 return SuccessResp.Ok(rooms);
             }
-        }
-    }
-}using System.Security.Cryptography.X509Certificates;
-using BE.src.Domains.DTOs.Room;
-using BE.src.Domains.Enum;
-using BE.src.Domains.Models;
-using BE.src.Repositories;
-using BE.src.Shared.Type;
-using BE.src.Util;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-
-namespace BE.src.Services
-{
-    public interface IRoomServ
-    {
-        Task<IActionResult> CreateRoom(CreateRoomRqDTO data);
-        Task<IActionResult> ViewRoomDetail(string hashCode);
-        Task<IActionResult> GetCommentByRoomId(Guid roomId);
-    }
-
-    public class RoomServ : IRoomServ
-    {
-        private readonly IRoomRepo _roomRepo;
-        private readonly IAreaRepo _areaRepo;
-
-        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo)
-        {
-            _roomRepo = roomRepo;
-            _areaRepo = areaRepo;
         }
 
         public async Task<IActionResult> CreateRoom(CreateRoomRqDTO data)

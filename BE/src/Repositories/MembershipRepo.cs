@@ -11,7 +11,7 @@ namespace BE.src.Repositories
 {
     public interface IMembershipRepo
     {
-        Task<MembershipDto?> GetMembershipDetails(Guid membershipId);
+        Task<Membership?> GetMembershipDetails(Guid userId);
     }
 
     public class MembershipRepo : IMembershipRepo
@@ -21,18 +21,10 @@ namespace BE.src.Repositories
         {
             _context = context;
         }
-        public async Task<MembershipDto?> GetMembershipDetails(Guid membershipId)
+        public async Task<Membership?> GetMembershipDetails(Guid userId)
         {
-            return await _context.Memberships
-                .Where(m => m.Id == membershipId)
-                .Select(m => new MembershipDto
-                {
-                    Name = m.Name,
-                    Rank = m.Rank,
-                    Discount = m.Discount,
-                    Price = m.Price
-                })
-                .FirstOrDefaultAsync();
+            return (await _context.MembershipUsers.Where(m => m.UserId == userId && m.Status)
+                    .Include(x => x.Membership).FirstOrDefaultAsync())?.Membership;
         }
     }
 }

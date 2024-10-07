@@ -52,7 +52,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<IUserServ, UserServ>(); builder.Services.AddScoped<IRoomServ, RoomServ>();
-builder.Services.AddScoped<IMembershipServ, MembershipServ>(); builder.Services.AddScoped<IAmenityServiceService, AmenityServiceService>();
+builder.Services.AddScoped<IMembershipServ, MembershipServ>();
 builder.Services.AddScoped<IBookingServ, BookingServ>();
 builder.Services.AddScoped<IAreaServ, AreaServ>();
 builder.Services.AddScoped<IRoomServ, RoomServ>();
@@ -61,7 +61,7 @@ builder.Services.AddScoped<IAmenityServiceServ, AmenityServiceServ>();
 builder.Services.AddScoped<ITransactionServ, TrasactionServ>();
 
 builder.Services.AddScoped<IUserRepo, UserRepo>(); builder.Services.AddScoped<IRoomRepo, RoomRepo>();
-builder.Services.AddScoped<IMembershipRepo, MembershipRepo>(); builder.Services.AddScoped<IAmenityServiceRepository, AmenityServiceRepository>();
+builder.Services.AddScoped<IMembershipRepo, MembershipRepo>();
 builder.Services.AddScoped<IBookingRepo, BookingRepo>();
 builder.Services.AddScoped<IAreaRepo, AreaRepo>();
 builder.Services.AddScoped<IRoomRepo, RoomRepo>();

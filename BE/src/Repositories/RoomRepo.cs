@@ -2,6 +2,7 @@ using BE.src.Domains.Database;
 using BE.src.Domains.DTOs;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
+using BE.src.Util;
 using Microsoft.EntityFrameworkCore;
 
 namespace BE.src.Repositories
@@ -15,6 +16,14 @@ namespace BE.src.Repositories
         // Return room detail
         Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId);
         Task<List<RoomDto>> GetRoomsByAreaId(Guid areaId);
+
+        Task<Room?> GetRoomById(Guid roomId);
+        Task<bool> CreateRoom(Room room);
+        Task<bool> AddImageRoom(Image image);
+        Task<List<Utility>> GetListUtilitiesById(List<Guid> UtilitiesId);
+        Task<Room?> GetRoomDetailByHashCode(string hashCode);
+        Task<int> GetCountFavouriteRoom(Guid roomId);
+        Task<List<RatingFeedback>> GetListRatingFeedback(Guid roomId);
     }
     public class RoomRepo : IRoomRepo
     {
@@ -108,34 +117,6 @@ namespace BE.src.Repositories
             }).ToList();
 
             return roomDtos;
-        }
-    }
-}using System.Security.Cryptography;
-using BE.src.Domains.Database;
-using BE.src.Domains.Models;
-using BE.src.Util;
-using Microsoft.EntityFrameworkCore;
-
-namespace BE.src.Repositories
-{
-    public interface IRoomRepo
-    {
-        Task<Room?> GetRoomById(Guid roomId);
-        Task<bool> CreateRoom(Room room);
-        Task<bool> AddImageRoom(Image image);
-        Task<List<Utility>> GetListUtilitiesById(List<Guid> UtilitiesId);
-        Task<Room?> GetRoomDetailByHashCode(string hashCode);
-        Task<int> GetCountFavouriteRoom(Guid roomId);
-        Task<List<RatingFeedback>> GetListRatingFeedback(Guid roomId);
-    }
-
-    public class RoomRepo : IRoomRepo
-    {
-        private readonly PodDbContext _context;
-
-        public RoomRepo(PodDbContext context)
-        {
-            _context = context;
         }
 
         public async Task<bool> CreateRoom(Room room)

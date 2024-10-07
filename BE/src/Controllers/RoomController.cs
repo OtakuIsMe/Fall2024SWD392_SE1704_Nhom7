@@ -1,5 +1,6 @@
 using BE.src.Domains.Database;
 using BE.src.Domains.DTOs;
+using BE.src.Domains.DTOs.Room;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using BE.src.Services;
@@ -40,23 +41,6 @@ namespace BE.src.Controllers
         public async Task<IActionResult> GetRoomsByArea(Guid areaId)
         {
             return await _roomServ.ViewRoomsByArea(areaId);
-        }
-    }
-}using BE.src.Domains.DTOs.Room;
-using BE.src.Services;
-using Microsoft.AspNetCore.Mvc;
-
-namespace BE.src.Controllers
-{
-    [ApiController]
-    [Route("room/")]
-    public class RoomController : ControllerBase
-    {
-        private readonly IRoomServ _roomServ;
-
-        public RoomController(IRoomServ roomServ)
-        {
-            _roomServ = roomServ;
         }
 
         [HttpPost("Create")]

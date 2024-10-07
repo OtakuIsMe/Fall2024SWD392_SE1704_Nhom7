@@ -16,6 +16,8 @@ namespace BE.src.Services
         Task<IActionResult> GetUserByToken(string token);
         Task<IActionResult> RegisterUser(RegisterRqDTO data);
         Task<IActionResult> ResetPassword(ResetPassRqDTO data);
+        Task<IActionResult> ViewProfileByUserId(Guid userId);
+        Task<IActionResult> UpdateProfile(Guid userId, UpdateProfileDTO data);
     }
     public class UserServ : IUserServ
     {
@@ -156,6 +158,58 @@ namespace BE.src.Services
             catch (Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> ViewProfileByUserId(Guid userId)
+        {
+            try
+            {
+                var user = await _userRepo.GetUserById(userId);
+                if (user == null)
+                {
+                    return ErrorResp.NotFound("Not found this user");
+                }
+                return SuccessResp.Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> UpdateProfile(Guid userId, UpdateProfileDTO data)
+        {
+            try
+            {
+                var userInDb = await _userRepo.GetUserById(userId);
+                if (userInDb == null)
+                {
+                    return ErrorResp.NotFound("Not found this user");
+                }
+                userInDb.Name = data.Name;
+                userInDb.Username = data.Username;
+                userInDb.Email = data.Email;
+                userInDb.Phone = data.Phone;
+                userInDb.DOB = data.DOB;
+                userInDb.Image = new Image
+                {
+                    Url = data.Image[0]
+                };
+                userInDb.UpdateAt = DateTime.UtcNow;
+                bool isUpdated = await _userRepo.UpdateUser(userInDb);
+                if (isUpdated)
+                {
+                    return SuccessResp.Ok("Update user successfully");
+                }
+                else
+                {
+                    return ErrorResp.BadRequest("Fail to update user");
+                }
+            }
+            catch (System.Exception)
+            {
+                return ErrorResp.BadRequest("Fail to update user");
             }
         }
     }
