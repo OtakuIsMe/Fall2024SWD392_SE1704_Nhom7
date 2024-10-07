@@ -1,6 +1,4 @@
 using BE.src.Domains.Database;
-using BE.src.Domains.DTOs;
-using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,42 +6,40 @@ namespace BE.src.Repositories
 {
     public interface IBookingRepo
     {
-        // Find room by id
-        Task<Room?> GetRoomById(Guid roomId);
-
-        // Return book status of room
-        Task<List<RoomStatusDto>> GetRoomStatus(DateTime startDate, DateTime endDate);
+        Task<bool> AddBooking(Booking booking);
+        Task<bool> AddBookingItems(List<BookingItem> bookingItems);
+        Task<bool> UpdateBooking(Booking booking);
+        Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId);
     }
-
     public class BookingRepo : IBookingRepo
     {
         private readonly PodDbContext _context;
-
         public BookingRepo(PodDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Room?> GetRoomById(Guid roomId)
+        public async Task<bool> AddBooking(Booking booking)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
+            _context.Bookings.Add(booking);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<RoomStatusDto>> GetRoomStatus(DateTime startDate, DateTime endDate)
+        public async Task<bool> AddBookingItems(List<BookingItem> bookingItems)
         {
-            var roomBookings = await _context.Bookings
-                .Where(b => b.Room.Status == 0 
-                            && ((b.DateBooking >= startDate && b.DateBooking <= endDate) 
-                                || (b.DateBooking <= startDate && b.DateBooking >= endDate))) 
-                .Select(b => new RoomStatusDto
-                {
-                    RoomId = b.RoomId,
-                    IsRented = b.Room.Status,
-                    StartDate = startDate,
-                    EndDate = endDate
-                }).ToListAsync();
+            _context.BookingItems.AddRange(bookingItems);
+            return await _context.SaveChangesAsync() > 0;
+        }
 
-            return roomBookings;
+        public async Task<bool> UpdateBooking(Booking booking)
+        {
+            _context.Update(booking);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId)
+        {
+            return await _context.Bookings.Where(b => b.RoomId == roomId && b.DateBooking > DateTime.Now).ToListAsync();
         }
     }
 }

@@ -1,32 +1,34 @@
 using BE.src.Repositories;
+using BE.src.Shared.Type;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BE.src.Services
 {
-    public interface IAmenityServiceService
+    public interface IAmenityServiceServ
     {
-        Task<IActionResult> GetAllServices();
+        Task<IActionResult> GetAllAmenityService();
     }
 
-    public class AmenityServiceService : IAmenityServiceService
+    public class AmenityServiceServ : IAmenityServiceServ
     {
-        private readonly IAmenityServiceRepository _repository;
+        private readonly IAmenityServiceRepo _amenityServiceRepo;
 
-        public AmenityServiceService(IAmenityServiceRepository repository)
+        public AmenityServiceServ(IAmenityServiceRepo amenityServiceRepo)
         {
-            _repository = repository;
+            _amenityServiceRepo = amenityServiceRepo;
         }
 
-        public async Task<IActionResult> GetAllServices()
+        public async Task<IActionResult> GetAllAmenityService()
         {
-            var services = await _repository.GetAllServices();
-
-            if(services == null)
+            try
             {
-                return new NotFoundObjectResult(new { Message = "Services not found" });
+                var amenityServices = await _amenityServiceRepo.GetAllAmenityService();
+                return SuccessResp.Ok(amenityServices);
             }
-
-            return new OkObjectResult(services);
+            catch (System.Exception)
+            {
+                return ErrorResp.BadRequest("Error to get list Amenity and Service");
+            }
         }
     }
 }

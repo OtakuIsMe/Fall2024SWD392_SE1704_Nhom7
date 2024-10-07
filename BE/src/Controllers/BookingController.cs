@@ -1,23 +1,31 @@
-using BE.src.Domains.Enum;
+using BE.src.Domains.DTOs.Booking;
 using BE.src.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BE.src.Controllers
 {
-    [ApiController]
     [Route("booking/")]
+    [ApiController]
     public class BookingController : ControllerBase
     {
-        private readonly IBookingServ _service;
-        public BookingController(IBookingServ service)
+        private readonly IBookingServ _bookingServ;
+
+        public BookingController(IBookingServ bookingServ)
         {
-            _service = service;
+            _bookingServ = bookingServ;
         }
 
-        [HttpGet("status")]
-        public async Task<IActionResult> GetRoomStatusAsync(DateTime startDate, DateTime endDate)
+        [HttpPost("room")]
+        public async Task<IActionResult> BookingRoom([FromBody] BookingRoomRqDTO data)
         {
-            return await _service.GetRoomStatusAsync(startDate, endDate);
+            return await _bookingServ.BookingRoom(data);
+        }
+
+        [HttpGet("ViewBookingRoom/{roomId:guid}")]
+        public async Task<IActionResult> GetBookingOfRoom(Guid roomId)
+        {
+            return await _bookingServ.ViewBookingListOfRoom(roomId);
         }
     }
 }

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import "./RegisterPopup.css"
+import { Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+interface RegisterPopupProps {
+  onClose: () => void;
+}
 
-const RegisterPopup = ({ onClose }) => {
+const RegisterPopup: React.FC<RegisterPopupProps> = ({ onClose }) => {
+
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle registration logic here
     console.log('Registration submitted', { email, password, confirmPassword });
@@ -14,36 +19,48 @@ const RegisterPopup = ({ onClose }) => {
   };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-content">
-        <h2>Đăng ký</h2>
-        <form onSubmit={handleSubmit}>
-          <input
+    <Dialog open={true} onClose={onClose}>
+      <DialogTitle>Đăng ký</DialogTitle>
+      <form onSubmit={handleSubmit}>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="E-mail"
             type="email"
-            placeholder="E-mail"
+            fullWidth
+            variant="outlined"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input
+          <TextField
+            margin="dense"
+            label="Mật khẩu"
             type="password"
-            placeholder="Password"
+            fullWidth
+            variant="outlined"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <input
+          <TextField
+            margin="dense"
+            label="Xác nhận mật khẩu"
             type="password"
-            placeholder="Confirm Password"
+            fullWidth
+            variant="outlined"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
-          <button type="submit">Đăng ký</button>
-        </form>
-        <button className="close-button" onClick={onClose}>×</button>
-      </div>
-    </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>Hủy</Button>
+          <Button type="submit" color="primary">Đăng ký</Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

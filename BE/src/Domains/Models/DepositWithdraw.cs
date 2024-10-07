@@ -1,3 +1,4 @@
+using BE.src.Domains.Enum;
 using BE.src.Domains.Models.Base;
 using System;
 
@@ -6,7 +7,7 @@ namespace BE.src.Domains.Models
     public class DepositWithdraw : BaseEntity
     {
         public float Amount { get; set; }
-        public string Type { get; set; } = null!;
+        public TypeDepositWithdrawEnum Type { get; set; }
         public string Method { get; set; } = null!;
 
         public Guid UserId { get; set; }

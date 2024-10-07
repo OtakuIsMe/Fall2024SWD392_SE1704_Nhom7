@@ -1,33 +1,32 @@
 using BE.src.Domains.Database;
-using BE.src.Domains.DTOs;
+using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BE.src.Repositories
 {
-    public interface IAmenityServiceRepository
+    public interface IAmenityServiceRepo
     {
-        Task<List<AmenitiesServiceDto>> GetAllServices();
+        Task<List<AmenityService>> GetAllAmenityService();
+        Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId);
     }
 
-    public class AmenityServiceRepository : IAmenityServiceRepository
+    public class AmenityServiceRepo : IAmenityServiceRepo
     {
         private readonly PodDbContext _context;
 
-        public AmenityServiceRepository(PodDbContext context)
+        public AmenityServiceRepo(PodDbContext context)
         {
             _context = context;
         }
 
-        public async Task<List<AmenitiesServiceDto>> GetAllServices()
+        public async Task<List<AmenityService>> GetAllAmenityService()
         {
-            return await _context.AmenityServices
-                        .Select(s => new AmenitiesServiceDto
-                        {
-                            Id = s.Id,
-                            Name = s.Name,
-                            Price = s.Price
-                        })
-                        .ToListAsync();
+            return await _context.AmenityServices.ToListAsync();
+        }
+
+        public async Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId)
+        {
+            return await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityServiceId);
         }
     }
 }

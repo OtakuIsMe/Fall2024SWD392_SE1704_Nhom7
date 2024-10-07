@@ -1,5 +1,6 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --background-color: aliceblue;
 
   /* color-scheme: light dark; */
 
@@ -7,11 +8,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  transition: all .2s;
 }
 
 body {
   margin: 0;
   padding: 0;
+}
+
+* {
+  transition: all .2s;
 }

@@ -1,3 +1,4 @@
+using BE.src.Domains.Enum;
 using BE.src.Domains.Models.Base;
 using System;
 
@@ -5,7 +6,7 @@ namespace BE.src.Domains.Models
 {
     public class Transaction : BaseEntity
     {
-        public string TransactionType { get; set; } = null!;
+        public TypeTransactionEnum TransactionType { get; set; }
         public float Total { get; set; }
 
         public Guid? PaymentRefundId { get; set; }

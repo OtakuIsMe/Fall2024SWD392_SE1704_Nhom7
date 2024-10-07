@@ -1,8 +1,11 @@
+using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using BE.src.Domains.Models.Base;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using System.Reflection.Emit;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.AspNetCore.Connections;
 
 namespace BE.src.Domains.Database
 {
@@ -26,6 +29,7 @@ namespace BE.src.Domains.Database
             public DbSet<UserAreaManagement> UserAreaManagements { get; set; } = null!;
             public DbSet<Location> Locations { get; set; } = null!;
             public DbSet<Transaction> Transactions { get; set; } = null!;
+            public DbSet<Utility> Utilities { get; set; } = null!;
 
             private readonly IConfiguration _configuration;
 
@@ -86,6 +90,13 @@ namespace BE.src.Domains.Database
                         .IsRequired();
 
                         entity.Property(b => b.Status)
+                        .IsRequired()
+                        .HasConversion(
+                            v => (int)v,
+                            v => (StatusBookingEnum)v
+                            );
+
+                        entity.Property(b => b.Total)
                         .IsRequired();
 
                         entity.HasOne(b => b.User)
@@ -95,6 +106,10 @@ namespace BE.src.Domains.Database
                         entity.HasOne(b => b.Room)
                         .WithMany(r => r.Bookings)
                         .HasForeignKey(b => b.RoomId);
+
+                        entity.HasOne(b => b.MembershipUser)
+                        .WithMany(mu => mu.Bookings)
+                        .HasForeignKey(b => b.MembershipUserId);
                   });
 
                   builder.Entity<BookingItem>(entity =>
@@ -108,7 +123,11 @@ namespace BE.src.Domains.Database
                         .IsRequired();
 
                         entity.Property(bi => bi.Status)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConversion(
+                            v => (int)v,
+                            v => (StatusBookingItemEnum)v
+                            );
 
                         entity.HasOne(bi => bi.Booking)
                         .WithMany(b => b.BookingItems)
@@ -128,7 +147,11 @@ namespace BE.src.Domains.Database
 
                         entity.Property(e => e.Type)
                               .IsRequired()
-                              .HasMaxLength(20);
+                              .HasMaxLength(20)
+                              .HasConversion(
+                                  v => v.ToString(),
+                                  v => v.ToEnum<TypeDepositWithdrawEnum>()
+                              );
 
                         entity.Property(e => e.Method)
                               .IsRequired()
@@ -163,19 +186,28 @@ namespace BE.src.Domains.Database
                         .IsRequired()
                         .HasMaxLength(300);
 
+                        entity.Property(i => i.RoomId)
+                        .IsRequired(false);
+
                         entity.HasOne(i => i.Room)
                         .WithMany(r => r.Images)
                         .HasForeignKey(i => i.RoomId)
                         .OnDelete(DeleteBehavior.Cascade);
+
+                        entity.Property(i => i.AreaId)
+                        .IsRequired(false);
 
                         entity.HasOne(i => i.Area)
                         .WithMany(a => a.Images)
                         .HasForeignKey(i => i.AreaId)
                         .OnDelete(DeleteBehavior.Cascade);
 
+                        entity.Property(i => i.UserId)
+                        .IsRequired(false);
+
                         entity.HasOne(i => i.User)
-                        .WithMany(u => u.Images)
-                        .HasForeignKey(i => i.UserId)
+                        .WithOne(u => u.Image)
+                        .HasForeignKey<Image>(i => i.UserId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
 
@@ -185,15 +217,13 @@ namespace BE.src.Domains.Database
 
                         entity.Property(l => l.Address)
                         .IsRequired(false)
-                        .HasMaxLength(500);
+                        .HasMaxLength(300);
 
                         entity.Property(l => l.Longitude)
-                        .IsRequired(false)
-                        .HasMaxLength(50);
+                        .IsRequired();
 
                         entity.Property(l => l.Latitude)
-                        .IsRequired(false)
-                        .HasMaxLength(50);
+                        .IsRequired();
 
                         entity.HasOne(l => l.Area)
                         .WithOne(a => a.Location)
@@ -225,6 +255,9 @@ namespace BE.src.Domains.Database
                   builder.Entity<MembershipUser>(entity =>
                   {
                         entity.HasKey(mu => mu.Id);
+
+                        entity.Property(mu => mu.Status)
+                        .IsRequired();
 
                         entity.HasOne(mu => mu.Membership)
                         .WithMany(m => m.MembershipUsers)
@@ -265,7 +298,11 @@ namespace BE.src.Domains.Database
                         entity.HasKey(pr => pr.Id);
 
                         entity.Property(pr => pr.Type)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConversion(
+                            v => v.ToString(),
+                            v => v.ToEnum<PaymentRefundEnum>()
+                            );
 
                         entity.Property(pr => pr.Total)
                         .IsRequired();
@@ -331,11 +368,23 @@ namespace BE.src.Domains.Database
 
                         entity.Property(r => r.Name)
                         .IsRequired()
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasConversion(
+                            v => v.ToString(),
+                            v => v.ToEnum<RoleEnum>()
+                            );
                   });
                   builder.Entity<Room>(entity =>
                   {
                         entity.HasKey(r => r.Id);
+
+                        entity.Property(r => r.TypeRoom)
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasConversion(
+                            v => v.ToString(),
+                            v => v.ToEnum<TypeRoomEnum>()
+                            );
 
                         entity.Property(r => r.Name)
                         .IsRequired()
@@ -345,7 +394,15 @@ namespace BE.src.Domains.Database
                         .IsRequired();
 
                         entity.Property(r => r.Status)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConversion(
+                            v => (int)v,
+                            v => (StatusRoomEnum)v
+                            );
+
+                        entity.Property(r => r.Description)
+                        .IsRequired()
+                        .HasMaxLength(1000);
 
                         entity.HasOne(r => r.Area)
                         .WithMany(a => a.Rooms)
@@ -357,7 +414,12 @@ namespace BE.src.Domains.Database
                         entity.HasKey(t => t.Id);
 
                         entity.Property(t => t.TransactionType)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasConversion(
+                            v => v.ToString(),
+                            v => v.ToEnum<TypeTransactionEnum>()
+                            );
 
                         entity.Property(t => t.Total)
                         .IsRequired();
@@ -409,6 +471,9 @@ namespace BE.src.Domains.Database
                         entity.Property(u => u.DOB)
                         .IsRequired(false);
 
+                        entity.Property(u => u.Wallet)
+                        .IsRequired();
+
                         entity.HasOne(u => u.Role)
                         .WithMany(r => r.Users)
                         .HasForeignKey(u => u.RoleId)
@@ -428,6 +493,19 @@ namespace BE.src.Domains.Database
                         .HasForeignKey(uam => uam.AreaId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
+
+                  builder.Entity<Utility>(entity =>
+                  {
+                        entity.HasKey(u => u.Id);
+
+                        entity.Property(u => u.Name)
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                        entity.HasMany(u => u.Rooms)
+                        .WithMany(r => r.Utilities);
+                  });
+
                   builder.Entity<BaseEntity>()
                         .Property(b => b.CreateAt)
                         .IsRequired(false);
