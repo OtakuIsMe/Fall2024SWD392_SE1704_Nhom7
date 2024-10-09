@@ -21,5 +21,11 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.BookingRoom(data);
         }
+
+        [HttpGet("ViewBookingRoom/{roomId:guid}")]
+        public async Task<IActionResult> GetBookingOfRoom(Guid roomId)
+        {
+            return await _bookingServ.ViewBookingListOfRoom(roomId);
+        }
     }
 }

@@ -56,9 +56,10 @@ namespace BE.src.Services
                 }
                 else
                 {
+                    int count = 0;
                     foreach (IFormFile image in data.Images)
                     {
-                        string? urlFirebase = await Utils.UploadImgToFirebase(image, Utils.ConvertToUnderscore(data.Name), $"Room/{Utils.ConvertToUnderscore(area.Name)}/");
+                        string? urlFirebase = await Utils.UploadImgToFirebase(image, count.ToString(), $"Room/{Utils.ConvertToUnderscore(area.Name)}/{Utils.ConvertToUnderscore(data.Name)}");
                         if (urlFirebase == null)
                         {
                             return ErrorResp.BadRequest("Fail to save image to firebase");
@@ -73,6 +74,7 @@ namespace BE.src.Services
                         {
                             return ErrorResp.BadRequest("Fail to save image to database");
                         }
+                        count++;
                     }
                     return SuccessResp.Created("Create room success");
                 }
@@ -87,7 +89,7 @@ namespace BE.src.Services
         {
             try
             {
-                Room? room = await _roomRepo.GetRoomDetailByHashCode(hashCode);
+                var room = await _roomRepo.GetRoomDetailByHashCode(hashCode);
                 if (room == null)
                 {
                     return ErrorResp.NotFound("Cant found the room");

@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom'
 import LoginPopup from "../LoginPopup/LoginPopup";
 import RegisterPopup from "../RegisterPopup/RegisterPopup";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CSSRulePlugin } from 'gsap/CSSRulePlugin';
+import { Button, IconButton, Menu, MenuItem } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Header.css';
+import { AuthenContext } from '../AuthenContext';
 
 // Define the props type
 interface HeaderProps {
@@ -18,13 +21,13 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const navigate = useNavigate();
 
   const navbar = [
-    {name: 'Home', link: '/'},
-    {name: 'Location', link: '/areas'},
-    {name: 'Room', link: '/rooms'},
-    {name: 'About us', link: '/aboutUs'},
-    {name: 'Membership', link: '/membership'},
+    { name: 'Home', link: '/' },
+    { name: 'Location', link: '/areas' },
+    { name: 'Room', link: '/rooms' },
+    { name: 'About us', link: '/aboutUs' },
+    { name: 'Membership', link: '/membership' },
   ]
-  
+
   const divRef1 = useRef<HTMLDivElement | null>(null);
   const divRef2 = useRef<HTMLDivElement | null>(null);
 
@@ -32,6 +35,13 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const context = useContext(AuthenContext);
+  if (!context) {
+    throw new Error("useAuthenContext must be used within an AuthenProvider");
+  }
+  const { user, logout } = context;
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const handleLoginClick = () => {
     setIsLoginOpen(true);
@@ -39,6 +49,20 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
 
   const handleRegisterClick = () => {
     setIsRegisterOpen(true);
+  };
+
+  const handleLogoutClick = () => {
+    logout();
+    setAnchorEl(null);
+    window.location.href = '/';
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const closePopup = () => {
@@ -198,8 +222,26 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
         ))}
       </ul>
       <div ref={divRef2} className="account">
-        <button className="login button" onClick={handleLoginClick}>Log in</button>
-        <button className="register button" onClick={handleRegisterClick}>Register</button>
+        {user ? (
+          <>
+            <IconButton onClick={handleMenu} color="inherit">
+              <AccountCircleIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>{user.username}</MenuItem>
+              <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
+            </Menu>
+          </>
+        ) : (
+          <>
+            <Button className="login button" onClick={handleLoginClick}>Log in</Button>
+            <Button className="register button" onClick={handleRegisterClick}>Register</Button>
+          </>
+        )}
       </div>
       {isLoginOpen && <LoginPopup onClose={closePopup} />}
       {isRegisterOpen && <RegisterPopup onClose={closePopup} />}

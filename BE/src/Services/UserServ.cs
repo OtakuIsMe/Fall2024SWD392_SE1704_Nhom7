@@ -44,7 +44,8 @@ namespace BE.src.Services
                     return SuccessResp.Ok(returnValue);
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
@@ -52,25 +53,29 @@ namespace BE.src.Services
         {
             try
             {
-                if (token == null) {
+                if (token == null)
+                {
                     return ErrorResp.BadRequest("Token is null");
                 }
 
                 Guid? userId = Utils.GetUserIdByJWT(token);
 
-                if (userId == null) {
+                if (userId == null)
+                {
                     return ErrorResp.BadRequest("Token is invalid");
                 }
 
                 User? user = await _userRepo.GetUserById(userId.Value);
 
-                if (user == null) {
+                if (user == null)
+                {
                     return ErrorResp.NotFound("User is not found");
                 }
 
                 return SuccessResp.Ok(user);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
@@ -87,14 +92,15 @@ namespace BE.src.Services
                 {
                     return ErrorResp.BadRequest("This username is already registered");
                 }
-                else 
+                else
                 {
                     Role? userRole = await _userRepo.GetRoleByName(RoleEnum.Customer);
                     if (userRole == null)
                     {
                         return ErrorResp.NotFound("Can't find customrer role");
                     }
-                    var user = new User {
+                    var user = new User
+                    {
                         Username = data.Username,
                         Email = data.Email,
                         Phone = data.Phone,
@@ -113,7 +119,8 @@ namespace BE.src.Services
                     }
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
@@ -123,7 +130,7 @@ namespace BE.src.Services
             try
             {
                 User? user = await _userRepo.GetUserById(data.UserId);
-                if (user == null) 
+                if (user == null)
                 {
                     return ErrorResp.NotFound("Not found this user");
                 }
@@ -136,7 +143,7 @@ namespace BE.src.Services
                     user.Password = Utils.HashObject<string>(data.NewPassword);
                     user.UpdateAt = DateTime.UtcNow;
                     bool isUpdated = await _userRepo.UpdateUser(user);
-                    if (isUpdated) 
+                    if (isUpdated)
                     {
                         return SuccessResp.Ok("Change Password successfully");
                     }
@@ -146,7 +153,7 @@ namespace BE.src.Services
                     }
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
             }

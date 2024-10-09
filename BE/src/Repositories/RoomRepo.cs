@@ -46,10 +46,12 @@ namespace BE.src.Repositories
 
         public async Task<Room?> GetRoomDetailByHashCode(string hashCode)
         {
-            return await _context.Rooms.Where(r => Utils.HashObject<Guid>(r.Id) == hashCode)
+            return _context.Rooms
                                         .Include(r => r.Images)
                                         .Include(r => r.Utilities)
-                                        .FirstOrDefaultAsync();
+                                        .AsEnumerable()
+                                        .Where(r => Utils.HashObject(r.Id) == hashCode)
+                                        .FirstOrDefault();
         }
 
         public async Task<int> GetCountFavouriteRoom(Guid roomId)

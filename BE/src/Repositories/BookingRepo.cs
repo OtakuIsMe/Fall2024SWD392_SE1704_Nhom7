@@ -1,5 +1,6 @@
 using BE.src.Domains.Database;
 using BE.src.Domains.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BE.src.Repositories
 {
@@ -8,6 +9,7 @@ namespace BE.src.Repositories
         Task<bool> AddBooking(Booking booking);
         Task<bool> AddBookingItems(List<BookingItem> bookingItems);
         Task<bool> UpdateBooking(Booking booking);
+        Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -33,6 +35,11 @@ namespace BE.src.Repositories
         {
             _context.Update(booking);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId)
+        {
+            return await _context.Bookings.Where(b => b.RoomId == roomId && b.DateBooking > DateTime.Now).ToListAsync();
         }
     }
 }

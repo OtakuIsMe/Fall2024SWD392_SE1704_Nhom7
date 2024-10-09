@@ -23,6 +23,7 @@ namespace BE.src.Controllers
         [HttpPost("Create")]
         public Task<IActionResult> CreateArea([FromForm] CreateAreaRqDTO data)
         {
+            Console.WriteLine($"{data.Latitude}, {data.Longitude}");
             return _areaServ.CreateArea(data);
         }
     }
