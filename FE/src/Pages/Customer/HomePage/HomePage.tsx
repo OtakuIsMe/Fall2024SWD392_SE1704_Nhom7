@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router'
 import dayjs, { Dayjs } from 'dayjs'
 import Header from '../../../Components/Header/Header'
 import Banner2 from '../../../Assets/banner2.jpg'
+import Office1 from '../../../Assets/office1.jpg'
+import Office2 from '../../../Assets/office2.jpg'
+import Office3 from '../../../Assets/office3.jpg'
 import Worker from '../../../Assets/working.jpg'
 import PB from '../../../Assets/p&b.png'
 import Membership from '../../../Assets/membership.png'
@@ -11,6 +15,8 @@ import ScrollDownButton from '../../../Components/ScrollDownButton/ScrollDownBut
 import './HomePage.css'
 
 const HomePage: React.FC = () => {
+
+  const navigate = useNavigate()
 
   const [date, setdate] = useState<Dayjs>(dayjs())
   const [maxDate, setMaxDate] = useState<Dayjs>(dayjs())
@@ -26,13 +32,27 @@ const HomePage: React.FC = () => {
   const thirdDivRef   = useRef<HTMLDivElement | null>(null);
   const fourthDivRef  = useRef<HTMLDivElement | null>(null);
 
+  const officeList =  [
+    {img: Office1, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
+    {img: Office2, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
+    {img: Office3, location: '195/3 Hai Ba Trung, Ward 6, Distirct 3, HCM City'},
+  ]
+  
+  const search = () => {
+    if(true){
+      navigate('/rooms')
+    }else{
+      navigate('/roomDetail/:1')
+    }
+  }
+
   useEffect(() => {
     setMaxDate(date.add(30, 'day'))
   }, [])
 
   return (
     <div id='hp'>
-      <Header />
+      <Header isTransparent={true}/>
       <div ref={firstDivRef} className='hp_banner_container hp_section'>
         <div className="hp_banner"></div>
         <div className='hp_welcome'>
@@ -50,7 +70,7 @@ const HomePage: React.FC = () => {
               <input type="datetime-local" id='end_date' className='hp_date_input' />
             </div>
           </div>
-          <button className='hp_comfirm'>Confirm</button>
+          <button className='hp_comfirm' onClick={() => search()}>Check</button>
         </form>
         <ScrollDownButton ref={secondDivRef} title="Scroll Down" />
       </div>
@@ -74,24 +94,18 @@ const HomePage: React.FC = () => {
       <div ref={thirdDivRef} className="hp_area_display hp_section">
         <h1>Location</h1>
         <div className="hp_area_wrapper">
-          <div className="area_card card1">
-            <div className="area_info">
-              <h3>Location</h3>
-              <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
+          {officeList.map<React.ReactNode>((office, index) => (
+            <div 
+              key={index} 
+              className={`area_card card${index + 1}`} 
+              style={{backgroundImage: `url(${office.img})`}}
+              >
+              <div className="area_info">
+                <h3>Location</h3>
+                <p>{office.location}</p>
+              </div>
             </div>
-          </div>
-          <div className="area_card card2">
-            <div className="area_info">
-              <h3>Location</h3>
-              <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
-            </div>
-          </div>
-          <div className="area_card card3">
-            <div className="area_info">
-              <h3>Location</h3>
-              <p>Hẻm 195/3 Hai Bà Trưng, p.6, Quận 3, TP.HCM</p>
-            </div>
-          </div>
+          ))}
         </div>
         <div className="hp_down_page">
           <ScrollDownButton ref={fourthDivRef} title="Scroll Down"/>

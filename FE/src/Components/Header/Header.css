@@ -1,11 +1,11 @@
 #header {
-    width: 100%;    
+    width: 100%;
     height: fit-content;
 
     padding: 40px 20px;
-    
+
     display: flex;
-    justify-content: space-around   ;
+    justify-content: space-around;
 
     position: fixed;
     top: 0px;
@@ -23,9 +23,9 @@
 
 #header > .list {
     display: flex;
-    list-style-type: none; 
-    padding: 0; 
-    margin: 0; 
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
 #header > .list li {
@@ -49,6 +49,7 @@
     background-color: transparent;
     color: aliceblue;
     transition: all .2s;
+    font-family: "Playfair Display", times, serif;
 }
 
 #header > .account button::before {
@@ -71,10 +72,10 @@
     color: black;
 }
 
-#header > .account > .login:hover::before{
+#header > .account > .login:hover::before {
     width: 100%;
 }
 
-#header > .account > .register:hover::before{
+#header > .account > .register:hover::before {
     width: 100%;
 }

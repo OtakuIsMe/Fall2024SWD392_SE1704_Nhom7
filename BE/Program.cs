@@ -46,8 +46,10 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<IUserServ, UserServ>();
+builder.Services.AddScoped<IAreaServ, AreaServ>();
 
 builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IAreaRepo, AreaRepo>();
 
 builder.Services.AddDbContext<PodDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
