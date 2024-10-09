@@ -15,6 +15,12 @@ namespace BE.src.Controllers
             _transactionServ = transactionServ;
         }
 
+        [HttpGet("transaction-history")]
+        public async Task<IActionResult> ViewTransactionHistory([FromBody] Guid userId)
+        {
+            return await _transactionServ.ViewTransactionHistory(userId);
+        }
+
         // [HttpPost("payment-cod")]
         // public async Task<IActionResult> PaymentByCod([FromBody] Guid bookingId)
         // {
