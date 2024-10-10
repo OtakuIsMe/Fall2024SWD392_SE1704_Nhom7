@@ -374,7 +374,7 @@ const RoomDetail = () => {
           </div>
         </div>
       </div>
-      <div className="service-popup">
+      {/* <div className="service-popup">
         <div className="service-board">
           <div className="title-close">
             <div>
@@ -408,9 +408,7 @@ const RoomDetail = () => {
                 </div>
               </div>
               <div className="services">
-                {/* {typeServiceSelected === "food" && (
-                  
-                )} */}
+                
               </div>
             </div>
             <div className="booking-service">
@@ -418,7 +416,7 @@ const RoomDetail = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

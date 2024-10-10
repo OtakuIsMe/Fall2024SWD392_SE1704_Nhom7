@@ -22,7 +22,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ onClose }) => {
     e.preventDefault();
     login(email, password);
     onClose();
-    navigate('/');
+    window.location.href = "/"
   };
 
   return (

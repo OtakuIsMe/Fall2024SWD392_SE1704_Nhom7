@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { useNavigate } from 'react-router'
 import dayjs, { Dayjs } from 'dayjs'
 import Header from '../../../Components/Header/Header'
@@ -12,9 +12,13 @@ import Membership from '../../../Assets/membership.png'
 import WorkPod from '../../../Assets/workpod.png'
 import Meeting from '../../../Assets/meeting.png'
 import ScrollDownButton from '../../../Components/ScrollDownButton/ScrollDownButton';
+import { user } from ''
 import './HomePage.css'
+import { AuthenContext } from '../../../Components/AuthenContext'
 
 const HomePage: React.FC = () => {
+
+  const { user } = useContext(AuthenContext);
 
   const navigate = useNavigate()
 
@@ -25,7 +29,7 @@ const HomePage: React.FC = () => {
   const [mouseInCard2, setMouseInCard2] = useState(false)
   const [mouseInCard3, setMouseInCard3] = useState(false)
 
-  const [user, setUser] = useState([]);
+  const [userInfo, setUserInfo] = useState([]);
 
   const firstDivRef = useRef<HTMLDivElement | null>(null);
   const secondDivRef = useRef<HTMLDivElement | null>(null);
@@ -52,6 +56,7 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     setMaxDate(date.add(30, 'day'))
+    setUserInfo(user)
   }, [])
 
   return (
