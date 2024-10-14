@@ -23,5 +23,6 @@ namespace BE.src.Domains.Models
                 public ICollection<RatingFeedback> RatingFeedbacks { get; set; } = null!;
                 public ICollection<Booking> Bookings { get; set; } = null!;
                 public ICollection<DepositWithdraw> DepositWithdraws { get; set; } = null!;
+                public ICollection<DeviceChecking> DeviceCheckings { get; set; } = null!;
         }
 }

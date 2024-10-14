@@ -23,5 +23,10 @@ namespace BE.src.Shared.Type
         {
             return new JsonResult(data) { StatusCode = RespCode.CREATED };
         }
+
+        public static IActionResult Redirect(string url)
+        {
+            return new RedirectResult(url, false);
+        }
     }
 }

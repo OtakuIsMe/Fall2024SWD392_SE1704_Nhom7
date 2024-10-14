@@ -7,7 +7,7 @@ namespace BE.src.Domains.DTOs.Booking
         public required Guid RoomId { get; set; }
         public required Guid UserId { get; set; }
         public List<BookingItemDTO>? BookingItemDTOs { get; set; }
-        public required TimeSpan TimeBooking {  get; set; }
+        public required int TimeHourBooking { get; set; }
         public required DateTime DateBooking { get; set; }
     }
 }

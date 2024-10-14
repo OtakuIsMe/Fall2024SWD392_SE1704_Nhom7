@@ -5,9 +5,9 @@ using System;
 namespace BE.src.Domains.Models
 {
     public class BookingItem : BaseEntity
-    { 
+    {
         public int AmountItems { get; set; }
-        public float Total { get; set; } 
+        public float Total { get; set; }
         public StatusBookingItemEnum Status { get; set; }
 
         public Guid BookingId { get; set; }
@@ -15,5 +15,6 @@ namespace BE.src.Domains.Models
         public Guid AmenityServiceId { get; set; }
         public AmenityService AmenityService { get; set; } = null!;
         public ICollection<RefundItem> RefundItems { get; set; } = null!;
+        public DeviceChecking DeviceChecking { get; set; } = null!;
     }
 }
