@@ -10,6 +10,7 @@ namespace BE.src.Repositories
         Task<bool> AddBookingItems(List<BookingItem> bookingItems);
         Task<bool> UpdateBooking(Booking booking);
         Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId);
+        Task<Booking?> GetBookingById(Guid id);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -29,6 +30,11 @@ namespace BE.src.Repositories
         {
             _context.BookingItems.AddRange(bookingItems);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Booking?> GetBookingById(Guid id)
+        {
+            return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<bool> UpdateBooking(Booking booking)
