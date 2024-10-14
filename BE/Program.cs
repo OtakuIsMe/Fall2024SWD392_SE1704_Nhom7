@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using BE.src.Shared.Constant;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
+
 
 builder.Services.AddCors(options =>
 {
@@ -46,8 +52,18 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<IUserServ, UserServ>();
+builder.Services.AddScoped<IAreaServ, AreaServ>();
+builder.Services.AddScoped<IRoomServ, RoomServ>();
+builder.Services.AddScoped<IBookingServ, BookingServ>();
+builder.Services.AddScoped<IAmenityServiceServ, AmenityServiceServ>();
+builder.Services.AddScoped<ITransactionServ, TrasactionServ>();
 
 builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IAreaRepo, AreaRepo>();
+builder.Services.AddScoped<IRoomRepo, RoomRepo>();
+builder.Services.AddScoped<IBookingRepo, BookingRepo>();
+builder.Services.AddScoped<IAmenityServiceRepo, AmenityServiceRepo>();
+builder.Services.AddScoped<ITransactionRepo, TrasactionRepo>();
 
 builder.Services.AddDbContext<PodDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),

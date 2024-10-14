@@ -14,8 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
@@ -30,10 +34,7 @@
 
   <ItemGroup>
     <Folder Include="src\Domains\DTOs\AmenityService\" />
-    <Folder Include="src\Domains\DTOs\Area\" />
-    <Folder Include="src\Domains\DTOs\Booking\" />
     <Folder Include="src\Domains\DTOs\Transaction\" />
-    <Folder Include="src\Domains\DTOs\Room\" />
   </ItemGroup>
 
 </Project>

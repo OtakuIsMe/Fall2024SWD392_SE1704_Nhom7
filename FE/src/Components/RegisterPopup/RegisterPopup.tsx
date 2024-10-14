@@ -5,7 +5,7 @@ interface RegisterPopupProps {
 }
 
 const RegisterPopup: React.FC<RegisterPopupProps> = ({ onClose }) => {
-  
+
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
