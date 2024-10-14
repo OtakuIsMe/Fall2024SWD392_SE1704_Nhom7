@@ -17,17 +17,18 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ onClose }) => {
   if (!context) {
     throw new Error("useAuthenContext must be used within an AuthenProvider");
   }
+
   const { login } = context;
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     login(email, password);
     onClose();
-    window.location.href = "/"
   };
 
   return (
     <Dialog open onClose={onClose} aria-labelledby="form-dialog-title">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) => handleSubmit(e)}>
         <DialogTitle id="form-dialog-title">Đăng nhập</DialogTitle>
         <DialogContent>
           <TextField

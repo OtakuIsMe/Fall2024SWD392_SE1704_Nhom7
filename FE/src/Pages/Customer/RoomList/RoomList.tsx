@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import dayjs from 'dayjs';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import POD1 from '../../../Assets/1POD.jpg'
 import POD2 from '../../../Assets/2POD.jpg'
@@ -32,6 +33,11 @@ const rooms = [
 
 const RoomList: React.FC = () => {
 
+  const [max, setMax] = useState('')
+  const [min, setMin] = useState('')
+  const [minEnd, setMinEnd] = useState('')
+  const [startDate, setStart] = useState('')
+  const [endDate, setEnd] = useState('')
   const [roomList, setRoomList] = useState(rooms);
   const [filterOps, setFilterOps] = useState({
     type: '',
@@ -39,7 +45,11 @@ const RoomList: React.FC = () => {
   });
 
   useEffect(() => {
-    handleFilter(); // Automatically filter when filterOps changes
+    getTimeSpanFromSessions()
+  },[]);
+
+  useEffect(() => {
+    handleFilter(); 
   }, [filterOps]);
 
   const handleFilter = () => {
@@ -55,6 +65,32 @@ const RoomList: React.FC = () => {
       [key]: value,
     }));
   };
+
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) : void => {
+    const startT = event.target.value
+    setStart(startT);
+    const endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+    setEnd(endT);
+    setMinEnd(endT);
+  };
+
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) : void => {
+    setEnd(event.target.value);
+  };
+
+  const getTimeSpanFromSessions = () : void => {
+    const sesStartDate = sessionStorage.getItem('startDate');
+    const sesEndDate = sessionStorage.getItem('endDate');
+    if (sesStartDate) {
+      setStart(sesStartDate)
+      const endT = dayjs(sesStartDate).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+      setEnd(endT);
+      setMinEnd(endT);
+    }
+    if (sesEndDate) {
+      setEnd(sesEndDate)
+    }
+  }
 
   return (
     <>
@@ -92,11 +128,11 @@ const RoomList: React.FC = () => {
             <p>Timespan</p>
             <div className='search_input start'>
               <label htmlFor="start_date"><p>From</p></label>
-              <input type="datetime-local" id='start_date' className='hp_date_input' />
+              <input type="datetime-local" id='start_date' min={min} max={max} value={startDate} onChange={handleStartDateChange} className='hp_date_input' />
             </div>
             <div className='search_input end'>
               <label htmlFor="end_date"><p>To</p></label>
-              <input type="datetime-local" id='end_date' className='hp_date_input' />
+              <input type="datetime-local" id='end_date' min={minEnd} max={max} value={endDate} onChange={handleEndDateChange} className='hp_date_input' />
             </div>
           </div>
         </div>

@@ -46,4 +46,24 @@ export class ApiGateway {
             throw error;
         }
     }
+
+    public static async BookRoom<T>(userId: string, roomId: string, bookingItemDTOs: object[], timeBooking: object, dateBooking: string): Promise<T> {
+        try {
+            const bookingData = {
+                roomId: roomId,
+                userId: userId,
+                bookingItemDTOs: bookingItemDTOs,
+                timeBooking: timeBooking,
+                dateBooking: dateBooking
+            };
+    
+            const response = await this.axiosInstance.post<T>(`booking/room/`, bookingData);
+    
+            console.log(response.data);
+            return response.data;
+        } catch (error) {
+            console.error("BookRoom error:", error);
+            throw error;
+        }
+    }
 }

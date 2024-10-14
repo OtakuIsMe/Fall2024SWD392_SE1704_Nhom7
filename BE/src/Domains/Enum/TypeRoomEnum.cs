@@ -5,6 +5,6 @@ namespace BE.src.Domains.Enum
         Single,
         Double,
         Fourth,
-        Metting,
+        Meeting,
     }
 }

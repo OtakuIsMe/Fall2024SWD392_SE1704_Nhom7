@@ -205,8 +205,13 @@
     margin-top: 10px;
 }
 
+#room-detail-page .room-detail-container .room-booking .booking-detail:hover {
+    border: 1px solid blue;
+}
+
 #room-detail-page .room-detail-container .room-booking .book-interval {
     display: flex;
+    flex-direction: column;
 }
 
 #room-detail-page .room-detail-container .room-booking .book-interval .box-time {
@@ -226,20 +231,20 @@
     color: #4e538b;
     font-size: 13px;
     font-weight: 600;
+
     position: relative;
-    padding: 12px 0;
+    padding: 12px 5px;
+
     display: flex;
     align-items: center;
     margin: 0;
+
+    border: none;
+    cursor: pointer;
 }
 
-#room-detail-page .room-detail-container .room-booking .book-interval .check-in .time-oclock::before {
-    right: 0;
-    content: '';
-    background-color: #b1b1b1;
-    width: 1px;
-    height: 100%;
-    position: absolute;
+#room-detail-page .room-detail-container .room-booking .book-interval .box-time input.time-oclock:focus {
+    outline-width: 0;
 }
 
 #room-detail-page .room-detail-container .room-booking .date {
@@ -323,6 +328,7 @@
 }
 
 #room-detail-page .room-detail-container .service-btn {
+    text-align: center;
     background-color: white;
     color: #405ae6;
     border: 2px solid #e3e5e6;
@@ -330,25 +336,26 @@
 
 #room-detail-page .service-popup {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background-color: rgba(59, 59, 59, 0.336);
     position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 4;
-    display: flex;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
     align-items: center;
     justify-content: center;
+    z-index: 4;
 }
 
 #room-detail-page .service-popup .service-board {
     background-color: white;
     width: 60%;
-    height: 800px;
+    height: 90vh;
     border-radius: 30px;
     box-shadow: 1px 1px 1px 1px rgba(170, 170, 170, 0.623);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 #room-detail-page .service-popup .service-board .title-close {
@@ -396,7 +403,7 @@
 }
 
 #room-detail-page .service-popup .nav-bar {
-    width: 70%;
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     margin: 0 auto;
@@ -414,7 +421,6 @@
 
 #room-detail-page .service-popup .nav-bar .nav svg {
     font-size: 20px;
-    margin-right: 10px;
 }
 
 
@@ -422,6 +428,7 @@
     color: rgb(255, 145, 0);
     position: relative;
     display: flex;
+    transition: all .2s;
 }
 
 #room-detail-page .service-popup .nav-bar .nav.active::before {
