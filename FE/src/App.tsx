@@ -23,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/rooms" element={<RoomList />} />
           <Route path="/roomDetail/:roomHashing" element={<RoomDetail />} />
           <Route path="/dashboard" element={<DashBoard />} />
+          
         </Routes>
       </AuthenProvider>
     </>
