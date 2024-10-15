@@ -78,6 +78,44 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
+        Public async Task<IActionResult> CreateArea(CreateAreaRqDTO data)
+        {
+            
+        }
+
+        
+        public async Task<IActionResult> AddService(AddServiceRqDTO data)
+        {
+            try
+            {
+                
+                var area = await _areaRepo.GetAreaById(data.AreaId);
+                if (area == null)
+                {
+                    return ErrorResp.BadRequest("Area not found");
+                }
+
+               
+                var service = new Service
+                {
+                    Name = data.ServiceName,
+                    Description = data.Description,
+                    Area = area
+                };
+
+                var isServiceCreated = await _areaRepo.CreateService(service);
+                if (!isServiceCreated)
+                {
+                    return ErrorResp.BadRequest("Fail to create service");
+                }
+
+                return SuccessResp.Created("Service added successfully");
+            }
+            catch (Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
     }
 
 }
