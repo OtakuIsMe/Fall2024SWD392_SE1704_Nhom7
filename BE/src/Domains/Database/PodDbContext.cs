@@ -325,6 +325,7 @@ namespace BE.src.Domains.Database
 
                         entity.Property(pr => pr.Type)
                         .IsRequired()
+                        .HasMaxLength(10)
                         .HasConversion(
                             v => v.ToString(),
                             v => v.ToEnum<PaymentRefundEnum>()
@@ -334,6 +335,16 @@ namespace BE.src.Domains.Database
                         .IsRequired();
 
                         entity.Property(pr => pr.PointBonus)
+                        .IsRequired();
+
+                        entity.Property(pr => pr.PaymentType)
+                        .IsRequired(false)
+                        .HasMaxLength(10)
+                        .HasConversion(
+                              v => v.ToString(),
+                              v => string.IsNullOrEmpty(v) ? default : v.ToEnum<PaymentTypeEnum>()
+                        );
+                        entity.Property(pr => pr.Satutus)
                         .IsRequired();
 
                         entity.HasOne(pr => pr.Booking)

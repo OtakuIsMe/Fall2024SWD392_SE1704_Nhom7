@@ -1,6 +1,8 @@
+using BE.Migrations;
 using BE.src.Domains.Database;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Engines;
 
 namespace BE.src.Repositories
 {
@@ -11,6 +13,7 @@ namespace BE.src.Repositories
         Task<bool> UpdateBooking(Booking booking);
         Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId);
         Task<Booking?> GetBookingById(Guid id);
+        Task<List<Booking>> ViewBookingAvailablePeriod(Guid RoomId, DateTime StartDate, DateTime EndDate);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -46,6 +49,15 @@ namespace BE.src.Repositories
         public async Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId)
         {
             return await _context.Bookings.Where(b => b.RoomId == roomId && b.DateBooking > DateTime.Now).ToListAsync();
+        }
+
+        public async Task<List<Booking>> ViewBookingAvailablePeriod(Guid RoomId, DateTime StartDate, DateTime EndDate)
+        {
+            return await _context.Bookings
+                                    .Where(b => b.RoomId == RoomId
+                                            && b.DateBooking >= StartDate && b.DateBooking <= EndDate
+                                            && b.IsPay)
+                                    .ToListAsync();
         }
     }
 }

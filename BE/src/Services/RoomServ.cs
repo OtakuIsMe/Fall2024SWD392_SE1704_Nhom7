@@ -18,17 +18,20 @@ namespace BE.src.Services
         Task<IActionResult> GetCommentByRoomId(Guid roomId);
         Task<IActionResult> ViewListFavourite(Guid userId);
         Task<IActionResult> UnOrFavouriteRoom(Guid roomId, Guid userId);
+        Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data);
     }
 
     public class RoomServ : IRoomServ
     {
         private readonly IRoomRepo _roomRepo;
         private readonly IAreaRepo _areaRepo;
+        private readonly IBookingRepo _bookingRepo;
 
-        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo)
+        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo, IBookingRepo bookingRepo)
         {
             _roomRepo = roomRepo;
             _areaRepo = areaRepo;
+            _bookingRepo = bookingRepo;
         }
 
         public async Task<IActionResult> CreateRoom(CreateRoomRqDTO data)
@@ -168,6 +171,21 @@ namespace BE.src.Services
                         return ErrorResp.BadRequest("Fail to add favourite");
                     }
                 }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data)
+        {
+            try
+            {
+                List<RoomScheduleRpDTO> roomSchedules = new List<RoomScheduleRpDTO>();
+                List<Booking> availableBookings = await _bookingRepo.ViewBookingAvailablePeriod(data.RoomId, data.StartDate, data.EndDate);
+
+                return SuccessResp.Ok(roomSchedules);
             }
             catch (System.Exception ex)
             {

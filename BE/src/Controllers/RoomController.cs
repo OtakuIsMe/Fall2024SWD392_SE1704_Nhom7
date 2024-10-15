@@ -42,5 +42,10 @@ namespace BE.src.Controllers
         {
             return await _roomServ.UnOrFavouriteRoom(roomId, userId);
         }
+        [HttpGet("Schedule")]
+        public async Task<IActionResult> ScheduleRoom([FromBody] RoomScheduleRqDTO data)
+        {
+            return await _roomServ.GetScheduleRoom(data);
+        }
     }
 }
