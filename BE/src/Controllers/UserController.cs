@@ -56,7 +56,7 @@ namespace BE.src.Controllers
             var hashCode = Utils.HashObject<string>(id);
             return Ok(new { hashing = hashCode });
         }
-        [HttpGet("ViewProfile")]
+        [HttpPost("ViewProfile")]
         public async Task<IActionResult> ViewProfile([FromBody] string userId)
         {
             return await _userServ.ViewProfileByUserId(Guid.Parse(userId));

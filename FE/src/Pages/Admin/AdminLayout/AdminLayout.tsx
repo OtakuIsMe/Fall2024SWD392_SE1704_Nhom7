@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AssessmentIcon from '@mui/icons-material/Assessment';
@@ -10,10 +10,16 @@ import RoomIcon from '@mui/icons-material/Room';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { AuthenContext } from '../../../Components/AuthenContext'
 import './AdminLayout.css'
 
-
 const AdminLayout:React.FC = () => {
+
+  const context = useContext(AuthenContext);
+  if (!context) {
+    throw new Error("useAuthenContext must be used within an AuthenProvider");
+  }
+  const { user } = context;
 
   const navItems = [
     {name: 'Dashboard', href: '/dashboard', icon: <AssessmentIcon/>},
