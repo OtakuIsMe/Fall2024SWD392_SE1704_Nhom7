@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { useNavigate } from 'react-router'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import Header from '../../../Components/Header/Header'
 import Banner2 from '../../../Assets/banner2.jpg'
 import Office1 from '../../../Assets/office1.jpg'
@@ -13,19 +13,24 @@ import WorkPod from '../../../Assets/workpod.png'
 import Meeting from '../../../Assets/meeting.png'
 import ScrollDownButton from '../../../Components/ScrollDownButton/ScrollDownButton';
 import './HomePage.css'
+import { AuthenContext } from '../../../Components/AuthenContext'
 
 const HomePage: React.FC = () => {
+  
+  const context = useContext(AuthenContext);
+  if (!context) {
+    throw new Error("useAuthenContext must be used within an AuthenProvider");
+  }
+
+  const { user } = context;
 
   const navigate = useNavigate()
 
-  const [date, setdate] = useState<Dayjs>(dayjs())
-  const [maxDate, setMaxDate] = useState<Dayjs>(dayjs())
-  const [minate, setMinDate] = useState<Dayjs>(dayjs())
-  const [mouseInCard1, setMouseInCard1] = useState(false)
-  const [mouseInCard2, setMouseInCard2] = useState(false)
-  const [mouseInCard3, setMouseInCard3] = useState(false)
-
-  const [user, setUser] = useState([]);
+  const [max, setMax] = useState('')
+  const [min, setMin] = useState('')
+  const [minEnd, setMinEnd] = useState('')
+  const [startDate, setStart] = useState('')
+  const [endDate, setEnd] = useState('')
 
   const firstDivRef = useRef<HTMLDivElement | null>(null);
   const secondDivRef = useRef<HTMLDivElement | null>(null);
@@ -33,7 +38,7 @@ const HomePage: React.FC = () => {
   const fourthDivRef = useRef<HTMLDivElement | null>(null);
 
   const navigateToDetails = (locationId: string) => {
-    navigate(`/areadetails/${locationId}`); // Sử dụng navigate thay vì push
+    navigate(`/areadetails/${locationId}`);
   };
 
   const officeList = [
@@ -43,15 +48,35 @@ const HomePage: React.FC = () => {
   ]
 
   const search = () => {
-    if (true) {
-      navigate('/rooms')
-    } else {
-      navigate('/roomDetail/:1')
-    }
+    navigate('/roomslist')
+    sessionStorage.setItem('startDate', startDate)
+    sessionStorage.setItem('endDate', endDate)
   }
 
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const startT = event.target.value
+    setStart(startT);
+    const endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+    setEnd(endT);
+    setMinEnd(endT);
+  };
+
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEnd(event.target.value);
+  };
+
+  useEffect(() => {},[user])
+
   useEffect(() => {
-    setMaxDate(date.add(30, 'day'))
+    const date = new Date();
+    const curTime = dayjs(date).set('minute', 0).add(1, 'hour').format('YYYY-MM-DDThh:mm')
+    const endTime = dayjs(date).set('minute', 0).add(2, 'hour').format('YYYY-MM-DDThh:mm')
+    const maxTime = dayjs(date).set('hour', 0).set('minute', 0).add(30, 'day').format('YYYY-MM-DDThh:mm')
+    setStart(curTime)
+    setEnd(endTime)
+    setMax(maxTime)
+    setMin(curTime)
+    setMinEnd(curTime)
   }, [])
 
   return (
@@ -61,17 +86,21 @@ const HomePage: React.FC = () => {
         <div className="hp_banner"></div>
         <div className='hp_welcome'>
           <p>Welcome to WorkChill!</p>
-          <p>User Name</p>
+          {user ? 
+            <p>Hello {user.username}!</p>
+          :
+            <p>User name</p>
+          }  
         </div>
         <form className="hp_search">
           <div className="hp_input_container">
             <div className='hp_search_input start'>
               <label htmlFor="start_date"><p>From</p></label>
-              <input type="datetime-local" id='start_date' className='hp_date_input' />
+              <input type="datetime-local" id='start_date' min={min} max={max} value={startDate} onChange={handleStartDateChange} className='hp_date_input' />
             </div>
             <div className='hp_search_input end'>
               <label htmlFor="end_date"><p>To</p></label>
-              <input type="datetime-local" id='end_date' className='hp_date_input' />
+              <input type="datetime-local" id='end_date' min={minEnd} max={max} value={endDate} onChange={handleEndDateChange} className='hp_date_input' />
             </div>
           </div>
           <button className='hp_comfirm' onClick={() => search()}>Check</button>

@@ -56,5 +56,20 @@ namespace BE.src.Controllers
             var hashCode = Utils.HashObject<string>(id);
             return Ok(new { hashing = hashCode });
         }
+        [HttpGet("ViewProfile")]
+        public async Task<IActionResult> ViewProfile([FromBody] string userId)
+        {
+            return await _userServ.ViewProfileByUserId(Guid.Parse(userId));
+        }
+        [HttpPut("UpdateProfile")]
+        public async Task<IActionResult> UpdateProfile(Guid userId, [FromBody] UpdateProfileDTO dto)
+        {
+            return await _userServ.UpdateProfile(userId, dto);
+        }
+        [HttpGet("GetListUserCustomer")]
+        public async Task<IActionResult> GetListUserCustomer()
+        {
+            return await _userServ.GetListUserCustomer();
+        }
     }
 }

@@ -1,32 +1,97 @@
-using System.Security.Cryptography.X509Certificates;
-using BE.src.Domains.DTOs.Room;
-using BE.src.Domains.Enum;
+using BE.src.Domains.DTOs;
 using BE.src.Domains.Models;
 using BE.src.Repositories;
 using BE.src.Shared.Type;
-using BE.src.Util;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
+using BE.src.Util;
+using BE.src.Domains.Enum;
+using BE.src.Domains.DTOs.Room;
 
 namespace BE.src.Services
 {
     public interface IRoomServ
     {
+        // Search and filter room
+        Task<IActionResult> GetRoomBySearchInput(string inputInfo);
+        Task<IActionResult> GetRoomByFilterTypeRoom(TypeRoomEnum typeRoom);
+        Task<IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate);
+
+        // Return room detail
+        Task<IActionResult> ViewRoomDetail(Guid roomId);
+        Task<IActionResult> ViewRoomsByArea(Guid areaId);
+
         Task<IActionResult> CreateRoom(CreateRoomRqDTO data);
         Task<IActionResult> ViewRoomDetail(string hashCode);
         Task<IActionResult> GetCommentByRoomId(Guid roomId);
+        Task<IActionResult> ViewListFavourite(Guid userId);
+        Task<IActionResult> UnOrFavouriteRoom(Guid roomId, Guid userId);
+        Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data);
     }
-
     public class RoomServ : IRoomServ
     {
         private readonly IRoomRepo _roomRepo;
         private readonly IAreaRepo _areaRepo;
+        private readonly IBookingRepo _bookingRepo;
 
-        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo)
+        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo, IBookingRepo bookingRepo)
         {
             _roomRepo = roomRepo;
             _areaRepo = areaRepo;
+            _bookingRepo = bookingRepo;
+        }
+
+        public async Task<IActionResult> GetRoomBySearchInput(string inputInfo)
+        {
+            var room = await _roomRepo.SearchRoomByInput(inputInfo);
+            if (room == null)
+            {
+                return ErrorResp.NotFound("Not found room");
+            }
+            else
+            {
+                return SuccessResp.Ok(room);
+            }
+        }
+
+        public async Task<IActionResult> GetRoomByFilterTypeRoom(TypeRoomEnum typeRoom)
+        {
+            var room = await _roomRepo.FilterRoomByTypeRoom(typeRoom);
+            if (room == null)
+            {
+                return ErrorResp.NotFound("Not found room");
+            }
+            else
+            {
+                return SuccessResp.Ok(room);
+            }
+        }
+
+        public async Task<IActionResult> ViewRoomDetail(Guid roomId)
+        {
+            var roomDetail = await _roomRepo.GetRoomDetailsById(roomId);
+
+            if (roomDetail == null)
+            {
+                return ErrorResp.NotFound("Not found room");
+            }
+            else
+            {
+                return SuccessResp.Ok(roomDetail);
+            }
+        }
+
+        public async Task<IActionResult> ViewRoomsByArea(Guid areaId)
+        {
+            var rooms = await _roomRepo.GetRoomsByAreaId(areaId);
+
+            if (rooms == null)
+            {
+                return ErrorResp.NotFound("Not found room");
+            }
+            else
+            {
+                return SuccessResp.Ok(rooms);
+            }
         }
 
         public async Task<IActionResult> CreateRoom(CreateRoomRqDTO data)
@@ -113,6 +178,87 @@ namespace BE.src.Services
             {
                 List<RatingFeedback> ratingFeedbacks = await _roomRepo.GetListRatingFeedback(roomId);
                 return SuccessResp.Ok(ratingFeedbacks);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+        public async Task<IActionResult> ViewListFavourite(Guid userId)
+        {
+            try
+            {
+                List<Room> rooms = await _roomRepo.GetListFavouriteRoom(userId);
+                return SuccessResp.Ok(rooms);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> UnOrFavouriteRoom(Guid roomId, Guid userId)
+        {
+            try
+            {
+                Favourite? favouriteRoom = await _roomRepo.GetFavouriteRoomByUser(roomId, userId);
+                if (favouriteRoom != null)
+                {
+                    bool isDelete = await _roomRepo.DeleteFavouriteRoom(favouriteRoom);
+                    if (isDelete)
+                    {
+                        return SuccessResp.Ok("Remove favourite success");
+                    }
+                    else
+                    {
+                        return ErrorResp.BadRequest("Fail to remove favourite");
+                    }
+                }
+                else
+                {
+                    Favourite newFavouriteRoom = new()
+                    {
+                        RoomId = roomId,
+                        UserId = userId
+                    };
+                    bool isAdd = await _roomRepo.AddFavouriteRoom(newFavouriteRoom);
+                    if (isAdd)
+                    {
+                        return SuccessResp.Ok("Add favourite success");
+                    }
+                    else
+                    {
+                        return ErrorResp.BadRequest("Fail to add favourite");
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data)
+        {
+            try
+            {
+                List<RoomScheduleRpDTO> roomSchedules = new List<RoomScheduleRpDTO>();
+                List<Booking> availableBookings = await _bookingRepo.ViewBookingAvailablePeriod(data.RoomId, data.StartDate, data.EndDate);
+
+                return SuccessResp.Ok(roomSchedules);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                List<Room> rooms = await _roomRepo.GetRoomListWithBookingTimes(areaId, typeRoom, startDate, endDate);
+                return SuccessResp.Ok(rooms);
             }
             catch (System.Exception ex)
             {

@@ -1,0 +1,16 @@
+#service-mng {
+    height: 100%;
+}
+
+#service-mng > h1 {
+    margin: 0;
+}
+
+#service-mng > .content {
+    max-height: calc(100vh - 149px);
+    overflow-y: scroll;
+}
+
+#service-mng > .content::-webkit-scrollbar {
+    display: none;
+}

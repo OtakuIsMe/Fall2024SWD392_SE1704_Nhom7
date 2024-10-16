@@ -1,14 +1,91 @@
+.ad-header {
+    display: flex;
+    height: 60px;
+    padding: 0 60px;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(228, 228, 228);
+}
+
+.ad-header p {
+    margin: 0;
+}
+
+.ad-header > .logo {
+    height: 100%;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+}
+
+.ad-header > .logo > p {
+    width: fit-content;
+    font-size: 32px;
+    font-weight: bold;
+    font-family: "Kanit", Arial, sans-serif;
+    cursor: pointer;
+}
+
+.ad-header > .user,
+.ad-header > .user > div {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-family: "Kanit", Arial, sans-serif;
+    cursor: pointer;
+}
+
+.ad-header > .user > div p {
+    margin: 0;
+}
+
+.ad-header > .user > div:last-child:hover{
+    background-color: rgb(228, 228, 228);
+}
+
 #ad-layout {
+    height: 100vh;
+    overflow: hidden;
+}
+
+#ad-layout > .content {
     display: grid;
     grid-template-columns: 3fr 12fr;
-    height: 100vh;
+    min-height: calc(100vh - 61px);
     width: 100%;
+    overflow: hidden;
 }
 
-#ad-layout > .sidebar {
-    background-color: aqua;
+#ad-layout > .content > .sidebar {
+    border-right: 1px solid rgb(225, 225, 225);
 }
 
-#ad-layout > .main-content {
-    background-color: brown;
+#ad-layout > .content > .sidebar > .nav-container {
+    width: 100%;
+    z-index: 0;
+}
+
+#ad-layout > .content > .sidebar > .nav-container > div {
+    display: flex;
+    align-items: center;
+    padding: 20px 35px;
+    font-size: 18px;
+    font-family: "Kanit", Arial, sans-serif;
+    transition: all .3s;
+    cursor: pointer;
+}
+
+#ad-layout > .content > .sidebar > .nav-container > div p {
+    margin: 0 0 0 10px;
+}
+
+#ad-layout > .content > .main-content {
+    box-sizing: border-box;
+    padding: 20px;
+    height: 100%;
+    overflow: hidden;
+}
+
+#ad-layout > .content > .main-content > * {
+    font-family: "Kanit", Arial, sans-serif;
 }

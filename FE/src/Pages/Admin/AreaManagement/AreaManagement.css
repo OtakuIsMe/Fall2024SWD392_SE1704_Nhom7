@@ -1,0 +1,16 @@
+#area-mng {
+    height: 100%;
+}
+
+#area-mng > h1 {
+    margin: 0;
+}
+
+#area-mng > .content {
+    max-height: calc(100vh - 149px);
+    overflow-y: scroll;
+}
+
+#area-mng > .content::-webkit-scrollbar {
+    display: none;
+}

@@ -4,6 +4,7 @@ using BE.src.Domains.Models;
 using BE.src.Repositories;
 using BE.src.Shared.Type;
 using Microsoft.AspNetCore.Mvc;
+using Mysqlx;
 
 namespace BE.src.Services
 {
@@ -11,6 +12,9 @@ namespace BE.src.Services
     {
         Task<IActionResult> BookingRoom(BookingRoomRqDTO data);
         Task<IActionResult> ViewBookingListOfRoom(Guid roomId);
+        Task<IActionResult> AcceptBooking(Guid bookingId);
+        Task<IActionResult> CancelBooking(Guid bookingId);
+        Task<IActionResult> GetBookingRequests();
     }
 
     public class BookingServ : IBookingServ
@@ -34,13 +38,14 @@ namespace BE.src.Services
             {
                 float total = 0;
                 Membership? userMembership = await _userRepo.GetMemberShipByUserId(data.UserId);
-                Booking booking = new Booking
+                Booking booking = new()
                 {
-                    TimeBooking = data.TimeBooking,
+                    TimeBooking = TimeSpan.FromHours(data.TimeHourBooking),
                     DateBooking = data.DateBooking,
                     Status = StatusBookingEnum.Wait,
                     UserId = data.UserId,
                     RoomId = data.RoomId,
+                    IsPay = false
                 };
 
                 Room? room = await _roomRepo.GetRoomById(data.RoomId);
@@ -50,7 +55,7 @@ namespace BE.src.Services
                     return ErrorResp.NotFound("Cant not find room");
                 }
 
-                total += room.Price;
+                total += room.Price * data.TimeHourBooking;
 
                 bool isCreatedBooking = await _bookingRepo.AddBooking(booking);
 
@@ -97,7 +102,9 @@ namespace BE.src.Services
 
                 booking.Total = total;
 
-                return SuccessResp.Ok("Booking room success");
+                await _bookingRepo.UpdateBooking(booking);
+
+                return SuccessResp.Ok(booking.Id);
             }
             catch (Exception ex)
             {
@@ -111,6 +118,63 @@ namespace BE.src.Services
             {
                 List<Booking> bookings = await _bookingRepo.ViewBookingOfRoomInFuture(roomId);
                 return SuccessResp.Ok(bookings);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> AcceptBooking(Guid bookingId)
+        {
+            try
+            {
+                var isAccept = await _bookingRepo.AcceptBooking(bookingId);
+                if (isAccept)
+                {
+                    return SuccessResp.Ok("Accept booking success");
+                }
+                else
+                {
+                    return ErrorResp.NotFound("Can not find booking");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CancelBooking(Guid bookingId)
+        {
+            try
+            {
+                var isDecline = await _bookingRepo.DeclineBooking(bookingId);
+                if (isDecline)
+                {
+                    return SuccessResp.Ok("Decline booking success");
+                }
+                else
+                {
+                    return ErrorResp.NotFound("Can not find booking");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetBookingRequests()
+        {
+            try
+            {
+                var bookingRequests = await _bookingRepo.GetBookingRequests();
+                if (bookingRequests == null)
+                {
+                    return ErrorResp.NotFound("Can not find booking requests");
+                }
+                return SuccessResp.Ok(bookingRequests);
             }
             catch (System.Exception ex)
             {
