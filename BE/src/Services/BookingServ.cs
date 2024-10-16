@@ -11,6 +11,8 @@ namespace BE.src.Services
     {
         Task<IActionResult> BookingRoom(BookingRoomRqDTO data);
         Task<IActionResult> ViewBookingListOfRoom(Guid roomId);
+        Task<IActionResult> AcceptBooking(Guid bookingId);
+        Task<IActionResult> CancelBooking(Guid bookingId);
     }
 
     public class BookingServ : IBookingServ
@@ -117,5 +119,46 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
+
+        public async Task<IActionResult> AcceptBooking(Guid bookingId)
+        {
+            try
+            {
+                var isAccept = await _bookingRepo.AcceptBooking(bookingId);
+                if (isAccept)
+                {
+                    return SuccessResp.Ok("Accept booking success");
+                }
+                else
+                {
+                    return ErrorResp.NotFound("Can not find booking");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CancelBooking(Guid bookingId)
+        {
+            try
+            {
+                var isDecline = await _bookingRepo.DeclineBooking(bookingId);
+                if (isDecline)
+                {
+                    return SuccessResp.Ok("Decline booking success");
+                }
+                else
+                {
+                    return ErrorResp.NotFound("Can not find booking");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
     }
 }

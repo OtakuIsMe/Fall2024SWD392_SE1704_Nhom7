@@ -1,5 +1,6 @@
 using BE.src.Domains.Database;
 using BE.src.Domains.DTOs;
+using BE.src.Domains.DTOs.Booking;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using BE.src.Util;
@@ -12,7 +13,7 @@ namespace BE.src.Repositories
         // Search and filter room
         Task<List<Room>> SearchRoomByInput(string inputInfo);
         Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom);
-
+        Task<List<Room>> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate);
         // Return room detail
         Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId);
         Task<List<RoomDto>> GetRoomsByAreaId(Guid areaId);
@@ -166,5 +167,38 @@ namespace BE.src.Repositories
         {
             return await _context.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
         }
+
+        public async Task<List<Room>> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
+        {
+            var rooms = await _context.Rooms
+                .Include(r => r.Bookings)
+                .Include(r => r.Area)
+                .Include(r => r.Images)
+                .Where(r => r.AreaId == areaId)
+                .Where(r => r.Status == (int)StatusRoomEnum.Available)
+                .Where(r => r.TypeRoom == typeRoom) 
+                .ToListAsync();
+
+            var availableRooms = new List<Room>();
+
+            foreach (var room in rooms)
+            {
+                bool hasConflictingBooking = room.Bookings.Any(b =>
+                {
+                    DateTime bookingStartTime = b.DateBooking;
+                    DateTime bookingEndTime = b.DateBooking.Add(b.TimeBooking);
+
+                    return (bookingStartTime < endDate && bookingEndTime > startDate && b.Status != 0);
+                });
+
+                if (!hasConflictingBooking)
+                {
+                    availableRooms.Add(room);
+                }
+            }
+
+            return availableRooms;
+        }
+
     }
 }

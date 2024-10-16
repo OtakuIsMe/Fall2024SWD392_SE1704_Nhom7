@@ -27,5 +27,17 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.ViewBookingListOfRoom(roomId);
         }
+
+        [HttpPut("AcceptBooking/{bookingId:guid}")]
+        public async Task<IActionResult> AcceptBooking(Guid bookingId)
+        {
+            return await _bookingServ.AcceptBooking(bookingId);
+        }
+
+        [HttpPut("CancelBooking/{bookingId:guid}")]
+        public async Task<IActionResult> CancelBooking(Guid bookingId)
+        {
+            return await _bookingServ.CancelBooking(bookingId);
+        }   
     }
 }

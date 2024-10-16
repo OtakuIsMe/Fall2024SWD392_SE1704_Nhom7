@@ -1,4 +1,5 @@
 using BE.src.Domains.Database;
+using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,8 @@ namespace BE.src.Repositories
         Task<bool> AddBookingItems(List<BookingItem> bookingItems);
         Task<bool> UpdateBooking(Booking booking);
         Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId);
+        Task<bool> AcceptBooking(Guid bookingId);
+        Task<bool> DeclineBooking(Guid bookingId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -40,6 +43,35 @@ namespace BE.src.Repositories
         public async Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId)
         {
             return await _context.Bookings.Where(b => b.RoomId == roomId && b.DateBooking > DateTime.Now).ToListAsync();
+        }
+
+        
+        public async Task<bool> AcceptBooking(Guid bookingId)
+        {
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            
+            if (booking == null) return false;
+
+            booking.Status = StatusBookingEnum.Completed;
+            booking.CreateAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+
+        public async Task<bool> DeclineBooking(Guid bookingId)
+        {
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            
+            if (booking == null) return false; 
+
+            booking.Status = StatusBookingEnum.Canceled; 
+            booking.CreateAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            
+            return true;
         }
     }
 }

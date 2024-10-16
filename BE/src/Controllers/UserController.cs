@@ -66,5 +66,10 @@ namespace BE.src.Controllers
         {
             return await _userServ.UpdateProfile(userId, dto);
         }
+        [HttpGet("GetListUserCustomer")]
+        public async Task<IActionResult> GetListUserCustomer()
+        {
+            return await _userServ.GetListUserCustomer();
+        }
     }
 }

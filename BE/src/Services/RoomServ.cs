@@ -14,6 +14,7 @@ namespace BE.src.Services
         // Search and filter room
         Task<IActionResult> GetRoomBySearchInput(string inputInfo);
         Task<IActionResult> GetRoomByFilterTypeRoom(TypeRoomEnum typeRoom);
+        Task<IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate);
 
         // Return room detail
         Task<IActionResult> ViewRoomDetail(Guid roomId);
@@ -171,6 +172,19 @@ namespace BE.src.Services
             {
                 List<RatingFeedback> ratingFeedbacks = await _roomRepo.GetListRatingFeedback(roomId);
                 return SuccessResp.Ok(ratingFeedbacks);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                List<Room> rooms = await _roomRepo.GetRoomListWithBookingTimes(areaId, typeRoom, startDate, endDate);
+                return SuccessResp.Ok(rooms);
             }
             catch (System.Exception ex)
             {

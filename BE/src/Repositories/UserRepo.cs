@@ -19,6 +19,7 @@ namespace BE.src.Repositories
         Task<bool> UpdateUser(User user);
         Task<User?> ViewProfileByUserId(Guid userId);
         Task<Membership?> GetMemberShipByUserId(Guid userId);
+        Task<List<User>> GetListUserCustomer();
     }
     public class UserRepo : IUserRepo
     {
@@ -75,6 +76,11 @@ namespace BE.src.Repositories
                                             .ThenInclude(mu => mu.Membership)
                                         .Include(u => u.Image)
                                         .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<User>> GetListUserCustomer()
+        {
+            return await _context.Users.Where(u => u.Role.Name == RoleEnum.Customer).ToListAsync();
         }
     }
 }

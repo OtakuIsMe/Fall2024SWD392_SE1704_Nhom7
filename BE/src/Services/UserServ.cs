@@ -18,6 +18,7 @@ namespace BE.src.Services
         Task<IActionResult> ResetPassword(ResetPassRqDTO data);
         Task<IActionResult> ViewProfileByUserId(Guid userId);
         Task<IActionResult> UpdateProfile(Guid userId, UpdateProfileDTO data);
+        Task<IActionResult> GetListUserCustomer();
     }
     public class UserServ : IUserServ
     {
@@ -210,6 +211,19 @@ namespace BE.src.Services
             catch (System.Exception)
             {
                 return ErrorResp.BadRequest("Fail to update user");
+            }
+        }
+
+        public async Task<IActionResult> GetListUserCustomer()
+        {
+            try
+            {
+                var users = await _userRepo.GetListUserCustomer();
+                return SuccessResp.Ok(users);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
             }
         }
     }

@@ -10,6 +10,7 @@ namespace BE.src.Services
     public interface IAreaServ
     {
         Task<IActionResult> CreateArea(CreateAreaRqDTO data);
+        Task<IActionResult> GetAreas();
     }
 
     public class AreaServ : IAreaServ
@@ -74,6 +75,19 @@ namespace BE.src.Services
                 }
             }
             catch (Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetAreas()
+        {
+            try
+            {
+                var areas = await _areaRepo.GetAreas();
+                return SuccessResp.Ok(areas);
+            }
+            catch (System.Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
             }
