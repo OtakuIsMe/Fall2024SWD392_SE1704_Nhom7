@@ -36,6 +36,17 @@ export class ApiGateway {
         }
     }
 
+    public static async GetUserList<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`user/GetListUserCustomer`);
+            console.log(response.data);
+            return response.data
+        } catch (error) {
+            console.error("GetUserList error:", error);
+            throw error;
+        }
+    }
+
     public static async GetRoomDetail<T>(hashCode: string): Promise<T> {
         try {
             const response = await this.axiosInstance.get<T>(`room/ViewDetail/${hashCode}`);

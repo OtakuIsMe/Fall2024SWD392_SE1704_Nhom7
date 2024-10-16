@@ -70,6 +70,8 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
     setIsRegisterOpen(false);
   };
 
+  useEffect(() => {},[user]);
+
   useEffect(() => {
     if (divRef1.current) {
       if (isTransparent) {
