@@ -11,6 +11,7 @@ namespace BE.src.Repositories
         Task<bool> CreateArea(Area area);
         Task<bool> AddImageArea(Image image);
         Task<Area?> GetAreaById(Guid areaId);
+        Task<List<Area>> GetAreas();
     }
     public class AreaRepo : IAreaRepo
     {
@@ -42,6 +43,11 @@ namespace BE.src.Repositories
         public async Task<Area?> GetAreaById(Guid areaId)
         {
             return await _context.Areas.FirstOrDefaultAsync(a => a.Id == areaId);
+        }
+
+        public async Task<List<Area>> GetAreas()
+        {
+            return await _context.Areas.ToListAsync();
         }
     }
 }

@@ -1,6 +1,9 @@
+using BE.Migrations;
 using BE.src.Domains.Database;
+using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Engines;
 
 namespace BE.src.Repositories
 {
@@ -11,6 +14,10 @@ namespace BE.src.Repositories
         Task<bool> UpdateBooking(Booking booking);
         Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId);
         Task<Booking?> GetBookingById(Guid id);
+        Task<List<Booking>> ViewBookingAvailablePeriod(Guid RoomId, DateTime StartDate, DateTime EndDate);
+        Task<bool> AcceptBooking(Guid bookingId);
+        Task<bool> DeclineBooking(Guid bookingId);
+        Task<List<Booking>> GetBookingRequests();
     }
     public class BookingRepo : IBookingRepo
     {
@@ -46,6 +53,61 @@ namespace BE.src.Repositories
         public async Task<List<Booking>> ViewBookingOfRoomInFuture(Guid roomId)
         {
             return await _context.Bookings.Where(b => b.RoomId == roomId && b.DateBooking > DateTime.Now).ToListAsync();
+        }
+
+        public async Task<List<Booking>> ViewBookingAvailablePeriod(Guid RoomId, DateTime StartDate, DateTime EndDate)
+        {
+            return await _context.Bookings
+                                    .Where(b => b.RoomId == RoomId
+                                            && b.DateBooking >= StartDate && b.DateBooking <= EndDate
+                                            && b.IsPay)
+                                    .ToListAsync();
+        }
+
+        
+        public async Task<bool> AcceptBooking(Guid bookingId)
+        {
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            
+            if (booking == null) return false;
+
+            booking.Status = StatusBookingEnum.Completed;
+            booking.CreateAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+
+        public async Task<bool> DeclineBooking(Guid bookingId)
+        {
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            
+            if (booking == null) return false; 
+
+            booking.Status = StatusBookingEnum.Canceled; 
+            booking.CreateAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            
+            return true;
+        }
+
+        public async Task<List<Booking>> GetBookingRequests()
+        {
+            var bookingRequests = await _context.Bookings
+                        .Include(b => b.BookingItems) 
+                            .ThenInclude(bi => bi.AmenityService)
+                        .Include(b => b.User)
+                            .ThenInclude(u => u.MembershipUsers)
+                        .Include(b => b.User)
+                            .ThenInclude(u => u.Image)
+                        .Include(b => b.Room)
+                            .ThenInclude(r => r.Images)
+                        .Where(b => b.Status == StatusBookingEnum.Wait)
+                        .ToListAsync();
+
+            return bookingRequests;
         }
     }
 }

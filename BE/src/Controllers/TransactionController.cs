@@ -22,11 +22,11 @@ namespace BE.src.Controllers
             return await _transactionServ.TransactionHistory(userId);
         }
 
-        // [HttpPost("payment-cod")]
-        // public async Task<IActionResult> PaymentByCod([FromBody] Guid bookingId)
-        // {
-
-        // }
+        [HttpPost("payment-cod")]
+        public async Task<IActionResult> PaymentByCod([FromBody] Guid bookingId)
+        {
+            return await _transactionServ.PaymentByCod(bookingId);
+        }
 
         [HttpPost("Payment-PayPal-Create")]
         public async Task<IActionResult> PaymentByPayPal([FromBody] PaymentPayPalDto data)

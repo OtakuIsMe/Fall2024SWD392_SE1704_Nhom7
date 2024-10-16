@@ -26,5 +26,10 @@ namespace BE.src.Controllers
             Console.WriteLine($"{data.Latitude}, {data.Longitude}");
             return _areaServ.CreateArea(data);
         }
+        [HttpGet("ViewListArea")]
+        public Task<IActionResult> GetAreas()
+        {
+            return _areaServ.GetAreas();
+        }
     }
 }

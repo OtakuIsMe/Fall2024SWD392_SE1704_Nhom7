@@ -1,5 +1,6 @@
 using BE.src.Domains.DTOs.Transaction;
 using MyTransaction = BE.src.Domains.Models.Transaction;
+using System.Transactions;
 using BE.src.Repositories;
 using BE.src.Shared.Constant;
 using BE.src.Shared.Type;
@@ -13,6 +14,8 @@ using PaypalTransaction = PayPal.Api.Transaction;
 using MyTrasaction = BE.src.Domains.Models.Transaction;
 
 using BE.src.Domains.Enum;
+using BE.src.Shared.Type;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BE.src.Services
 {
@@ -21,17 +24,19 @@ namespace BE.src.Services
         Task<IActionResult> TransactionHistory(Guid userId);
         Task<IActionResult> PaymentByPaypal(PaymentPayPalDto data);
         Task<IActionResult> PaymentPaypalSuccess(Guid bookingId);
+        Task<IActionResult> PaymentByCod(Guid bookingId);        
     }
 
     public class TrasactionServ : ITransactionServ
     {
         private readonly ITransactionRepo _transactionRepo;
         private readonly IBookingRepo _bookingRepo;
-
-        public TrasactionServ(ITransactionRepo transactionRepo, IBookingRepo bookingRepo)
+        private readonly IUserRepo _userRepo;
+        public TrasactionServ(ITransactionRepo transactionRepo, IBookingRepo bookingRepo, IUserRepo userRepo)
         {
             _transactionRepo = transactionRepo;
             _bookingRepo = bookingRepo;
+            _userRepo = userRepo;
         }
 
         private APIContext GetAPIContext()
@@ -131,7 +136,9 @@ namespace BE.src.Services
                     Type = PaymentRefundEnum.Payment,
                     Total = booking.Total,
                     PointBonus = 0,
-                    BookingId = bookingId
+                    BookingId = bookingId,
+                    PaymentType = PaymentTypeEnum.Paypal,
+                    Satutus = true
                 };
                 bool isCreatedPayment = await _transactionRepo.CreatePaymentRefund(payment);
                 if (!isCreatedPayment)
@@ -151,6 +158,55 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Cant create transaction");
                 }
                 return SuccessResp.Redirect("http://localhost:5173/");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> PaymentByCod(Guid bookingId)
+        {
+            try
+            {
+                var booking = await _bookingRepo.GetBookingById(bookingId);
+                if (booking == null)
+                {
+                    return ErrorResp.NotFound("Cant find booking");
+                }
+                booking.IsPay = true;
+                bool isUpdateBooking = await _bookingRepo.UpdateBooking(booking);
+                if (!isUpdateBooking)
+                {
+                    return ErrorResp.BadRequest("Cant update booking");
+                }
+                PaymentRefund payment = new()
+                {
+                    Type = PaymentRefundEnum.Payment,
+                    Total = booking.Total,
+                    PointBonus = 0,
+                    BookingId = bookingId,
+                    PaymentType = PaymentTypeEnum.COD,
+                    Satutus = false
+                };
+                bool isCreatedPayment = await _transactionRepo.CreatePaymentRefund(payment);
+                if (!isCreatedPayment)
+                {
+                    return ErrorResp.BadRequest("Cant create payment");
+                }
+                MyTransaction transaction = new()
+                {
+                    TransactionType = TypeTransactionEnum.Payment,
+                    Total = booking.Total,
+                    PaymentRefund = payment,
+                    UserId = booking.UserId
+                };
+                bool isCreatedTrasaction = await _transactionRepo.CreateTransaction(transaction);
+                if (!isCreatedTrasaction)
+                {
+                    return ErrorResp.BadRequest("Cant create transaction");
+                }
+                return SuccessResp.Ok("Payment cod done");
             }
             catch (System.Exception ex)
             {
