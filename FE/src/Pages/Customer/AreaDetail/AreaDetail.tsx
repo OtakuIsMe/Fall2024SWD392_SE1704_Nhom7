@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { locations } from './data';
 import { Location } from './types';
 import Rating from '@mui/material/Rating';
+import Header from '../../../Components/Header/Header';
 import './AreaDetail.css';
 
 const AreaDetails = () => {
   const { locationId } = useParams<{ locationId: string }>();
   const location = locations.find((loc: Location) => loc.id === locationId);
+  const navigate = useNavigate(); // Hook để điều hướng
 
   // Tạo state để lưu trữ ratings, sử dụng một đối tượng với các khóa là index
   const [ratings, setRatings] = useState<{ [key: string]: number }>({});
@@ -23,41 +25,53 @@ const AreaDetails = () => {
     }
   }, [location]);
 
-  const handleRatingChange = (index: string) => (event: React.ChangeEvent<{}>, newValue: number | null) => {
-    setRatings(prev => ({
+  const handleRatingChange = (index: string) => (
+    event: React.SyntheticEvent<Element, Event>,
+    newValue: number | null
+  ) => {
+    setRatings((prev) => ({
       ...prev,
-      [index]: newValue || 0
+      [index]: newValue || 0,
     }));
   };
 
   if (!location) {
-    return <div>Địa điểm không tồn tại.</div>;
+    return (
+      <div>
+        <h1>Location not found</h1>
+        <button onClick={() => navigate('/')}>Go back</button>
+      </div>
+    );
   }
 
   return (
-    <div className="area-details-container">
-      <div className="header-image">
-        <img src={location.imageUrl} alt={location.name} />
+    <>
+      <Header isTransparent={false} />
+      <div className="area-details-container">
+        
+        <div className="content-section">
+          <h1>{location.name}</h1>
+          <p>{location.description}</p>
+        </div>
+        <div className="header-image">
+          <img src={location.imageUrl} alt={location.name} />
+        </div>
+        <div className="reviews-section">
+          <h2>Reviews</h2>
+          {location.reviews.map((review, index) => (
+            <div key={index} className="review">
+              <strong>{review.user}</strong>
+              <p>{review.comment}</p>
+              <Rating
+                name={`rating-${index}`}
+                value={ratings[index]}
+                onChange={handleRatingChange(index.toString())}
+              />
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="content-section">
-        <h1>{location.name}</h1>
-        <p>{location.description}</p>
-      </div>
-      <div className="reviews-section">
-        <h2>Reviews</h2>
-        {location.reviews.map((review, index) => (
-          <div key={index} className="review">
-            <strong>{review.user}</strong>
-            <p>{review.comment}</p>
-            <Rating
-              name={`rating-${index}`}
-              value={ratings[index]}
-              onChange={handleRatingChange(index.toString())}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
+    </>
   );
 };
 
