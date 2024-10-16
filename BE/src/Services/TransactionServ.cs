@@ -24,7 +24,7 @@ namespace BE.src.Services
         Task<IActionResult> TransactionHistory(Guid userId);
         Task<IActionResult> PaymentByPaypal(PaymentPayPalDto data);
         Task<IActionResult> PaymentPaypalSuccess(Guid bookingId);
-        Task<IActionResult> PaymentByCod(Guid bookingId);        Task<IActionResult> ViewTransactionHistory(Guid userId);
+        Task<IActionResult> PaymentByCod(Guid bookingId);        
     }
 
     public class TrasactionServ : ITransactionServ
@@ -209,23 +209,6 @@ namespace BE.src.Services
                 return SuccessResp.Ok("Payment cod done");
             }
             catch (System.Exception ex)
-            {
-                return ErrorResp.BadRequest(ex.Message);
-            }
-        }
-
-        public async Task<IActionResult> ViewTransactionHistory(Guid userId)
-        {
-            try
-            {
-                var user = await _userRepo.GetUserById(userId);
-                if (user == null)
-                {
-                    return ErrorResp.NotFound("User not found");
-                }
-                return SuccessResp.Ok(await _transactionRepo.ViewTransactionHistoryOfUser(userId));
-            }
-            catch (Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
             }

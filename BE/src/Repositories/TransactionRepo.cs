@@ -9,7 +9,7 @@ namespace BE.src.Repositories
     {
         Task<List<Transaction>> GetTransactions(Guid userId);
         Task<bool> CreatePaymentRefund(PaymentRefund paymentRefund);
-        Task<bool> CreateTransaction(Transaction transaction);        Task<List<Transaction>> ViewTransactionHistoryOfUser(Guid userId);
+        Task<bool> CreateTransaction(Transaction transaction);        
     }
 
     public class TrasactionRepo : ITransactionRepo
@@ -33,9 +33,18 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public Task<List<Transaction>> GetTransactions(Guid userId)
+        public async Task<List<Transaction>> GetTransactions(Guid userId)
         {
-            throw new NotImplementedException();
+            return await _context.Transactions.Where(t => t.UserId == userId)
+                                            .Include(t => t.PaymentRefund)
+                                                .ThenInclude(t => t.RefundItems)
+                                                    .ThenInclude(ri => ri.BookingItem)
+                                                        .ThenInclude(bi => bi.AmenityService)
+                                            .Include(t => t.MembershipUser)
+                                            .Include(t => t.User)
+                                                .ThenInclude(u => u.Image)
+                                            .Include(t => t.DepositWithdraw)
+                                            .ToListAsync();
         }
     }
 }
