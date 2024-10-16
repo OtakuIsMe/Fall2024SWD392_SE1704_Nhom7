@@ -17,6 +17,7 @@ namespace BE.src.Repositories
         Task<List<Booking>> ViewBookingAvailablePeriod(Guid RoomId, DateTime StartDate, DateTime EndDate);
         Task<bool> AcceptBooking(Guid bookingId);
         Task<bool> DeclineBooking(Guid bookingId);
+        Task<List<Booking>> GetBookingRequests();
     }
     public class BookingRepo : IBookingRepo
     {
@@ -90,6 +91,23 @@ namespace BE.src.Repositories
             await _context.SaveChangesAsync();
             
             return true;
+        }
+
+        public async Task<List<Booking>> GetBookingRequests()
+        {
+            var bookingRequests = await _context.Bookings
+                        .Include(b => b.BookingItems) 
+                            .ThenInclude(bi => bi.AmenityService)
+                        .Include(b => b.User)
+                            .ThenInclude(u => u.MembershipUsers)
+                        .Include(b => b.User)
+                            .ThenInclude(u => u.Image)
+                        .Include(b => b.Room)
+                            .ThenInclude(r => r.Images)
+                        .Where(b => b.Status == StatusBookingEnum.Wait)
+                        .ToListAsync();
+
+            return bookingRequests;
         }
     }
 }

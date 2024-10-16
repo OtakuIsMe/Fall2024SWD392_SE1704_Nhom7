@@ -10,7 +10,7 @@ namespace BE.src.Repositories
 {
     public interface IReportRepo
     {
-        Task<List<RatingFeedback>?> GetReports();
+        Task<List<RatingFeedback>> GetRatingFeedbacks();
     }
 
     public class ReportRepo : IReportRepo
@@ -21,9 +21,14 @@ namespace BE.src.Repositories
             _context = context;
         }
 
-        public async Task<List<RatingFeedback>?> GetReports()
+        public async Task<List<RatingFeedback>> GetRatingFeedbacks()
         {
-            return await _context.RatingFeedbacks.ToListAsync();
+            return await _context.RatingFeedbacks
+                                    .Include(rf => rf.User)
+                                        .ThenInclude(u => u.Image)
+                                    .Include(rf => rf.Room)
+                                        .ThenInclude(r => r.Images)
+                                    .ToListAsync();
         }
     }
 }

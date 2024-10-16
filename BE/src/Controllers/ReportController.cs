@@ -17,10 +17,10 @@ namespace BE.src.Controllers
             _reportServ = reportServ;
         }
 
-        [HttpGet("view-all-reports")]
-        public async Task<IActionResult> ViewAllReports()
+        [HttpGet("rating-feedbacks")]
+        public async Task<IActionResult> GetRatingFeedbacks()
         {
-            return await _reportServ.ViewAllReports();
+            return await _reportServ.GetRatingFeedbacks();
         }
     }
 }

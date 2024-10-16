@@ -39,5 +39,11 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.CancelBooking(bookingId);
         }   
+
+        [HttpGet("GetBookingRequests")]
+        public async Task<IActionResult> GetBookingRequests()
+        {
+            return await _bookingServ.GetBookingRequests();
+        }
     }
 }

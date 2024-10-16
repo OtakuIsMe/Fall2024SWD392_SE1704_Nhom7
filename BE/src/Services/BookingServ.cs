@@ -4,6 +4,7 @@ using BE.src.Domains.Models;
 using BE.src.Repositories;
 using BE.src.Shared.Type;
 using Microsoft.AspNetCore.Mvc;
+using Mysqlx;
 
 namespace BE.src.Services
 {
@@ -13,6 +14,7 @@ namespace BE.src.Services
         Task<IActionResult> ViewBookingListOfRoom(Guid roomId);
         Task<IActionResult> AcceptBooking(Guid bookingId);
         Task<IActionResult> CancelBooking(Guid bookingId);
+        Task<IActionResult> GetBookingRequests();
     }
 
     public class BookingServ : IBookingServ
@@ -163,5 +165,21 @@ namespace BE.src.Services
             }
         }
 
+        public async Task<IActionResult> GetBookingRequests()
+        {
+            try
+            {
+                var bookingRequests = await _bookingRepo.GetBookingRequests();
+                if (bookingRequests == null)
+                {
+                    return ErrorResp.NotFound("Can not find booking requests");
+                }
+                return SuccessResp.Ok(bookingRequests);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
     }
 }

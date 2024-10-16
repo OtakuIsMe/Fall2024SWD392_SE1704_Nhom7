@@ -11,7 +11,7 @@ namespace BE.src.Services
 {
     public interface IReportServ
     {
-        Task<IActionResult> ViewAllReports();
+        Task<IActionResult> GetRatingFeedbacks();
     }
 
     public class ReportServ : IReportServ
@@ -22,16 +22,23 @@ namespace BE.src.Services
             _reportRepo = reportRepo;
         }
 
-        public async Task<IActionResult> ViewAllReports()
+        public async Task<IActionResult> GetRatingFeedbacks()
         {
-            var reports = await _reportRepo.GetReports();
-            if (reports == null)
+            try
             {
-                return ErrorResp.NotFound("Not found reports");
+                var ratingFeedbacks = await _reportRepo.GetRatingFeedbacks();
+                if (ratingFeedbacks == null)
+                {
+                    return ErrorResp.NotFound("Not found rating feedbacks");
+                }
+                else
+                {
+                    return SuccessResp.Ok(ratingFeedbacks);
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                return SuccessResp.Ok(reports);
+                return ErrorResp.BadRequest(ex.Message);
             }
         }
     }
