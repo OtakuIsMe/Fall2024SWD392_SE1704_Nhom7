@@ -10,6 +10,8 @@ namespace BE.src.Domains.Models
         public PaymentRefundEnum Type { get; set; }
         public float Total { get; set; }
         public int PointBonus { get; set; }
+        public PaymentTypeEnum? PaymentType { get; set; }
+        public bool Satutus { get; set; }
 
         public Guid BookingId { get; set; }
         public Booking Booking { get; set; } = null!;

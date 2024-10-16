@@ -25,6 +25,10 @@ namespace BE.src.Repositories
         Task<Room?> GetRoomDetailByHashCode(string hashCode);
         Task<int> GetCountFavouriteRoom(Guid roomId);
         Task<List<RatingFeedback>> GetListRatingFeedback(Guid roomId);
+        Task<List<Room>> GetListFavouriteRoom(Guid userId);
+        Task<Favourite?> GetFavouriteRoomByUser(Guid roomId, Guid userId);
+        Task<bool> AddFavouriteRoom(Favourite favourite);
+        Task<bool> DeleteFavouriteRoom(Favourite favourite);
     }
     public class RoomRepo : IRoomRepo
     {
@@ -166,6 +170,31 @@ namespace BE.src.Repositories
         public async Task<Room?> GetRoomById(Guid roomId)
         {
             return await _context.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
+        }
+        public async Task<List<Room>> GetListFavouriteRoom(Guid userId)
+        {
+            return await _context.Favourites.Where(f => f.UserId == userId)
+                                            .Include(f => f.Room)
+                                                .ThenInclude(r => r.Images)
+                                            .Select(f => f.Room)
+                                            .ToListAsync();
+        }
+
+        public async Task<Favourite?> GetFavouriteRoomByUser(Guid roomId, Guid userId)
+        {
+            return await _context.Favourites.Where(f => f.UserId == userId && f.RoomId == roomId).FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> AddFavouriteRoom(Favourite favourite)
+        {
+            _context.Favourites.Add(favourite);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteFavouriteRoom(Favourite favourite)
+        {
+            _context.Favourites.Remove(favourite);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<List<Room>> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)

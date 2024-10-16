@@ -15,6 +15,8 @@ namespace BE.src.Domains.Database
             public DbSet<Area> Areas { get; set; } = null!;
             public DbSet<Booking> Bookings { get; set; } = null!;
             public DbSet<BookingItem> BookingItems { get; set; } = null!;
+            public DbSet<DepositWithdraw> DepositWithdraws { get; set; } = null!;
+            public DbSet<DeviceChecking> DeviceCheckings { get; set; } = null!;
             public DbSet<Role> Roles { get; set; } = null!;
             public DbSet<User> Users { get; set; } = null!;
             public DbSet<Membership> Memberships { get; set; } = null!;
@@ -95,6 +97,8 @@ namespace BE.src.Domains.Database
                             v => (int)v,
                             v => (StatusBookingEnum)v
                             );
+                        entity.Property(b => b.IsPay)
+                        .IsRequired();
 
                         entity.Property(b => b.Total)
                         .IsRequired();
@@ -109,7 +113,8 @@ namespace BE.src.Domains.Database
 
                         entity.HasOne(b => b.MembershipUser)
                         .WithMany(mu => mu.Bookings)
-                        .HasForeignKey(b => b.MembershipUserId);
+                        .HasForeignKey(b => b.MembershipUserId)
+                        .IsRequired(false); ;
                   });
 
                   builder.Entity<BookingItem>(entity =>
@@ -161,6 +166,27 @@ namespace BE.src.Domains.Database
                               .WithMany(u => u.DepositWithdraws)
                               .HasForeignKey(d => d.UserId)
                               .OnDelete(DeleteBehavior.Cascade);
+                  });
+
+                  builder.Entity<DeviceChecking>(entity =>
+                  {
+                        entity.HasKey(e => e.Id);
+                        entity.Property(e => e.Status)
+                              .IsRequired()
+                              .HasMaxLength(20)
+                              .HasConversion(
+                                  v => v.ToString(),
+                                  v => v.ToEnum<StatusDeviceCheckingEnum>()
+                              );
+                        entity.Property(e => e.Description)
+                              .IsRequired()
+                              .HasMaxLength(300);
+                        entity.HasOne(dc => dc.BookingItem)
+                              .WithOne(bi => bi.DeviceChecking)
+                              .HasForeignKey<DeviceChecking>(dc => dc.BookingItemsId);
+                        entity.HasOne(dc => dc.Staff)
+                              .WithMany(dc => dc.DeviceCheckings)
+                              .HasForeignKey(dc => dc.StaffId);
                   });
 
                   builder.Entity<Favourite>(entity =>
@@ -299,6 +325,7 @@ namespace BE.src.Domains.Database
 
                         entity.Property(pr => pr.Type)
                         .IsRequired()
+                        .HasMaxLength(10)
                         .HasConversion(
                             v => v.ToString(),
                             v => v.ToEnum<PaymentRefundEnum>()
@@ -308,6 +335,16 @@ namespace BE.src.Domains.Database
                         .IsRequired();
 
                         entity.Property(pr => pr.PointBonus)
+                        .IsRequired();
+
+                        entity.Property(pr => pr.PaymentType)
+                        .IsRequired(false)
+                        .HasMaxLength(10)
+                        .HasConversion(
+                              v => v.ToString(),
+                              v => string.IsNullOrEmpty(v) ? default : v.ToEnum<PaymentTypeEnum>()
+                        );
+                        entity.Property(pr => pr.Satutus)
                         .IsRequired();
 
                         entity.HasOne(pr => pr.Booking)

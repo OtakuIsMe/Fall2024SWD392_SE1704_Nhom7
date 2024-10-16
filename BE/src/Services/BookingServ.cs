@@ -36,13 +36,14 @@ namespace BE.src.Services
             {
                 float total = 0;
                 Membership? userMembership = await _userRepo.GetMemberShipByUserId(data.UserId);
-                Booking booking = new Booking
+                Booking booking = new()
                 {
-                    TimeBooking = data.TimeBooking,
+                    TimeBooking = TimeSpan.FromHours(data.TimeHourBooking),
                     DateBooking = data.DateBooking,
                     Status = StatusBookingEnum.Wait,
                     UserId = data.UserId,
                     RoomId = data.RoomId,
+                    IsPay = false
                 };
 
                 Room? room = await _roomRepo.GetRoomById(data.RoomId);
@@ -52,7 +53,7 @@ namespace BE.src.Services
                     return ErrorResp.NotFound("Cant not find room");
                 }
 
-                total += room.Price;
+                total += room.Price * data.TimeHourBooking;
 
                 bool isCreatedBooking = await _bookingRepo.AddBooking(booking);
 
@@ -99,7 +100,9 @@ namespace BE.src.Services
 
                 booking.Total = total;
 
-                return SuccessResp.Ok("Booking room success");
+                await _bookingRepo.UpdateBooking(booking);
+
+                return SuccessResp.Ok(booking.Id);
             }
             catch (Exception ex)
             {

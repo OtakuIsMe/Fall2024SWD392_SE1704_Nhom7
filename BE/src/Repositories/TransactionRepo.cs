@@ -1,3 +1,4 @@
+using BE.src.Domains.Models;
 using BE.src.Domains.Database;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,9 @@ namespace BE.src.Repositories
 {
     public interface ITransactionRepo
     {
-        Task<List<Transaction>> ViewTransactionHistoryOfUser(Guid userId);
+        Task<List<Transaction>> GetTransactions(Guid userId);
+        Task<bool> CreatePaymentRefund(PaymentRefund paymentRefund);
+        Task<bool> CreateTransaction(Transaction transaction);        Task<List<Transaction>> ViewTransactionHistoryOfUser(Guid userId);
     }
 
     public class TrasactionRepo : ITransactionRepo
@@ -18,18 +21,21 @@ namespace BE.src.Repositories
             _context = context;
         }
 
-        public async Task<List<Transaction>> ViewTransactionHistoryOfUser(Guid userId)
+        public async Task<bool> CreatePaymentRefund(PaymentRefund paymentRefund)
         {
-            return await _context.Transactions.Where(t => t.UserId == userId)
-                                            .Include(t => t.PaymentRefund)
-                                                .ThenInclude(t => t.RefundItems)
-                                                    .ThenInclude(ri => ri.BookingItem)
-                                                        .ThenInclude(bi => bi.AmenityService)
-                                            .Include(t => t.MembershipUser)
-                                            .Include(t => t.User)
-                                                .ThenInclude(u => u.Image)
-                                            .Include(t => t.DepositWithdraw)
-                                            .ToListAsync();
+            _context.PaymentRefunds.Add(paymentRefund);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> CreateTransaction(Transaction transaction)
+        {
+            _context.Transactions.Add(transaction);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public Task<List<Transaction>> GetTransactions(Guid userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -23,12 +23,17 @@ namespace BE.src.Services
         Task<IActionResult> CreateRoom(CreateRoomRqDTO data);
         Task<IActionResult> ViewRoomDetail(string hashCode);
         Task<IActionResult> GetCommentByRoomId(Guid roomId);
+        Task<IActionResult> ViewListFavourite(Guid userId);
+        Task<IActionResult> UnOrFavouriteRoom(Guid roomId, Guid userId);
+        Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data);
     }
     public class RoomServ : IRoomServ
     {
         private readonly IRoomRepo _roomRepo;
         private readonly IAreaRepo _areaRepo;
-        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo)
+        private readonly IBookingRepo _bookingRepo;
+
+        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo, IBookingRepo bookingRepo)
         {
             _roomRepo = roomRepo;
             _areaRepo = areaRepo;
@@ -172,6 +177,74 @@ namespace BE.src.Services
             {
                 List<RatingFeedback> ratingFeedbacks = await _roomRepo.GetListRatingFeedback(roomId);
                 return SuccessResp.Ok(ratingFeedbacks);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+        public async Task<IActionResult> ViewListFavourite(Guid userId)
+        {
+            try
+            {
+                List<Room> rooms = await _roomRepo.GetListFavouriteRoom(userId);
+                return SuccessResp.Ok(rooms);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> UnOrFavouriteRoom(Guid roomId, Guid userId)
+        {
+            try
+            {
+                Favourite? favouriteRoom = await _roomRepo.GetFavouriteRoomByUser(roomId, userId);
+                if (favouriteRoom != null)
+                {
+                    bool isDelete = await _roomRepo.DeleteFavouriteRoom(favouriteRoom);
+                    if (isDelete)
+                    {
+                        return SuccessResp.Ok("Remove favourite success");
+                    }
+                    else
+                    {
+                        return ErrorResp.BadRequest("Fail to remove favourite");
+                    }
+                }
+                else
+                {
+                    Favourite newFavouriteRoom = new()
+                    {
+                        RoomId = roomId,
+                        UserId = userId
+                    };
+                    bool isAdd = await _roomRepo.AddFavouriteRoom(newFavouriteRoom);
+                    if (isAdd)
+                    {
+                        return SuccessResp.Ok("Add favourite success");
+                    }
+                    else
+                    {
+                        return ErrorResp.BadRequest("Fail to add favourite");
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data)
+        {
+            try
+            {
+                List<RoomScheduleRpDTO> roomSchedules = new List<RoomScheduleRpDTO>();
+                List<Booking> availableBookings = await _bookingRepo.ViewBookingAvailablePeriod(data.RoomId, data.StartDate, data.EndDate);
+
+                return SuccessResp.Ok(roomSchedules);
             }
             catch (System.Exception ex)
             {

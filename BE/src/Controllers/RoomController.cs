@@ -54,10 +54,26 @@ namespace BE.src.Controllers
             return await _roomServ.ViewRoomDetail(hashCode);
         }
 
-        [HttpGet("ViewDetail/{roomId:guid}")]
+        [HttpGet("ViewFeedback/{roomId:guid}")]
         public async Task<IActionResult> GetComment(Guid roomId)
         {
             return await _roomServ.GetCommentByRoomId(roomId);
+        }
+
+        [HttpGet("ViewListFavourite/{userId:guid}")]
+        public async Task<IActionResult> ViewListFavourite(Guid userId)
+        {
+            return await _roomServ.ViewListFavourite(userId);
+        }
+        [HttpGet("(Un)Favourite")]
+        public async Task<IActionResult> UnOrFavouriteRoom([FromQuery] Guid roomId, [FromQuery] Guid userId)
+        {
+            return await _roomServ.UnOrFavouriteRoom(roomId, userId);
+        }
+        [HttpGet("Schedule")]
+        public async Task<IActionResult> ScheduleRoom([FromBody] RoomScheduleRqDTO data)
+        {
+            return await _roomServ.GetScheduleRoom(data);
         }
 
         [HttpGet("GetRoomListWithBookingTimes")]
