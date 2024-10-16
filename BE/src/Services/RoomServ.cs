@@ -37,6 +37,7 @@ namespace BE.src.Services
         {
             _roomRepo = roomRepo;
             _areaRepo = areaRepo;
+            _bookingRepo = bookingRepo;
         }
 
         public async Task<IActionResult> GetRoomBySearchInput(string inputInfo)

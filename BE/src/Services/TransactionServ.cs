@@ -36,6 +36,7 @@ namespace BE.src.Services
         {
             _transactionRepo = transactionRepo;
             _bookingRepo = bookingRepo;
+            _userRepo = userRepo;
         }
 
         private APIContext GetAPIContext()
@@ -211,7 +212,6 @@ namespace BE.src.Services
             {
                 return ErrorResp.BadRequest(ex.Message);
             }
-            _userRepo = userRepo;
         }
 
         public async Task<IActionResult> ViewTransactionHistory(Guid userId)
