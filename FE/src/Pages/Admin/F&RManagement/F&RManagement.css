@@ -1,16 +1,16 @@
-#dashboard {
+#fr-mng {
     height: 100%;
 }
 
-#dashboard > h1 {
+#fr-mng > h1 {
     margin: 0;
 }
 
-#dashboard > .content {
+#fr-mng > .content {
     max-height: calc(100vh - 149px);
     overflow-y: scroll;
 }
 
-#dashboard > .content::-webkit-scrollbar {
+#fr-mng > .content::-webkit-scrollbar {
     display: none;
 }

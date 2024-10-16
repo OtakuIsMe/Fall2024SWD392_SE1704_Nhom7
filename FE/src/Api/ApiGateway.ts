@@ -66,4 +66,17 @@ export class ApiGateway {
             throw error;
         }
     }
+
+    public static async payBill<T>(bookingId: string): Promise<T> {
+        try {
+            const bookingid = bookingId;
+            const response = await this.axiosInstance.post<T>(`transaction/Payment-PayPal-Create`, bookingid);
+            
+            console.log(response.data);
+            return response.data
+        } catch (error) {
+            console.error("Transaction error:", error);
+            throw error;
+        }
+    }
 }

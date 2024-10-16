@@ -1,16 +1,16 @@
-#dashboard {
+#membership-mng {
     height: 100%;
 }
 
-#dashboard > h1 {
+#membership-mng > h1 {
     margin: 0;
 }
 
-#dashboard > .content {
+#membership-mng > .content {
     max-height: calc(100vh - 149px);
     overflow-y: scroll;
 }
 
-#dashboard > .content::-webkit-scrollbar {
+#membership-mng > .content::-webkit-scrollbar {
     display: none;
 }

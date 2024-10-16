@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 import { ApiGateway } from '../../../Api/ApiGateway'
 import { AuthenContext } from '../../../Components/AuthenContext'
 import Header from '../../../Components/Header/Header'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration';
 import './RoomDetail.css'
 import room1 from '../../../Assets/room1.jpg'
@@ -19,6 +19,7 @@ import { MdRoomService, MdOutlineFoodBank, MdHomeRepairService } from "react-ico
 import { TbAirConditioning, TbCurrencyDong } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { RiDrinks2Fill } from "react-icons/ri";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 dayjs.extend(duration);
 
@@ -42,6 +43,9 @@ const RoomDetail = () => {
   const [infoSelected, setInfoSelected] = useState("info-container")
   const [typeServiceSelected, setTypeServiceSelected] = useState("food");
   const [openPopup, setOpenPopup] = useState(false);
+  const [openPopupMsg, setOpenPopupMsg] = useState(false);
+
+  const [bookingId, setBookingId] = useState<any>()
 
   const utilities = [
     {
@@ -212,14 +216,13 @@ const RoomDetail = () => {
     }
   }
 
-  const postBookingRoom = async (): Promise<void> => {
+  const postBookingRoom = async (e : React.FormEvent): Promise<void> => {
+    e.preventDefault()
     try {
+      const roomId = "a3f26dd6-b769-476a-8acd-6a60d01b8c9e";
       const userId = user.id;
-      const roomId = roomInfo.roomId;
-      const bookingItemDTOs = [
-        {},
-      ];
-      const timeBooking = { ticks: hoursToTicks(totalTimeInHour(startDate, endDate)) };
+      const bookingItemDTOs : any[] = [];
+      const timeBooking = { ticks: parseInt(totalTimeInHour(startDate, endDate)) };
       const dateBooking = startDate;
 
       const response = await ApiGateway.BookRoom(
@@ -230,15 +233,36 @@ const RoomDetail = () => {
         dateBooking
       );
       console.log('Booking successful:', response);
+      setBookingId(response)
+      showMessage()
     } catch (error) {
       console.error('Error booking room:', error);
     }
   };
 
-useEffect(() => {
-  window.scrollTo(0, 0);
-  getTimeSpanFromSessions()
-  fetchRoomDetail();
+  const payBill = async () : Promise<void> => {
+    if (bookingId) {
+      try{
+        const bookId = bookingId;
+        const response = await ApiGateway.payBill(bookId);
+        console.log(response);
+        // window.location.href = response.;
+      } catch (error) {
+        console.error('Error booking room:', error);
+      }
+      
+    }
+  }
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const date = new Date();
+    const curTime = dayjs(date).set('minute', 0).add(1, 'hour').format('YYYY-MM-DDThh:mm')
+    const maxTime = dayjs(date).set('hour', 0).set('minute', 0).add(30, 'day').format('YYYY-MM-DDThh:mm')
+    setMax(maxTime)
+    setMin(curTime)
+    getTimeSpanFromSessions()
+    fetchRoomDetail();
   }, [])
   
   useEffect(() => {
@@ -327,6 +351,13 @@ useEffect(() => {
     if (sesEndDate) {
       setEnd(sesEndDate)
     }
+  }
+
+  const showMessage = () : void => {
+    setOpenPopupMsg(true);
+    setTimeout(() => {
+      setOpenPopupMsg(false);
+    }, 2000);
   }
 
   interface CardPSevice {
@@ -425,7 +456,7 @@ useEffect(() => {
               </React.Fragment>
             )}
           </div>
-          <form className="room-booking" onSubmit={() => postBookingRoom()}>
+          <form className="room-booking" onSubmit={postBookingRoom}>
             <p className="price-booking">{priceConvert(roomInfo.price)}VND/h</p>
             <div className="booking-detail">
               <div className="book-interval">
@@ -524,6 +555,12 @@ useEffect(() => {
 
             </div>
           </div>
+        </div>
+      </div>
+      <div className="service-popup" style={!openPopupMsg ? {display: "none"}:{display: "flex"}}>
+        <div className="noti">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z"/></svg>
+          <p>Booking successful!</p>
         </div>
       </div>
     </div>

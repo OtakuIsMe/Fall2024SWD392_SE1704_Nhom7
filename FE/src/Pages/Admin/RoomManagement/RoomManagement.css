@@ -1,16 +1,16 @@
-#dashboard {
+#room-mng {
     height: 100%;
 }
 
-#dashboard > h1 {
+#room-mng > h1 {
     margin: 0;
 }
 
-#dashboard > .content {
+#room-mng > .content {
     max-height: calc(100vh - 149px);
     overflow-y: scroll;
 }
 
-#dashboard > .content::-webkit-scrollbar {
+#room-mng > .content::-webkit-scrollbar {
     display: none;
 }

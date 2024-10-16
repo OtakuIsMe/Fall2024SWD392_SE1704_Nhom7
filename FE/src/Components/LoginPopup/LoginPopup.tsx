@@ -1,8 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { AuthenContext } from '../AuthenContext';
-import { ApiGateway } from '../../Api/ApiGateway';
 
 interface LoginPopupProps {
   onClose: () => void;
@@ -10,16 +8,16 @@ interface LoginPopupProps {
 
 
 const LoginPopup: React.FC<LoginPopupProps> = ({ onClose }) => {
+  // const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
   const context = useContext(AuthenContext);
   if (!context) {
     throw new Error("useAuthenContext must be used within an AuthenProvider");
   }
 
   const { login } = context;
-  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     login(email, password);

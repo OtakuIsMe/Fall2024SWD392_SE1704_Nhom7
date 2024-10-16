@@ -1,8 +1,8 @@
 import React from 'react'
-import './AreaManagement.css'
-import TableTpl from '../../../Components/Table/Table'
+import './RoomManagement.css'
+import TableTpl from '../../../Components/Table/Table';
 
-const AreaManagement: React.FC = () => {
+const RoomManagement: React.FC = () => {
   const rows = [
     createData('India', 'IN', 1324171354, 3287263),
     createData('China', 'CN', 1403500365, 9596961),
@@ -80,13 +80,13 @@ const AreaManagement: React.FC = () => {
   ];
 
   return (
-    <div id='area-mng'>
-      <h1>Area Management</h1>
+    <div id='room-mng'>
+      <h1>Room Management</h1>
       <div className='content'>
-        <TableTpl rows={rows} columns={columns}/>
+        <TableTpl rows={rows} columns={columns}/> 
       </div>
     </div>
   )
 }
 
-export default AreaManagement
+export default RoomManagement

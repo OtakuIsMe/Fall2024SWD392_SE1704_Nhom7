@@ -38,13 +38,18 @@ const RoomList: React.FC = () => {
   const [minEnd, setMinEnd] = useState('')
   const [startDate, setStart] = useState('')
   const [endDate, setEnd] = useState('')
-  const [roomList, setRoomList] = useState(rooms);
+  const [roomList, setRoomList] = useState<any>(rooms);
   const [filterOps, setFilterOps] = useState({
     type: '',
     area: '',
   });
 
   useEffect(() => {
+    const date = new Date();
+    const curTime = dayjs(date).set('minute', 0).add(1, 'hour').format('YYYY-MM-DDThh:mm')
+    const maxTime = dayjs(date).set('hour', 0).set('minute', 0).add(30, 'day').format('YYYY-MM-DDThh:mm')
+    setMax(maxTime)
+    setMin(curTime)
     getTimeSpanFromSessions()
   },[]);
 

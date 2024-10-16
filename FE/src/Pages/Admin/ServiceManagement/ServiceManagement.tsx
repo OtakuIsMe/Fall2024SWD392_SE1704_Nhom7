@@ -1,8 +1,8 @@
 import React from 'react'
-import './AreaManagement.css'
-import TableTpl from '../../../Components/Table/Table'
+import './ServiceManagement.css'
+import TableTpl from '../../../Components/Table/Table';
 
-const AreaManagement: React.FC = () => {
+const ServiceManagement: React.FC = () => {
   const rows = [
     createData('India', 'IN', 1324171354, 3287263),
     createData('China', 'CN', 1403500365, 9596961),
@@ -80,8 +80,8 @@ const AreaManagement: React.FC = () => {
   ];
 
   return (
-    <div id='area-mng'>
-      <h1>Area Management</h1>
+    <div id='service-mng'>
+      <h1>Service Management</h1>
       <div className='content'>
         <TableTpl rows={rows} columns={columns}/>
       </div>
@@ -89,4 +89,4 @@ const AreaManagement: React.FC = () => {
   )
 }
 
-export default AreaManagement
+export default ServiceManagement

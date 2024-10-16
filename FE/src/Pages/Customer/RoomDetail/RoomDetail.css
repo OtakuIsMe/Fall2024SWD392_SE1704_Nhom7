@@ -347,7 +347,8 @@
     z-index: 4;
 }
 
-#room-detail-page .service-popup .service-board {
+#room-detail-page .service-popup .service-board,
+#room-detail-page .service-popup .noti {
     background-color: white;
     width: 60%;
     height: 90vh;
@@ -356,6 +357,18 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+#room-detail-page .service-popup .noti {
+    width: 20%;
+    height: fit-content;
+    padding: 30px;
+    align-items: center;
+}
+
+#room-detail-page > .service-popup > .noti > p {
+    font-size: 2rem;
+    color: #4DB051;
 }
 
 #room-detail-page .service-popup .service-board .title-close {

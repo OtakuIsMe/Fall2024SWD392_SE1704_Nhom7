@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import { useNavigate } from 'react-router'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import Header from '../../../Components/Header/Header'
 import Banner2 from '../../../Assets/banner2.jpg'
 import Office1 from '../../../Assets/office1.jpg'
@@ -48,7 +48,7 @@ const HomePage: React.FC = () => {
   ]
 
   const search = () => {
-    navigate('/rooms')
+    navigate('/roomslist')
     sessionStorage.setItem('startDate', startDate)
     sessionStorage.setItem('endDate', endDate)
   }
