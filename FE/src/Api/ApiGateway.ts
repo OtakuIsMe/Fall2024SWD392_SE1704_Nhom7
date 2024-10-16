@@ -21,6 +21,21 @@ export class ApiGateway {
             console.error("Login error:", error);
             throw error;
         }
+    }public static async Register<T>(email: string, password: string,username:string, phone: string): Promise<T> {
+        try {
+            const data = {
+                Email: email,
+                Password: password,
+                Username: username,
+                phone: phone
+
+            };
+            const response = await this.axiosInstance.post<T>("user/Register", data);
+            return response.data;
+        } catch (error) {
+            console.error("Register error:", error);
+            throw error;
+        }
     }
 
     public static async GetUserByToken<T>(token: string): Promise<T> {

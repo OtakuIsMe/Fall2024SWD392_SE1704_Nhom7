@@ -5,6 +5,7 @@ interface AuthenContextProps {
     user: any;
     roleId: any;
     login: (email: string, password: string) => Promise<void>;
+    register: (email: string, username: string, phone: string, password: string) =>Promise<void>;
     logout: () => void;
 }
 
@@ -44,13 +45,23 @@ const AuthenProvider = ({ children }: { children: ReactNode }) => {
             alert("Đăng nhập thất bại")
         }
     }
+    const register = async (email: string, username: string, phone: string, password: string): Promise<void> => {
+  try {
+    // Giả sử hàm ApiGateway.Register yêu cầu từng tham số riêng lẻ
+    await ApiGateway.Register(email, username, phone, password); // Truyền đủ 4 tham số
+    alert("Đăng ký thành công");
+  } catch (error) {
+    throw new Error("Đăng ký thất bại");
+  }
+};
 
+      
     const logout = () => {
         localStorage.removeItem('token');
     }
 
     return (
-        <AuthenContext.Provider value={{ user, roleId, login, logout }}>
+        <AuthenContext.Provider value={{ user, roleId, login,register, logout }}>
             {children}
         </AuthenContext.Provider>
     );
