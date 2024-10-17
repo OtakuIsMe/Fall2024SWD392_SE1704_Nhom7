@@ -203,9 +203,7 @@ namespace BE.src.Repositories
                 .Include(r => r.Bookings)
                 .Include(r => r.Area)
                 .Include(r => r.Images)
-                .Where(r => r.AreaId == areaId)
-                .Where(r => r.Status == (int)StatusRoomEnum.Available)
-                .Where(r => r.TypeRoom == typeRoom) 
+                .Where(r => (r.AreaId == areaId || r.TypeRoom == typeRoom) && r.Status == (int)StatusRoomEnum.Available)
                 .ToListAsync();
 
             var availableRooms = new List<Room>();
