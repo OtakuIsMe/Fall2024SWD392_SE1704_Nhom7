@@ -219,7 +219,66 @@ namespace BE.src.Services
         {
             try
             {
-                return SuccessResp.Ok("Okey");
+                var transactions = await _transactionRepo.TransactionInYear(year);
+                List<StatisticMonth> returnValue = new(){
+                    new StatisticMonth(){
+                        Month = 1,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 2,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 3,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 4,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 5,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 6,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 7,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 8,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 9,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 10,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 11,
+                        Amount = 0
+                    },
+                    new StatisticMonth(){
+                        Month = 12,
+                        Amount = 0
+                    },
+
+                };
+                foreach (var transaction in transactions){
+                    foreach (var statisticMonth in returnValue){
+                        if(transaction.CreateAt.HasValue && statisticMonth.Month == transaction.CreateAt.Value.Month){
+                            statisticMonth.Amount += transaction.Total;
+                        }
+                    }
+                }
+                return SuccessResp.Ok(transactions);
             }
             catch (System.Exception ex)
             {

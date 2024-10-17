@@ -27,5 +27,10 @@ namespace BE.src.Controllers
         public async Task<IActionResult> CreateMembership([FromBody] MembershipCreateDTO data){
             return await _membershipServ.CreateMembership(data);
         }
+
+        [HttpPost("Get-All")]
+        public async Task<IActionResult> GetAllMembership(){
+            return await _membershipServ.GetAllMembership();
+        }
     }
 }

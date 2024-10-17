@@ -13,6 +13,7 @@ namespace BE.src.Repositories
     {
         Task<Membership?> GetMembershipDetails(Guid userId);
         Task<bool> CreateMembership(Membership membership);
+        Task<List<Membership>> GetAllMembership();
     }
 
     public class MembershipRepo : IMembershipRepo
@@ -31,6 +32,11 @@ namespace BE.src.Repositories
         public async Task<bool> CreateMembership(Membership membership){
             _context.Memberships.Add(membership);
             return await _context.SaveChangesAsync()>0;
+        }
+
+        public async Task<List<Membership>> GetAllMembership()
+        {
+            return await _context.Memberships.ToListAsync();
         }
     }
 }
