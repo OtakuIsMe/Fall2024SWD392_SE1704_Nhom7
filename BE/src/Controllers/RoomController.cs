@@ -47,5 +47,10 @@ namespace BE.src.Controllers
         {
             return await _roomServ.GetScheduleRoom(data);
         }
+        [HttpGet("TrendingRoom")]
+        public async Task<IActionResult> TrendingRoom()
+        {
+            return await _roomServ.TrendingRoom();
+        }
     }
 }

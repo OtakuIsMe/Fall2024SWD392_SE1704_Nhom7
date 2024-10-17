@@ -18,6 +18,7 @@ namespace BE.src.Repositories
         Task<Role?> GetRoleByName(RoleEnum name);
         Task<bool> UpdateUser(User user);
         Task<Membership?> GetMemberShipByUserId(Guid userId);
+        Task<int> CountAllUser();
     }
     public class UserRepo : IUserRepo
     {
@@ -65,6 +66,13 @@ namespace BE.src.Repositories
         {
             return (await _context.MembershipUsers.Where(u => u.UserId == userId && u.Status)
                                                 .Include(mu => mu.Membership).FirstOrDefaultAsync())?.Membership;
+        }
+
+        public async Task<int> CountAllUser()
+        {
+            return await _context.Users
+                                    .Where(u => u.Status == UserStatusEnum.Nornaml)
+                                    .CountAsync();
         }
     }
 }

@@ -1,3 +1,4 @@
+using BE.src.Domains.Enum;
 using BE.src.Domains.Models.Base;
 
 namespace BE.src.Domains.Models
@@ -11,6 +12,7 @@ namespace BE.src.Domains.Models
                 public string Username { get; set; } = null!;
                 public DateTime? DOB { get; set; }
                 public float Wallet { get; set; }
+                public UserStatusEnum Status { get; set; }
 
                 public Guid RoleId { get; set; }
                 public Role Role { get; set; } = null!;

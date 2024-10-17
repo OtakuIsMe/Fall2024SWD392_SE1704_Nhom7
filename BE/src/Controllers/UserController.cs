@@ -56,5 +56,10 @@ namespace BE.src.Controllers
             var hashCode = Utils.HashObject<string>(id);
             return Ok(new { hashing = hashCode });
         }
+        [HttpGet("CountAll")]
+        public async Task<IActionResult> CountAllUser()
+        {
+            return await _userServ.CountAllUser();
+        }
     }
 }

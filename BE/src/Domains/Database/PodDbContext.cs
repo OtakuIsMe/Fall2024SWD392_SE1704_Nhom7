@@ -511,6 +511,13 @@ namespace BE.src.Domains.Database
                         entity.Property(u => u.Wallet)
                         .IsRequired();
 
+                        entity.Property(u => u.Status)
+                        .IsRequired()
+                        .HasConversion(
+                              v => (int)v,
+                              v => (UserStatusEnum)v
+                        );
+
                         entity.HasOne(u => u.Role)
                         .WithMany(r => r.Users)
                         .HasForeignKey(u => u.RoleId)

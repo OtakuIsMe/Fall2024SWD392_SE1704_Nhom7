@@ -19,6 +19,7 @@ namespace BE.src.Repositories
         Task<Favourite?> GetFavouriteRoomByUser(Guid roomId, Guid userId);
         Task<bool> AddFavouriteRoom(Favourite favourite);
         Task<bool> DeleteFavouriteRoom(Favourite favourite);
+        Task<List<Room>>
     }
 
     public class RoomRepo : IRoomRepo
@@ -102,5 +103,7 @@ namespace BE.src.Repositories
             _context.Favourites.Remove(favourite);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<
     }
 }

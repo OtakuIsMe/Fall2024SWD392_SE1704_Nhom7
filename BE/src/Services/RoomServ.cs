@@ -19,6 +19,7 @@ namespace BE.src.Services
         Task<IActionResult> ViewListFavourite(Guid userId);
         Task<IActionResult> UnOrFavouriteRoom(Guid roomId, Guid userId);
         Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data);
+        Task<IActionResult> TrendingRoom();
     }
 
     public class RoomServ : IRoomServ
@@ -186,6 +187,21 @@ namespace BE.src.Services
                 List<Booking> availableBookings = await _bookingRepo.ViewBookingAvailablePeriod(data.RoomId, data.StartDate, data.EndDate);
 
                 return SuccessResp.Ok(roomSchedules);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> TrendingRoom()
+        {
+            try
+            {
+                foreach (var enumType in Enum.GetValues(typeof(TypeRoomEnum)))
+                {
+
+                }
             }
             catch (System.Exception ex)
             {

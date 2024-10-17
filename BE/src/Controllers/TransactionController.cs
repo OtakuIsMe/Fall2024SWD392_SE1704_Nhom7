@@ -40,6 +40,12 @@ namespace BE.src.Controllers
             Console.WriteLine(bookingId);
             return await _transactionServ.PaymentPaypalSuccess(bookingId);
         }
+        [HttpGet("Statistic-Month/{year: int}")]
+        public async Task<IActionResult> StatisticMonthInYear(int year)
+        {
+            return await _transactionServ.StatisticMonthInYear(year);
+        }
 
+        // [HttpGet("Statistic-")]
     }
 }

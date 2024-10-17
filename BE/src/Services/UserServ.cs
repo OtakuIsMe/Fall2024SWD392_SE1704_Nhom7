@@ -16,6 +16,7 @@ namespace BE.src.Services
         Task<IActionResult> GetUserByToken(string token);
         Task<IActionResult> RegisterUser(RegisterRqDTO data);
         Task<IActionResult> ResetPassword(ResetPassRqDTO data);
+        Task<IActionResult> CountAllUser();
     }
     public class UserServ : IUserServ
     {
@@ -106,7 +107,8 @@ namespace BE.src.Services
                         Phone = data.Phone,
                         Password = Utils.HashObject<string>(data.Password),
                         Wallet = 0,
-                        Role = userRole
+                        Role = userRole,
+                        Status = UserStatusEnum.Nornaml
                     };
                     var isCreated = await _userRepo.CreateUser(user);
                     if (isCreated)
@@ -154,6 +156,18 @@ namespace BE.src.Services
                 }
             }
             catch (Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CountAllUser()
+        {
+            try
+            {
+                return SuccessResp.Ok(await _userRepo.CountAllUser());
+            }
+            catch (System.Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
             }
