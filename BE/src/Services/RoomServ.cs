@@ -14,7 +14,7 @@ namespace BE.src.Services
         // Search and filter room
         Task<IActionResult> GetRoomBySearchInput(string inputInfo);
         Task<IActionResult> GetRoomByFilterTypeRoom(TypeRoomEnum typeRoom);
-        Task<IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate);
+        Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
 
         // Return room detail
         Task<IActionResult> ViewRoomDetail(Guid roomId);
@@ -253,7 +253,7 @@ namespace BE.src.Services
             }
         }
 
-        public async Task<IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate)
         {
             try
             {

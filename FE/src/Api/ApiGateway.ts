@@ -1,3 +1,4 @@
+import { ThirtyFpsSelect } from "@mui/icons-material";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 export class ApiGateway {
@@ -47,9 +48,28 @@ export class ApiGateway {
         }
     }
 
-    public static async GetRoomList<T>(areaId: string, typeRoom: string, startDate: string, endDate: string ): Promise<T[]> {
+    public static async GetRoomList<T>(areaId: string = '', typeRoom: string = '', startDate: string = '', endDate: string = '' ): Promise<T[]> {
         try {
-            const response = await this.axiosInstance.get<T[]>(`room/GetRoomListWithBookingTimes?areaId=${areaId}&typeRoom=${typeRoom}&startDate=${startDate}&endDate=${endDate}`);
+            let fetchLink = 'room/GetRoomListWithBookingTimes?';
+            const params: string[] = [];
+
+            if (areaId) {
+                params.push(`areaId=${encodeURIComponent(areaId)}`);
+            }
+            if (typeRoom) {
+                params.push(`typeRoom=${encodeURIComponent(typeRoom)}`);
+            }
+            if (startDate) {
+                params.push(`startDate=${encodeURIComponent(startDate)}`);
+            }
+            if (endDate) {
+                params.push(`endDate=${encodeURIComponent(endDate)}`);
+            }
+
+            fetchLink += params.join('&');
+            console.log(fetchLink);
+
+            const response = await this.axiosInstance.get<T[]>(fetchLink);
             return response.data
         } catch (error) {
             console.error("GetRoomList error:", error);
@@ -59,7 +79,7 @@ export class ApiGateway {
 
     public static async GetRoomDetail<T>(hashCode: string): Promise<T> {
         try {
-            const response = await this.axiosInstance.get<T>(`room/ViewDetail/${hashCode}`);
+            const response = await this.axiosInstance.get<T>(`room/${hashCode}`);
             console.log(response.data);
             return response.data
         } catch (error) {
@@ -77,6 +97,8 @@ export class ApiGateway {
                 timeHourBooking: timeHourBooking,
                 dateBooking: dateBooking
             };
+
+            console.log(bookingData)
     
             const response = await this.axiosInstance.post<T>(`booking/room/`, bookingData);
     
@@ -113,6 +135,16 @@ export class ApiGateway {
         } catch (error) {
             console.error("Transaction error:", error);
             console.error("Input:",bookingId)
+            throw error;
+        }
+    }
+
+    public static async GetArea<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`area/ViewListArea`)
+            return response.data
+        } catch (error) {
+            console.log("Get Area error: ", error)
             throw error;
         }
     }

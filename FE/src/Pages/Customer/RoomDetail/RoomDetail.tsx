@@ -214,32 +214,34 @@ const RoomDetail = () => {
   const fetchRoomDetail = async (): Promise<void> => {
     if (roomHashing != null) {
       const data: Data = await ApiGateway.GetRoomDetail(roomHashing);
-      setRoomInfo(data.info);
+      setRoomInfo(data);
     }
   }
 
   const postBookingRoom = async (e : React.FormEvent): Promise<void> => {
     e.preventDefault()
-    try {
-      const roomId = "a3f26dd6-b769-476a-8acd-6a60d01b8c9e";
-      const userId = user.id;
-      const bookingItemDTOs : any[] = [];
-      const timeHourBooking = parseInt(totalTimeInHour(startDate, endDate));
-      const dateBooking = startDate;
-      
-      const response = await ApiGateway.BookRoom(
-        userId,
-        roomId,
-        bookingItemDTOs,
-        timeHourBooking,
-        dateBooking
-      );
-      console.log('Booking successful:', response);
-      payBill(response);
-    } catch (error) {
-      console.error('Error booking room:', error);
+    if (roomHashing != null) {
+      try {
+        const roomId = roomHashing;
+        const userId = user.id;
+        const bookingItemDTOs : any[] = [];
+        const timeHourBooking = parseInt(totalTimeInHour(startDate, endDate));
+        const dateBooking = startDate;
+        
+        const response = await ApiGateway.BookRoom(
+          userId,
+          roomId,
+          bookingItemDTOs,
+          timeHourBooking,
+          dateBooking
+        );
+        console.log('Booking successful:', response);
+        payBill(response);
+      } catch (error) {
+        console.error('Error booking room:', error);
+      }
     }
-  };
+};
 
   const payBill = async (bookingId : any) : Promise<void> => {
     try{
@@ -457,7 +459,7 @@ const RoomDetail = () => {
             )}
           </div>
           <form className="room-booking" onSubmit={postBookingRoom}>
-            <p className="price-booking">{priceConvert(roomInfo.price)}VND/h</p>
+            <p className="price-booking">{priceConvert(roomInfo?.price)}VND/h</p>
             <div className="booking-detail">
               <div className="book-interval">
                 <div className="check-in box-time">
@@ -494,7 +496,7 @@ const RoomDetail = () => {
                   Room:
                 </span>
                 <span className='results'>
-                {priceConvert(roomInfo.price)} X {totalTimeInHour(startDate, endDate)}h
+                {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
                 </span>
               </div>
               <div className="services-price line">
@@ -518,7 +520,7 @@ const RoomDetail = () => {
                   Total Price:
                 </span>
                 <span className='results'>
-                  {totalPrice(roomInfo.price, '0', startDate, endDate)}
+                  {totalPrice(roomInfo?.price, '0', startDate, endDate)}
                 </span>
               </div>
             </div>
@@ -534,7 +536,7 @@ const RoomDetail = () => {
                       Room:
                     </span>
                     <span className='results'>
-                    {priceConvert(roomInfo.price)} X {totalTimeInHour(startDate, endDate)}h
+                    {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
                     </span>
                   </div>
                   <div className="services-price line">
@@ -558,7 +560,7 @@ const RoomDetail = () => {
                       Total Price:
                     </span>
                     <span className='results'>
-                      {totalPrice(roomInfo.price, '0', startDate, endDate)}
+                      {totalPrice(roomInfo?.price, '0', startDate, endDate)}
                     </span>
                   </div>
                 </div>
