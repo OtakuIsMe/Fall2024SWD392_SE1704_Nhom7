@@ -156,6 +156,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
             <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
               <MenuItem onClick={handleClose}>{user.username}</MenuItem>
               <MenuItem onClick={handleEditClick}>Chỉnh sửa thông tin</MenuItem>
+              <MenuItem onClick={() => navigate('/transaction-history')}>Lịch sử giao dịch</MenuItem>
               <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
             </Menu>
           </>

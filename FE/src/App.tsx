@@ -15,7 +15,7 @@ import RequestManagement from "./Pages/Admin/RequestManagement/RequestManagement
 import RoomManagement from "./Pages/Admin/RoomManagement/RoomManagement.tsx";
 import FRManagement from "./Pages/Admin/F&RManagement/F&RManagement.tsx";
 import MembershipManagement from "./Pages/Admin/MembershipManagement/MembershipManagement.tsx";
-
+import TransactionHistory from "./Pages/Customer/TransactionHistory/TransactionHistory.tsx";
 const App: React.FC = () => {
   const location = useLocation();
 
@@ -42,6 +42,7 @@ const App: React.FC = () => {
             <Route path="/feedbacks&reports" element={<FRManagement/>}/>
             <Route path="/areas" element={<AreaManagement/>}/>
             <Route path="/membership" element={<MembershipManagement/>}/>
+            <Route path="/transaction-history" element={<TransactionHistory />} />
           </Route>
         </Routes>
       </AuthenProvider>
