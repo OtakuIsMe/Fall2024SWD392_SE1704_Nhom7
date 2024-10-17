@@ -1,5 +1,6 @@
 using BE.src.Domains.DTOs.Transaction;
 using MyTransaction = BE.src.Domains.Models.Transaction;
+using System.Transactions;
 using BE.src.Repositories;
 using BE.src.Shared.Constant;
 using BE.src.Shared.Type;
@@ -13,6 +14,8 @@ using PaypalTransaction = PayPal.Api.Transaction;
 using MyTrasaction = BE.src.Domains.Models.Transaction;
 
 using BE.src.Domains.Enum;
+using BE.src.Shared.Type;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BE.src.Services
 {
@@ -29,11 +32,12 @@ namespace BE.src.Services
     {
         private readonly ITransactionRepo _transactionRepo;
         private readonly IBookingRepo _bookingRepo;
-
-        public TrasactionServ(ITransactionRepo transactionRepo, IBookingRepo bookingRepo)
+        private readonly IUserRepo _userRepo;
+        public TrasactionServ(ITransactionRepo transactionRepo, IBookingRepo bookingRepo, IUserRepo userRepo)
         {
             _transactionRepo = transactionRepo;
             _bookingRepo = bookingRepo;
+            _userRepo = userRepo;
         }
 
         private APIContext GetAPIContext()

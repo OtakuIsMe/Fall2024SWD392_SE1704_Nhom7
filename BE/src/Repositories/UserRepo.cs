@@ -80,31 +80,11 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
+
         public async Task<Membership?> GetMemberShipByUserId(Guid userId)
         {
             return (await _context.MembershipUsers.Where(u => u.UserId == userId && u.Status)
                                                 .Include(mu => mu.Membership).FirstOrDefaultAsync())?.Membership;
-        }
-
-        public async Task<User?> ViewProfileByUserId(Guid userId)
-        {
-            return await _context.Users.Where(u => u.Id == userId)
-                                        .Include(u => u.MembershipUsers)
-                                            .ThenInclude(mu => mu.Membership)
-                                        .Include(u => u.Image)
-                                        .FirstOrDefaultAsync();
-        }
-
-        public async Task<List<User>> GetListUserCustomer()
-        {
-            return await _context.Users.Where(u => u.Role.Name == RoleEnum.Customer).ToListAsync();
-        }
-
-        public async Task<int> CountAllUser()
-        {
-            return await _context.Users
-                                    .Where(u => u.Status == UserStatusEnum.Nornaml)
-                                    .CountAsync();
         }
     }
 }
