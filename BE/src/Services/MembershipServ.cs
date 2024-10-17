@@ -15,6 +15,7 @@ namespace BE.src.Services
     {
         Task<IActionResult> GetMembershipDetailsAsync(Guid membershipId);
         Task<IActionResult> CreateMembership(MembershipCreateDTO data);
+        Task<IActionResult> GetAllMembership();
     }
 
     public class MembershipServ : IMembershipServ
@@ -50,6 +51,18 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Fail to create membership");
                 }
                 return SuccessResp.Created("Created membership");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetAllMembership()
+        {
+            try
+            {
+                return SuccessResp.Ok(await _membershipRepo.GetAllMembership());
             }
             catch (System.Exception ex)
             {
