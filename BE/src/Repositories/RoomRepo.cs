@@ -13,7 +13,7 @@ namespace BE.src.Repositories
         // Search and filter room
         Task<List<Room>> SearchRoomByInput(string inputInfo);
         Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom);
-        Task<List<Room>> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate);
+        Task<List<Room>> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
         // Return room detail
         Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId);
         Task<List<RoomDto>> GetRoomsByAreaId(Guid areaId);
@@ -197,13 +197,14 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<Room>> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
+        public async Task<List<Room>> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate)
         {
             var rooms = await _context.Rooms
                 .Include(r => r.Bookings)
                 .Include(r => r.Area)
                 .Include(r => r.Images)
-                .Where(r => (r.AreaId == areaId || r.TypeRoom == typeRoom) && r.Status == (int)StatusRoomEnum.Available)
+                .Where(r => (r.AreaId == r.AreaId || areaId == null) && (r.TypeRoom == typeRoom || typeRoom == null)
+                                    && r.Status == (int)StatusRoomEnum.Available)
                 .ToListAsync();
 
             var availableRooms = new List<Room>();
@@ -215,7 +216,11 @@ namespace BE.src.Repositories
                     DateTime bookingStartTime = b.DateBooking;
                     DateTime bookingEndTime = b.DateBooking.Add(b.TimeBooking);
 
-                    return (bookingStartTime < endDate && bookingEndTime > startDate && b.Status != 0);
+                    bool isDateRangeProvided = startDate != null && endDate != null;
+
+                    return isDateRangeProvided
+                        ? (bookingStartTime < endDate && bookingEndTime > startDate && b.Status != 0)
+                        : false;  
                 });
 
                 if (!hasConflictingBooking)
@@ -226,6 +231,5 @@ namespace BE.src.Repositories
 
             return availableRooms;
         }
-
     }
 }

@@ -77,7 +77,7 @@ namespace BE.src.Controllers
         }
 
         [HttpGet("GetRoomListWithBookingTimes")]
-        public async Task<IActionResult> GetRoomListWithBookingTimes([FromQuery] Guid areaId, [FromQuery] TypeRoomEnum typeRoom,[FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        public async Task<IActionResult> GetRoomListWithBookingTimes([FromQuery] Guid? areaId, [FromQuery] TypeRoomEnum? typeRoom,[FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
             return await _roomServ.GetRoomListWithBookingTimes(areaId, typeRoom,startDate, endDate);
         }

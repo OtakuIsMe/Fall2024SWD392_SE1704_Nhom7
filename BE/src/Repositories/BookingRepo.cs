@@ -96,15 +96,59 @@ namespace BE.src.Repositories
         public async Task<List<Booking>> GetBookingRequests()
         {
             var bookingRequests = await _context.Bookings
-                        .Include(b => b.BookingItems) 
+                        .Include(b => b.BookingItems)
                             .ThenInclude(bi => bi.AmenityService)
-                        .Include(b => b.User)
-                            .ThenInclude(u => u.MembershipUsers)
-                        .Include(b => b.User)
-                            .ThenInclude(u => u.Image)
                         .Include(b => b.Room)
-                            .ThenInclude(r => r.Images)
+                            .ThenInclude(r => r.Images) 
                         .Where(b => b.Status == StatusBookingEnum.Wait)
+                        .Select(b => new Booking
+                        {
+                            Id = b.Id,
+                            Total = b.Total,
+                            Status = b.Status,
+                            IsPay = b.IsPay,
+                            DateBooking = b.DateBooking,
+                            TimeBooking = b.TimeBooking,
+                            User = new User
+                            {
+                                Id = b.User.Id,
+                                Name = b.User.Name,
+                                Email = b.User.Email,
+                                Phone = b.User.Phone,
+                                Image = b.User.Image != null 
+                                    ? new Image
+                                    {
+                                        Id = b.User.Image.Id,
+                                        Url = b.User.Image.Url
+                                    }
+                                    : null
+                            },
+                            Room = new Room
+                            {
+                                Id = b.Room.Id,
+                                Name = b.Room.Name,
+                                Images = b.Room.Images
+                                    .OrderByDescending(i => i.CreateAt)
+                                    .Take(1) 
+                                    .Select(i => new Image
+                                    {
+                                        Id = i.Id,
+                                        Url = i.Url
+                                    }).ToList()
+                            },
+                            BookingItems = b.BookingItems
+                                .Select(bi => new BookingItem
+                                {
+                                    Id = bi.Id,
+                                    AmountItems = bi.AmountItems,
+                                    Total = bi.Total,
+                                    AmenityService = new AmenityService
+                                    {
+                                        Id = bi.AmenityService.Id,
+                                        Name = bi.AmenityService.Name
+                                    }
+                                }).ToList()
+                        })
                         .ToListAsync();
 
             return bookingRequests;
