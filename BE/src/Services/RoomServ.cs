@@ -26,6 +26,7 @@ namespace BE.src.Services
         Task<IActionResult> ViewListFavourite(Guid userId);
         Task<IActionResult> UnOrFavouriteRoom(Guid roomId, Guid userId);
         Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data);
+        Task<IActionResult> TrendingRoom();
     }
     public class RoomServ : IRoomServ
     {
@@ -252,8 +253,17 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
-
-        public async Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate)
+        public async Task<IActionResult> TrendingRoom(){
+            try
+            {
+                return SuccessResp.Ok("");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+        public async Task <IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
         {
             try
             {

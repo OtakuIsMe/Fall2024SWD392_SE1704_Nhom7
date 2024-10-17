@@ -1,4 +1,3 @@
-using BE.Migrations;
 using BE.src.Domains.Database;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
@@ -64,38 +63,39 @@ namespace BE.src.Repositories
                                     .ToListAsync();
         }
 
-        
+
         public async Task<bool> AcceptBooking(Guid bookingId)
         {
             var booking = await _context.Bookings.FindAsync(bookingId);
-            
+
             if (booking == null) return false;
 
             booking.Status = StatusBookingEnum.Completed;
             booking.CreateAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-            
+
             return true;
         }
 
         public async Task<bool> DeclineBooking(Guid bookingId)
         {
             var booking = await _context.Bookings.FindAsync(bookingId);
-            
-            if (booking == null) return false; 
 
-            booking.Status = StatusBookingEnum.Canceled; 
+            if (booking == null) return false;
+
+            booking.Status = StatusBookingEnum.Canceled;
             booking.CreateAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-            
+
             return true;
         }
 
         public async Task<List<Booking>> GetBookingRequests()
         {
             var bookingRequests = await _context.Bookings
+                        .Include(b => b.BookingItems)
                         .Include(b => b.BookingItems)
                             .ThenInclude(bi => bi.AmenityService)
                         .Include(b => b.Room)

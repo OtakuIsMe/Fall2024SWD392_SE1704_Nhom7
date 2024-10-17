@@ -12,6 +12,7 @@ namespace BE.src.Repositories
     public interface IMembershipRepo
     {
         Task<Membership?> GetMembershipDetails(Guid userId);
+        Task<bool> CreateMembership(Membership membership);
     }
 
     public class MembershipRepo : IMembershipRepo
@@ -25,6 +26,11 @@ namespace BE.src.Repositories
         {
             return (await _context.MembershipUsers.Where(m => m.UserId == userId && m.Status)
                     .Include(x => x.Membership).FirstOrDefaultAsync())?.Membership;
+        }
+
+        public async Task<bool> CreateMembership(Membership membership){
+            _context.Memberships.Add(membership);
+            return await _context.SaveChangesAsync()>0;
         }
     }
 }

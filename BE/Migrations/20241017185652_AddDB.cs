@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BE.Migrations
 {
     /// <inheritdoc />
-    public partial class AllowNullForMembership : Migration
+    public partial class AddDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,6 +20,8 @@ namespace BE.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Type = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Price = table.Column<float>(type: "float", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
@@ -141,6 +143,40 @@ namespace BE.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Phone = table.Column<string>(type: "varchar(15)", maxLength: 15, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Password = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DOB = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Wallet = table.Column<float>(type: "float", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Rooms",
                 columns: table => new
                 {
@@ -170,122 +206,6 @@ namespace BE.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "RoomUtility",
-                columns: table => new
-                {
-                    RoomsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    UtilitiesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RoomUtility", x => new { x.RoomsId, x.UtilitiesId });
-                    table.ForeignKey(
-                        name: "FK_RoomUtility_Rooms_RoomsId",
-                        column: x => x.RoomsId,
-                        principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RoomUtility_Utilities_UtilitiesId",
-                        column: x => x.UtilitiesId,
-                        principalTable: "Utilities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "BookingItems",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    AmountItems = table.Column<int>(type: "int", nullable: false),
-                    Total = table.Column<float>(type: "float", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    BookingId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    AmenityServiceId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BookingItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BookingItems_AmenityServices_AmenityServiceId",
-                        column: x => x.AmenityServiceId,
-                        principalTable: "AmenityServices",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "DeviceCheckings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Status = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Description = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    BookingItemsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    BookingItemId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StaffId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DeviceCheckings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DeviceCheckings_BookingItems_BookingItemId",
-                        column: x => x.BookingItemId,
-                        principalTable: "BookingItems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Phone = table.Column<string>(type: "varchar(15)", maxLength: 15, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Password = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    DOB = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    Wallet = table.Column<float>(type: "float", nullable: false),
-                    RoleId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    DeviceCheckingId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_DeviceCheckings_DeviceCheckingId",
-                        column: x => x.DeviceCheckingId,
-                        principalTable: "DeviceCheckings",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "DepositWithdraws",
                 columns: table => new
                 {
@@ -304,71 +224,6 @@ namespace BE.Migrations
                     table.PrimaryKey("PK_DepositWithdraws", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DepositWithdraws_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Favourites",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Favourites", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Favourites_Rooms_RoomId",
-                        column: x => x.RoomId,
-                        principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Favourites_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Images",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Url = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    RoomId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    AreaId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Images", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Images_Areas_AreaId",
-                        column: x => x.AreaId,
-                        principalTable: "Areas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Images_Rooms_RoomId",
-                        column: x => x.RoomId,
-                        principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Images_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -431,6 +286,106 @@ namespace BE.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "UserAreaManagements",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAreaManagements", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAreaManagements_Areas_AreaId",
+                        column: x => x.AreaId,
+                        principalTable: "Areas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAreaManagements_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Favourites",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Favourites", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Favourites_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Favourites_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Url = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RoomId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    AreaId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    AmenityServiceId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Images_AmenityServices_AmenityServiceId",
+                        column: x => x.AmenityServiceId,
+                        principalTable: "AmenityServices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Images_Areas_AreaId",
+                        column: x => x.AreaId,
+                        principalTable: "Areas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Images_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Images_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "RatingFeedbacks",
                 columns: table => new
                 {
@@ -462,28 +417,25 @@ namespace BE.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "UserAreaManagements",
+                name: "RoomUtility",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    AreaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                    RoomsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UtilitiesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserAreaManagements", x => x.Id);
+                    table.PrimaryKey("PK_RoomUtility", x => new { x.RoomsId, x.UtilitiesId });
                     table.ForeignKey(
-                        name: "FK_UserAreaManagements_Areas_AreaId",
-                        column: x => x.AreaId,
-                        principalTable: "Areas",
+                        name: "FK_RoomUtility_Rooms_RoomsId",
+                        column: x => x.RoomsId,
+                        principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserAreaManagements_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
+                        name: "FK_RoomUtility_Utilities_UtilitiesId",
+                        column: x => x.UtilitiesId,
+                        principalTable: "Utilities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -498,6 +450,7 @@ namespace BE.Migrations
                     DateBooking = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Total = table.Column<float>(type: "float", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    IsPay = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     RoomId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     MembershipUserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
@@ -528,14 +481,48 @@ namespace BE.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "BookingItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AmountItems = table.Column<int>(type: "int", nullable: false),
+                    Total = table.Column<float>(type: "float", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    BookingId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AmenityServiceId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BookingItems_AmenityServices_AmenityServiceId",
+                        column: x => x.AmenityServiceId,
+                        principalTable: "AmenityServices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BookingItems_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "PaymentRefunds",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Type = table.Column<string>(type: "longtext", nullable: false)
+                    Type = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Total = table.Column<float>(type: "float", nullable: false),
                     PointBonus = table.Column<int>(type: "int", nullable: false),
+                    PaymentType = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Satutus = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     BookingId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
@@ -547,6 +534,38 @@ namespace BE.Migrations
                         name: "FK_PaymentRefunds_Bookings_BookingId",
                         column: x => x.BookingId,
                         principalTable: "Bookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "DeviceCheckings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Status = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    BookingItemsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    StaffId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeviceCheckings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeviceCheckings_BookingItems_BookingItemsId",
+                        column: x => x.BookingItemsId,
+                        principalTable: "BookingItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DeviceCheckings_Users_StaffId",
+                        column: x => x.StaffId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -664,9 +683,15 @@ namespace BE.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeviceCheckings_BookingItemId",
+                name: "IX_DeviceCheckings_BookingItemsId",
                 table: "DeviceCheckings",
-                column: "BookingItemId");
+                column: "BookingItemsId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeviceCheckings_StaffId",
+                table: "DeviceCheckings",
+                column: "StaffId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favourites_RoomId",
@@ -677,6 +702,12 @@ namespace BE.Migrations
                 name: "IX_Favourites_UserId",
                 table: "Favourites",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Images_AmenityServiceId",
+                table: "Images",
+                column: "AmenityServiceId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Images_AreaId",
@@ -778,41 +809,19 @@ namespace BE.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_DeviceCheckingId",
-                table: "Users",
-                column: "DeviceCheckingId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_BookingItems_Bookings_BookingId",
-                table: "BookingItems",
-                column: "BookingId",
-                principalTable: "Bookings",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Areas_Locations_LocationId",
-                table: "Areas");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_BookingItems_AmenityServices_AmenityServiceId",
-                table: "BookingItems");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_BookingItems_Bookings_BookingId",
-                table: "BookingItems");
-
             migrationBuilder.DropTable(
                 name: "BaseEntity");
+
+            migrationBuilder.DropTable(
+                name: "DeviceCheckings");
 
             migrationBuilder.DropTable(
                 name: "Favourites");
@@ -839,6 +848,9 @@ namespace BE.Migrations
                 name: "UserAreaManagements");
 
             migrationBuilder.DropTable(
+                name: "BookingItems");
+
+            migrationBuilder.DropTable(
                 name: "Utilities");
 
             migrationBuilder.DropTable(
@@ -846,9 +858,6 @@ namespace BE.Migrations
 
             migrationBuilder.DropTable(
                 name: "PaymentRefunds");
-
-            migrationBuilder.DropTable(
-                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "AmenityServices");
@@ -872,13 +881,10 @@ namespace BE.Migrations
                 name: "Areas");
 
             migrationBuilder.DropTable(
-                name: "DeviceCheckings");
-
-            migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "BookingItems");
+                name: "Locations");
         }
     }
 }
