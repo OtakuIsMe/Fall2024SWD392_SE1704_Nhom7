@@ -47,6 +47,16 @@ export class ApiGateway {
         }
     }
 
+    public static async GetRoomList<T>(areaId: string, typeRoom: string, startDate: string, endDate: string ): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`room/GetRoomListWithBookingTimes?areaId=${areaId}&typeRoom=${typeRoom}&startDate=${startDate}&endDate=${endDate}`);
+            return response.data
+        } catch (error) {
+            console.error("GetRoomList error:", error);
+            throw error;
+        }
+    }
+
     public static async GetRoomDetail<T>(hashCode: string): Promise<T> {
         try {
             const response = await this.axiosInstance.get<T>(`room/ViewDetail/${hashCode}`);
@@ -58,13 +68,13 @@ export class ApiGateway {
         }
     }
 
-    public static async BookRoom<T>(userId: string, roomId: string, bookingItemDTOs: object[], timeBooking: object, dateBooking: string): Promise<T> {
+    public static async BookRoom<T>(userId: string, roomId: string, bookingItemDTOs: object[], timeHourBooking: number, dateBooking: string): Promise<T> {
         try {
             const bookingData = {
                 roomId: roomId,
                 userId: userId,
                 bookingItemDTOs: bookingItemDTOs,
-                timeBooking: timeBooking,
+                timeHourBooking: timeHourBooking,
                 dateBooking: dateBooking
             };
     
@@ -78,6 +88,21 @@ export class ApiGateway {
         }
     }
 
+    public static async payCOD<T>(bookingId: string): Promise<T> {
+        try {
+            const bookingid = bookingId;
+            const response = await this.axiosInstance.post<T>(`transaction/payment-cod`, bookingid)
+
+            console.log(response);
+            return response.data;
+        } catch (err) {
+            console.error("Transaction error:", err);
+            console.error("Input:",bookingId)
+            throw err;
+        }
+
+    }
+
     public static async payBill<T>(bookingId: string): Promise<T> {
         try {
             const bookingid = bookingId;
@@ -87,6 +112,7 @@ export class ApiGateway {
             return response.data
         } catch (error) {
             console.error("Transaction error:", error);
+            console.error("Input:",bookingId)
             throw error;
         }
     }

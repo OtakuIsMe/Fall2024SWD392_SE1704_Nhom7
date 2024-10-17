@@ -47,6 +47,8 @@ const RoomDetail = () => {
 
   const [bookingId, setBookingId] = useState<any>()
 
+  const [payment, setPayment] = useState<string>('COD')
+
   const utilities = [
     {
       id: '1',
@@ -222,35 +224,36 @@ const RoomDetail = () => {
       const roomId = "a3f26dd6-b769-476a-8acd-6a60d01b8c9e";
       const userId = user.id;
       const bookingItemDTOs : any[] = [];
-      const timeBooking = { ticks: parseInt(totalTimeInHour(startDate, endDate)) };
+      const timeHourBooking = parseInt(totalTimeInHour(startDate, endDate));
       const dateBooking = startDate;
-
+      
       const response = await ApiGateway.BookRoom(
         userId,
         roomId,
         bookingItemDTOs,
-        timeBooking,
+        timeHourBooking,
         dateBooking
       );
       console.log('Booking successful:', response);
-      setBookingId(response)
-      showMessage()
+      payBill(response);
     } catch (error) {
       console.error('Error booking room:', error);
     }
   };
 
-  const payBill = async () : Promise<void> => {
-    if (bookingId) {
-      try{
-        const bookId = bookingId;
+  const payBill = async (bookingId : any) : Promise<void> => {
+    try{
+      const bookId = bookingId;
+      if (payment === 'COD') {
+        const response = await ApiGateway.payCOD(bookId);
+        console.log(response);
+        setOpenPopupMsg(false);
+      } else if (payment === 'Paypal') {
         const response = await ApiGateway.payBill(bookId);
         console.log(response);
-        // window.location.href = response.;
-      } catch (error) {
-        console.error('Error booking room:', error);
       }
-      
+    } catch (error) {
+      console.error('Error booking room:', error);
     }
   }
 
@@ -353,11 +356,8 @@ const RoomDetail = () => {
     }
   }
 
-  const showMessage = () : void => {
-    setOpenPopupMsg(true);
-    setTimeout(() => {
-      setOpenPopupMsg(false);
-    }, 2000);
+  const handlePaymentChange = (e : React.ChangeEvent<HTMLInputElement>) : void => {
+    setPayment(e.target.value)
   }
 
   interface CardPSevice {
@@ -473,6 +473,19 @@ const RoomDetail = () => {
                 <p className='title'>TOTAL TIME STAY IN ROOM </p>
                 <span> {totalTime(startDate, endDate)} <FaRegClock /></span>
               </div>
+              <div className="payment-method">
+                <p className="title">PAYMENT METHOD</p>
+                <div className="method">
+                  <label>
+                    <input type="radio" name='method' value="COD" checked={payment === 'COD'} onChange={handlePaymentChange}/>
+                    <span>COD</span>
+                  </label>
+                  <label>
+                    <input type="radio" name='method' value="Paypal" checked={payment === 'Paypal'} onChange={handlePaymentChange}/>
+                    <span>Paypal</span>
+                  </label>
+                </div>
+              </div>
             </div>
             <div className="total">
               <p className="title">Your Price Sumary</p>
@@ -510,7 +523,51 @@ const RoomDetail = () => {
               </div>
             </div>
             <div className='service-btn but' onClick={() => setOpenPopup(true)}>Additional Services</div>
-            <button className='book-btn but' type='submit'>Request To Book</button>
+            <div className='but' onClick={() => setOpenPopupMsg(true)} >Request To Book</div>
+            <div className="service-popup" style={!openPopupMsg ? {display: "none"}:{display: "flex"}}>
+              <div className="noti">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z"/></svg>
+                <p>Confirm booking</p>
+                <div className="total" style={{margin: "0", width: "100%"}}>
+                  <div className="Room-price line">
+                    <span className='title-result'>
+                      Room:
+                    </span>
+                    <span className='results'>
+                    {priceConvert(roomInfo.price)} X {totalTimeInHour(startDate, endDate)}h
+                    </span>
+                  </div>
+                  <div className="services-price line">
+                    <span className='title-result'>
+                      Services:
+                    </span>
+                    <span className='results'>
+                      60K
+                    </span>
+                  </div>
+                  <div className="membsership-price line">
+                    <span className='title-result'>
+                      Membership:
+                    </span>
+                    <span className='results'>
+                      5%
+                    </span>
+                  </div>
+                  <div className="total-price line">
+                    <span className='title-result'>
+                      Total Price:
+                    </span>
+                    <span className='results'>
+                      {totalPrice(roomInfo.price, '0', startDate, endDate)}
+                    </span>
+                  </div>
+                </div>
+                <div className='form-btns'>
+                  <div onClick={() => setOpenPopupMsg(false)}>Cancel</div>
+                  <button type='submit'>Confirm</button>
+                </div>
+              </div>
+            </div>
           </form>
         </div>
       </div>
@@ -555,12 +612,6 @@ const RoomDetail = () => {
 
             </div>
           </div>
-        </div>
-      </div>
-      <div className="service-popup" style={!openPopupMsg ? {display: "none"}:{display: "flex"}}>
-        <div className="noti">
-          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z"/></svg>
-          <p>Booking successful!</p>
         </div>
       </div>
     </div>
