@@ -1,14 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using BE.src.Domains.Models.Base;
 
 namespace BE.src.Domains.Models
 {
         public class User : BaseEntity
         {
-                public string Name { get; set; } = null!;
-                public string Phone { get; set; } = null!;
+                public string? Name { get; set; } = null!;
+                public string? Phone { get; set; } = null!;
                 public string Email { get; set; } = null!;
-                public string Password { get; set; } = null!;
-                public string Username { get; set; } = null!;
+                public string? Password { get; set; } = null!;
+                public string? Username { get; set; } = null!;
                 public DateTime? DOB { get; set; }
                 public float Wallet { get; set; }
 

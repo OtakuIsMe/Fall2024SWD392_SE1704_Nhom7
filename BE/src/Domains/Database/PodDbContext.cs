@@ -45,8 +45,10 @@ namespace BE.src.Domains.Database
             {
                   if (!optionsBuilder.IsConfigured) // Check if already configured
                   {
-                        optionsBuilder.UseMySql(_configuration.GetConnectionString("DefaultConnection"),
-                            new MySqlServerVersion(new Version(8, 0, 27)));
+                        // .UseLazyLoadingProxies(false)
+                        optionsBuilder
+                                          .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
+                                          new MySqlServerVersion(new Version(8, 0, 27)));
                   }
             }
 
@@ -60,6 +62,13 @@ namespace BE.src.Domains.Database
                         entity.Property(a => a.Name)
                         .IsRequired()
                         .HasMaxLength(100);
+                        entity.Property(a => a.Type)
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasConversion(
+                            v => v.ToString(),
+                            v => v.ToEnum<AmenityServiceTypeEnum>()
+                            );
                         entity.Property(a => a.Price)
                         .IsRequired();
                   });

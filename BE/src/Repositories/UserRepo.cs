@@ -20,6 +20,8 @@ namespace BE.src.Repositories
         Task<User?> ViewProfileByUserId(Guid userId);
         Task<Membership?> GetMemberShipByUserId(Guid userId);
         Task<List<User>> GetListUserCustomer();
+        Task<bool> CreateImageUser(Image image);
+        Task<bool> UpdateImageUser(Image image);
     }
     public class UserRepo : IUserRepo
     {
@@ -36,7 +38,9 @@ namespace BE.src.Repositories
 
         public async Task<User?> GetUserById(Guid userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            return await _context.Users
+                                    .Include(u => u.Image)
+                                    .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<User?> GetUserByEmail(string email)
@@ -60,6 +64,18 @@ namespace BE.src.Repositories
         public async Task<bool> UpdateUser(User user)
         {
             _context.Users.Update(user);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> CreateImageUser(Image image)
+        {
+            _context.Images.Add(image);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateImageUser(Image image)
+        {
+            _context.Images.Update(image);
             return await _context.SaveChangesAsync() > 0;
         }
 

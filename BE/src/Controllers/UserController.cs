@@ -61,15 +61,15 @@ namespace BE.src.Controllers
         {
             return await _userServ.ViewProfileByUserId(Guid.Parse(userId));
         }
-        [HttpPut("UpdateProfile")]
-        public async Task<IActionResult> UpdateProfile(Guid userId, [FromBody] UpdateProfileDTO dto)
-        {
-            return await _userServ.UpdateProfile(userId, dto);
-        }
         [HttpGet("GetListUserCustomer")]
         public async Task<IActionResult> GetListUserCustomer()
         {
             return await _userServ.GetListUserCustomer();
+        }
+        [HttpPost("UpdateUserProfile")]
+        public async Task<IActionResult> UpdateUserProfile([FromForm] UpdateProfileDTO data)
+        {
+            return await _userServ.UpdateUserProfile(data);
         }
     }
 }

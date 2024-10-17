@@ -8,12 +8,11 @@ namespace BE.src.Domains.DTOs.User
 {
     public class UpdateProfileDTO
     {
-        public string Name { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string Username { get; set; }
-        public DateTime? DOB { get; set; }
-        public List<string> Image { get; set; }
+        public required Guid UserId { get; set; }
+        public required string Name { get; set; }
+        public required string Phone { get; set; }
+        public required string Username { get; set; }
+        public required DateTime DOB { get; set; }
+        public required IFormFile Image { get; set; }
     }
 }

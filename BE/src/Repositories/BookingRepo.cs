@@ -1,4 +1,3 @@
-using BE.Migrations;
 using BE.src.Domains.Database;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
@@ -103,6 +102,7 @@ namespace BE.src.Repositories
                         .Include(b => b.Room)
                             .ThenInclude(r => r.Images)
                         .Where(b => b.Status == StatusBookingEnum.Wait)
+                        .AsNoTracking()
                         .ToListAsync();
 
             return bookingRequests;

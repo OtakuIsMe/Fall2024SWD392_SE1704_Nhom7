@@ -37,7 +37,6 @@ namespace BE.src.Controllers
         [HttpGet("Payment-PayPal-Success")]
         public async Task<IActionResult> PaymentPaypalSuccess([FromQuery] Guid bookingId)
         {
-            Console.WriteLine(bookingId);
             return await _transactionServ.PaymentPaypalSuccess(bookingId);
         }
 
