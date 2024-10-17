@@ -40,13 +40,6 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> CreateService(Service service)
-        {
-            _context.Services.Add(service);
-            var created = await _context.SaveChangesAsync() > 0;
-            return created;
-        }
-
         public async Task<Area?> GetAreaById(Guid areaId)
         {
             return await _context.Areas.FirstOrDefaultAsync(a => a.Id == areaId);
