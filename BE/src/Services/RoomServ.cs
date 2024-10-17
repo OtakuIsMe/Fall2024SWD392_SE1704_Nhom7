@@ -263,7 +263,7 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
-        public async Task <IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
+        public async Task <IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate)
         {
             try
             {
