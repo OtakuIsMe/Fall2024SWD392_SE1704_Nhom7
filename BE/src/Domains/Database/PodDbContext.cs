@@ -43,9 +43,9 @@ namespace BE.src.Domains.Database
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
-                  if (!optionsBuilder.IsConfigured) // Check if already configured
+                  if (!optionsBuilder.IsConfigured)
                   {
-                        // .UseLazyLoadingProxies(false)
+                        .UseLazyLoadingProxies(false)
                         optionsBuilder
                                           .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
                                           new MySqlServerVersion(new Version(8, 0, 27)));
