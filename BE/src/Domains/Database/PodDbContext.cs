@@ -244,6 +244,14 @@ namespace BE.src.Domains.Database
                         .WithOne(u => u.Image)
                         .HasForeignKey<Image>(i => i.UserId)
                         .OnDelete(DeleteBehavior.Cascade);
+
+                        entity.Property(i => i.AmenityServiceId)
+                        .IsRequired(false);
+
+                        entity.HasOne(i => i.AmenityService)
+                        .WithOne(u=> u.Image)
+                        .HasForeignKey<Image>(i=> i.AmenityServiceId)
+                        .OnDelete(DeleteBehavior.Cascade);
                   });
 
                   builder.Entity<Location>(entity =>
