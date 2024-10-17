@@ -24,7 +24,8 @@ namespace BE.src.Services
         Task<IActionResult> TransactionHistory(Guid userId);
         Task<IActionResult> PaymentByPaypal(PaymentPayPalDto data);
         Task<IActionResult> PaymentPaypalSuccess(Guid bookingId);
-        Task<IActionResult> PaymentByCod(Guid bookingId);        
+        Task<IActionResult> PaymentByCod(Guid bookingId);
+        Task<IActionResult> StatisticMonthInYear(int year);
     }
 
     public class TrasactionServ : ITransactionServ
@@ -207,6 +208,18 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Cant create transaction");
                 }
                 return SuccessResp.Ok("Payment cod done");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> StatisticMonthInYear(int year)
+        {
+            try
+            {
+                return SuccessResp.Ok("Okey");
             }
             catch (System.Exception ex)
             {
