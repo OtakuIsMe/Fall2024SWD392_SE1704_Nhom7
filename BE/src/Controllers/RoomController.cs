@@ -81,5 +81,10 @@ namespace BE.src.Controllers
         {
             return await _roomServ.GetRoomListWithBookingTimes(areaId, typeRoom,startDate, endDate);
         }
+
+        [HttpGet("Trending")]
+        public async Task<IActionResult> TrendingRoom(){
+            return await _roomServ.TrendingRoom();
+        }
     }
 }

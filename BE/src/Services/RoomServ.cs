@@ -253,9 +253,17 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
-        public async Task<IActionResult> TrendingRoom(){
+        public async Task<IActionResult> TrendingRoom()
+        {
             try
             {
+                // foreach (var roomType in Enum.GetValues(typeof(TypeRoomEnum)))
+                // {
+
+
+
+
+                // }
                 return SuccessResp.Ok("");
             }
             catch (System.Exception ex)
@@ -263,7 +271,7 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
-        public async Task <IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
+        public async Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate)
         {
             try
             {
@@ -275,5 +283,6 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
+
     }
 }

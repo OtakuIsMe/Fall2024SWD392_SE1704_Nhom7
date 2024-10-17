@@ -1,16 +1,103 @@
 #dashboard {
     height: 100%;
+    position: relative;
 }
 
-#dashboard > h1 {
+#dashboard .background-color-dashboard {
+    height: calc(100% + 40px);
+    width: calc(100% + 40px);
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    background-color: #f3f3f3;
+    z-index: -1;
+}
+
+#dashboard>h1 {
     margin: 0;
 }
 
-#dashboard > .content {
+#dashboard>.content {
     max-height: calc(100vh - 149px);
     overflow-y: scroll;
 }
 
-#dashboard > .content::-webkit-scrollbar {
+#dashboard>.content::-webkit-scrollbar {
     display: none;
+}
+
+#dashboard .card-statistic {
+    margin: 30px 0;
+    display: flex;
+}
+
+#dashboard .card-statistic .card {
+    flex: 1;
+    margin: 0 10px;
+    height: 120px;
+    background-color: #3438c9;
+    border-radius: 15px;
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+#dashboard .card-statistic .card .title {
+    color: white;
+    margin: 0;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#dashboard .card-statistic .card .value {
+    font-size: 28px;
+    color: white;
+    margin: 0;
+}
+
+#dashboard .card-statistic .total-in-come {
+    background-color: #7d32d4;
+}
+
+#dashboard .card-statistic .total-booking {
+    background-color: #0e805e;
+}
+
+#dashboard .contend-container {
+    display: flex;
+}
+
+#dashboard .contend-container .graph-statistic {
+    flex: 2;
+    background-color: white;
+    border: 1px solid #dee1e5;
+    border-radius: 15px;
+    height: 400px;
+    margin: 0 10px;
+    box-sizing: border-box;
+}
+
+#dashboard .contend-container .graph-statistic {
+    padding: 25px;
+}
+
+#dashboard .contend-container .graph-statistic .info-graph .title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+#dashboard .contend-container .graph-statistic .info-graph svg {
+    color: #9aa1ad;
+    cursor: pointer;
+}
+
+#dashboard .contend-container .new-booking {
+    flex: 1;
+    background-color: white;
+    border: 1px solid #dee1e5;
+    border-radius: 15px;
+    height: 400px;
+    margin: 0 10px;
+    box-sizing: border-box;
 }

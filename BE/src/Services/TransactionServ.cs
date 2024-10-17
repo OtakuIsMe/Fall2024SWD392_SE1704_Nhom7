@@ -278,7 +278,7 @@ namespace BE.src.Services
                         }
                     }
                 }
-                return SuccessResp.Ok(transactions);
+                return SuccessResp.Ok(returnValue);
             }
             catch (System.Exception ex)
             {
