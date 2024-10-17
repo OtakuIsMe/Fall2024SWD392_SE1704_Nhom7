@@ -42,12 +42,18 @@ const RoomDetail = () => {
 
   const [infoSelected, setInfoSelected] = useState("info-container")
   const [typeServiceSelected, setTypeServiceSelected] = useState("food");
+  const [typeNumberServiceSelected, setTypeNumberServiceSelected] = useState('0');
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopupMsg, setOpenPopupMsg] = useState(false);
 
   const [bookingId, setBookingId] = useState<any>()
 
   const [payment, setPayment] = useState<string>('COD')
+
+  const [serviceListType1, setServiceListType1] = useState<any>([])
+  const [serviceListType2, setServiceListType2] = useState<any>([])
+  const [serviceListType3, setServiceListType3] = useState<any>([])
+  const [serviceList, setServiceList] = useState<ServiceData[]>([]);
 
   const utilities = [
     {
@@ -99,57 +105,7 @@ const RoomDetail = () => {
       name: "Hot water dispenser"
     }
   ]
-
-  const food = [
-    {
-      id: "1",
-      name: "Trứng cá tầm",
-      price: 20,
-    },
-    {
-      id: "2",
-      name: "Bò wagyu",
-      price: 50,
-    },
-    {
-      id: "3",
-      name: "Nấm truffles",
-      price: 40,
-    },
-    {
-      id: "4",
-      name: "Cua hoàng đế",
-      price: 30,
-    }
-  ]
-
-  const drink = [
-    {
-      id: "1",
-      name: "Isabella’s Islay Whisky",
-      price: 2,
-    },
-    {
-      id: "2",
-      name: "Billionaire Vodka",
-      price: 5,
-    },
-    {
-      id: "3",
-      name: "The Macallan Valerio Adami 1926",
-      price: 3,
-    },
-    {
-      id: "4",
-      name: "Dictador M-City Golden Cities Series",
-      price: 4,
-    },
-    {
-      id: "5",
-      name: "Water",
-      price: 200,
-    },
-  ]
+  
 
   const totalTime = (start: string, end: string) : string => {
     const startT = dayjs(start)
@@ -206,6 +162,21 @@ const RoomDetail = () => {
     setInfoSelected(type);
   }
 
+  interface ServiceData {
+    index: number;
+    type: string;
+    name: string;
+    price: number;
+  }
+  function createData(
+    index: number,
+    type: string,
+    name: string,
+    price: number,
+  ): ServiceData {
+    return { index, type, name, price };
+  }
+
   const { roomHashing } = useParams();
 
   interface Data {
@@ -258,6 +229,32 @@ const RoomDetail = () => {
       console.error('Error booking room:', error);
     }
   }
+
+  const fetchServices = async (): Promise<void> => {
+    try {
+        const response = await ApiGateway.GetServices();
+        const rowData: ServiceData[] = [];
+
+        response.forEach((row: any, index: number) => {
+            const serviceData = createData(index, row.type, row.name, row.price);
+            rowData.push(serviceData);
+            console.log(rowData)
+            // Save to the appropriate state based on type
+            if (row.type === '0') {
+              setServiceListType1((prev: any) => [...prev, serviceData]);
+              console.log(serviceListType1)
+            } else if (row.type === '1') {
+              setServiceListType2((prev: any) => [...prev, serviceData]);
+              console.log(serviceListType2)
+            } else if (row.type === '2') {
+              setServiceListType3((prev: any) => [...prev, serviceData]);
+              console.log(serviceListType3)
+            }
+        });
+    } catch (err) {
+        console.error('Error getting service list:', err);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -313,6 +310,13 @@ const RoomDetail = () => {
 
   const handleServiceNavbar = (type: string) => {
     setTypeServiceSelected(type);
+    if (type === 'food') {
+      setTypeNumberServiceSelected('0')
+    } else if (type === 'drink'){
+      setTypeNumberServiceSelected('1')
+    } else if (type === 'amenity'){
+      setTypeNumberServiceSelected('2')
+    }
   }
 
   function iconReturn(id: string) {
@@ -361,6 +365,8 @@ const RoomDetail = () => {
   const handlePaymentChange = (e : React.ChangeEvent<HTMLInputElement>) : void => {
     setPayment(e.target.value)
   }
+
+  const filteredServices = serviceList.filter(service => service.type === typeNumberServiceSelected);
 
   interface CardPSevice {
     img: string,
@@ -575,7 +581,7 @@ const RoomDetail = () => {
       </div>
       <div className="service-popup" style={!openPopup ? {display: "none"}:{display: "flex"}}>
         <div className="service-board">
-          <div className="title-close" onClick={() => setOpenPopup(false)}>
+    <div className="title-close" onClick={() => {setOpenPopup(false), fetchServices();}}>
             <div>
               <p className="title">
                 Additional Services
@@ -607,7 +613,12 @@ const RoomDetail = () => {
                 </div>
               </div>
               <div className="services">
-                
+                {filteredServices.map((service, index) => (
+                  <div key={index} className="service-item">
+                      <h3>{service.name}</h3>
+                      <p>{service.price}</p>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="booking-service">

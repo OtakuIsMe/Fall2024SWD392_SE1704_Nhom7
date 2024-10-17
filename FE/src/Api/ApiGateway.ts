@@ -10,6 +10,16 @@ export class ApiGateway {
         },
     });
 
+    public static async GetServices<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>("http://localhost:5101/amenityservice/GetAll")
+            return response.data
+        } catch (error) {
+            console.error("Get Services error:", error);
+            throw error;
+        }
+    }
+
     public static async LoginDefault<T>(email: string, password: string): Promise<T> {
         try {
             const data = {
@@ -146,6 +156,16 @@ export class ApiGateway {
         } catch (error) {
             console.log("Get Area error: ", error)
             throw error;
+        }
+    }
+
+    public static async GetRequest<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`booking/GetBookingRequests`)
+            return response.data
+        } catch (error) {
+            console.log("Get Request Error: ", error)
+            throw error
         }
     }
 }

@@ -9,22 +9,22 @@ const AreaManagement: React.FC = () => {
   const data : any[] = [];
 
   interface Data {
-    id: string;
+    index: number;
     name: string;
     description: string;
     locationId: string;
   }
   function createData(
-    id: string,
+    index: number,
     name: string,
     description: string,
     locationId: string,
   ): Data {
-    return { id, name, description, locationId };
+    return { index, name, description, locationId };
   }
 
   interface Column {
-    id: 'id' | 'name' | 'description' | 'locationId' ;
+    id: 'index' | 'name' | 'description' | 'locationId' ;
     label: string;
     minWidth?: number;
     align?: 'right';
@@ -32,8 +32,8 @@ const AreaManagement: React.FC = () => {
   }
   const columns: Column[] = [
     { 
-      id: 'id', 
-      label: 'Id', 
+      id: 'index', 
+      label: 'Index', 
       minWidth: 170 
     },
     { 
@@ -61,9 +61,9 @@ const AreaManagement: React.FC = () => {
     try{
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetArea()
-      response.forEach((row: any) => {
+      response.forEach((row: any, index: number) => {
         // rowData.push(createData(row.images?.[0]?.url || '', row.typeRoom, row.name, row.price, row.description, row.status))
-        rowData.push(createData(row.id, row.name, row.description, row.locationId))
+        rowData.push(createData(index + 1, row.name, row.description, row.locationId))
       })
       setAreaList(rowData)
     } catch(err){
