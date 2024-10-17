@@ -1,9 +1,9 @@
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { ApiGateway } from "../Api/ApiGateway";
-import { ChildCare } from "@mui/icons-material";
 
 interface AuthenContextProps {
     user: any;
+    roleId: any;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
 }
@@ -16,6 +16,7 @@ export const AuthenContext = createContext<AuthenContextProps | undefined>(undef
 
 const AuthenProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<any>(null);
+    const [roleId, setRoleId] = useState<any>(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -31,6 +32,7 @@ const AuthenProvider = ({ children }: { children: ReactNode }) => {
             const userdata = await ApiGateway.GetUserByToken<any>(token);
             console.log(userdata)
             setUser(userdata);
+            setRoleId(userdata.roleId);
         }
     };
 
@@ -48,7 +50,7 @@ const AuthenProvider = ({ children }: { children: ReactNode }) => {
     }
 
     return (
-        <AuthenContext.Provider value={{ user, login, logout }}>
+        <AuthenContext.Provider value={{ user, roleId, login, logout }}>
             {children}
         </AuthenContext.Provider>
     );

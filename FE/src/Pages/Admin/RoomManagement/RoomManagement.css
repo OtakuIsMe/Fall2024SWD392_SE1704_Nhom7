@@ -1,0 +1,16 @@
+#room-mng {
+    height: 100%;
+}
+
+#room-mng > h1 {
+    margin: 0;
+}
+
+#room-mng > .content {
+    max-height: calc(100vh - 149px);
+    overflow-y: scroll;
+}
+
+#room-mng > .content::-webkit-scrollbar {
+    display: none;
+}

@@ -1,19 +1,85 @@
-import React from 'react'
+import React, { useState } from 'react'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
+import RoomServiceIcon from '@mui/icons-material/RoomService';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import ComputerIcon from '@mui/icons-material/Computer';
+import RoomIcon from '@mui/icons-material/Room';
+import InsertCommentIcon from '@mui/icons-material/InsertComment';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { Outlet, useNavigate } from 'react-router-dom';
 import './AdminLayout.css'
 
-interface AdminLayoutProps {
-    children: ReactNode;
-}
 
-const AdminLayout:React.FC<AdminLayoutProps> = ({children}) => {
+const AdminLayout:React.FC = () => {
+
+  const navItems = [
+    {name: 'Dashboard', href: '/dashboard', icon: <AssessmentIcon/>},
+    {name: 'Users', href: '/users', icon: <SupervisedUserCircleIcon/>}, //check in cho khach hang
+    {name: 'Services', href: '/services', icon: <RoomServiceIcon/>},
+    {name: 'Booking Requests', href: '/requests', icon: <LibraryBooksIcon/>},
+    {name: 'PODs / WorkRooms', href: '/rooms', icon: <ComputerIcon/>},
+    {name: 'Areas', href: '/areas', icon: <RoomIcon/>},
+    {name: 'Feedbacks & Reports', href: '/feedbacks&reports', icon: <InsertCommentIcon/>},
+    {name: 'Membership', href: '/membership', icon: <AccountBoxIcon/>},
+  ]
+
+  const navigate = useNavigate();
+
+  const [ isSelected, setIsSelected ] = useState(0)
+
+  const selected = (index: number) : void => {
+    setIsSelected(index)
+  }
+
+  const AdHeader:React.FC = () => {
+    return (
+      <div className="ad-header">
+        <div className="logo"> 
+          <p>WorkChill</p> 
+        </div>
+        <div className="user">
+          <div>
+            <AccountCircleIcon sx={{fontSize: 28}}/>
+            <p>User</p>
+          </div>
+          <div>
+            <LogoutIcon/>
+            <p>Log Out</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const SideNav:React.FC = () => {
+    return (
+      <div className='nav-container'>
+        {navItems.map((navItem, index) =>
+          <div 
+            key={index} 
+            className={`item${index + 1}`} 
+            onClick={() => {navigate(`${navItem.href}`), selected(index)}}
+            style={isSelected === index ? {color: "black"} : {color: "gray"}}
+            >{navItem.icon} <p>{navItem.name}</p></div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div id='ad-layout'>
+      <AdHeader />
+      <div className="content">
         <div className='sidebar'>
-
+          <SideNav/>
         </div>
         <div className='main-content'>
-            {children}
+          <Outlet />
         </div>
+      </div>
     </div>
   )
 }

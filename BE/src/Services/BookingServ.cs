@@ -4,6 +4,7 @@ using BE.src.Domains.Models;
 using BE.src.Repositories;
 using BE.src.Shared.Type;
 using Microsoft.AspNetCore.Mvc;
+using Mysqlx;
 
 namespace BE.src.Services
 {
@@ -11,6 +12,9 @@ namespace BE.src.Services
     {
         Task<IActionResult> BookingRoom(BookingRoomRqDTO data);
         Task<IActionResult> ViewBookingListOfRoom(Guid roomId);
+        Task<IActionResult> AcceptBooking(Guid bookingId);
+        Task<IActionResult> CancelBooking(Guid bookingId);
+        Task<IActionResult> GetBookingRequests();
     }
 
     public class BookingServ : IBookingServ
@@ -114,6 +118,63 @@ namespace BE.src.Services
             {
                 List<Booking> bookings = await _bookingRepo.ViewBookingOfRoomInFuture(roomId);
                 return SuccessResp.Ok(bookings);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> AcceptBooking(Guid bookingId)
+        {
+            try
+            {
+                var isAccept = await _bookingRepo.AcceptBooking(bookingId);
+                if (isAccept)
+                {
+                    return SuccessResp.Ok("Accept booking success");
+                }
+                else
+                {
+                    return ErrorResp.NotFound("Can not find booking");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CancelBooking(Guid bookingId)
+        {
+            try
+            {
+                var isDecline = await _bookingRepo.DeclineBooking(bookingId);
+                if (isDecline)
+                {
+                    return SuccessResp.Ok("Decline booking success");
+                }
+                else
+                {
+                    return ErrorResp.NotFound("Can not find booking");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetBookingRequests()
+        {
+            try
+            {
+                var bookingRequests = await _bookingRepo.GetBookingRequests();
+                if (bookingRequests == null)
+                {
+                    return ErrorResp.NotFound("Can not find booking requests");
+                }
+                return SuccessResp.Ok(bookingRequests);
             }
             catch (System.Exception ex)
             {
