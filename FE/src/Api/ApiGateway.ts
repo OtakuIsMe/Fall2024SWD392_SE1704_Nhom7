@@ -1,3 +1,4 @@
+import { ThirtyFpsSelect } from "@mui/icons-material";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 export class ApiGateway {
@@ -8,6 +9,16 @@ export class ApiGateway {
             'Content-Type': 'application/json',
         },
     });
+
+    public static async GetServices<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>("http://localhost:5101/amenityservice/GetAll")
+            return response.data
+        } catch (error) {
+            console.error("Get Services error:", error);
+            throw error;
+        }
+    }
 
     public static async LoginDefault<T>(email: string, password: string): Promise<T> {
         try {
@@ -47,9 +58,38 @@ export class ApiGateway {
         }
     }
 
+    public static async GetRoomList<T>(areaId: string = '', typeRoom: string = '', startDate: string = '', endDate: string = '' ): Promise<T[]> {
+        try {
+            let fetchLink = 'room/GetRoomListWithBookingTimes?';
+            const params: string[] = [];
+
+            if (areaId) {
+                params.push(`areaId=${encodeURIComponent(areaId)}`);
+            }
+            if (typeRoom) {
+                params.push(`typeRoom=${encodeURIComponent(typeRoom)}`);
+            }
+            if (startDate) {
+                params.push(`startDate=${encodeURIComponent(startDate)}`);
+            }
+            if (endDate) {
+                params.push(`endDate=${encodeURIComponent(endDate)}`);
+            }
+
+            fetchLink += params.join('&');
+            console.log(fetchLink);
+
+            const response = await this.axiosInstance.get<T[]>(fetchLink);
+            return response.data
+        } catch (error) {
+            console.error("GetRoomList error:", error);
+            throw error;
+        }
+    }
+
     public static async GetRoomDetail<T>(hashCode: string): Promise<T> {
         try {
-            const response = await this.axiosInstance.get<T>(`room/ViewDetail/${hashCode}`);
+            const response = await this.axiosInstance.get<T>(`room/${hashCode}`);
             console.log(response.data);
             return response.data
         } catch (error) {
@@ -58,15 +98,17 @@ export class ApiGateway {
         }
     }
 
-    public static async BookRoom<T>(userId: string, roomId: string, bookingItemDTOs: object[], timeBooking: object, dateBooking: string): Promise<T> {
+    public static async BookRoom<T>(userId: string, roomId: string, bookingItemDTOs: object[], timeHourBooking: number, dateBooking: string): Promise<T> {
         try {
             const bookingData = {
                 roomId: roomId,
                 userId: userId,
                 bookingItemDTOs: bookingItemDTOs,
-                timeBooking: timeBooking,
+                timeHourBooking: timeHourBooking,
                 dateBooking: dateBooking
             };
+
+            console.log(bookingData)
     
             const response = await this.axiosInstance.post<T>(`booking/room/`, bookingData);
     
@@ -78,6 +120,21 @@ export class ApiGateway {
         }
     }
 
+    public static async payCOD<T>(bookingId: string): Promise<T> {
+        try {
+            const bookingid = bookingId;
+            const response = await this.axiosInstance.post<T>(`transaction/payment-cod`, bookingid)
+
+            console.log(response);
+            return response.data;
+        } catch (err) {
+            console.error("Transaction error:", err);
+            console.error("Input:",bookingId)
+            throw err;
+        }
+
+    }
+
     public static async payBill<T>(bookingId: string): Promise<T> {
         try {
             const bookingid = bookingId;
@@ -87,7 +144,28 @@ export class ApiGateway {
             return response.data
         } catch (error) {
             console.error("Transaction error:", error);
+            console.error("Input:",bookingId)
             throw error;
+        }
+    }
+
+    public static async GetArea<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`area/ViewListArea`)
+            return response.data
+        } catch (error) {
+            console.log("Get Area error: ", error)
+            throw error;
+        }
+    }
+
+    public static async GetRequest<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`booking/GetBookingRequests`)
+            return response.data
+        } catch (error) {
+            console.log("Get Request Error: ", error)
+            throw error
         }
     }
 }

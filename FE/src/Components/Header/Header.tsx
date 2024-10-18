@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const navbar = [
     { name: 'Home', link: '/' },
     { name: 'Location', link: '/areas' },
-    { name: 'Room', link: '/rooms' },
+    { name: 'Room', link: '/roomlist' },
     { name: 'About us', link: '/aboutUs' },
     { name: 'Membership', link: '/membership' },
   ]

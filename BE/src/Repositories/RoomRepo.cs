@@ -29,6 +29,7 @@ namespace BE.src.Repositories
         Task<Favourite?> GetFavouriteRoomByUser(Guid roomId, Guid userId);
         Task<bool> AddFavouriteRoom(Favourite favourite);
         Task<bool> DeleteFavouriteRoom(Favourite favourite);
+        Task<List<Room>> TrendingRoom(TypeRoomEnum roomType);
     }
     public class RoomRepo : IRoomRepo
     {
@@ -40,20 +41,22 @@ namespace BE.src.Repositories
 
         public async Task<List<Room>> SearchRoomByInput(string inputInfo)
         {
-            return await _context.Rooms.Where(x => 
-                                    x.Name.Contains(inputInfo) || 
-                                    x.Price.ToString().Equals(inputInfo) || 
+            return await _context.Rooms.Where(x =>
+                                    x.Name.Contains(inputInfo) ||
+                                    x.Price.ToString().Equals(inputInfo) ||
                                     x.Area.Name.Contains(inputInfo))
                                 .Include(room => room.Images)
                                 .Include(room => room.Area)
-                                .Select(room => new Room{
+                                .Select(room => new Room
+                                {
                                     Id = room.Id,
                                     Name = room.Name,
                                     Price = room.Price,
                                     Area = room.Area,
                                     Images = room.Images
                                         .OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
-                                        .Select(i => new Image{
+                                        .Select(i => new Image
+                                        {
                                             Url = i.Url
                                         }).ToList()
                                 }).ToListAsync();
@@ -65,14 +68,16 @@ namespace BE.src.Repositories
             return await _context.Rooms.Where(x => x.TypeRoom.Equals(typeRoom))
                                         .Include(room => room.Images)
                                         .Include(room => room.Area)
-                                        .Select(room => new Room{
-                                                Id = room.Id,
-                                                Name = room.Name,
-                                                Price = room.Price,
-                                                Area = room.Area,
-                                                Images = room.Images
+                                        .Select(room => new Room
+                                        {
+                                            Id = room.Id,
+                                            Name = room.Name,
+                                            Price = room.Price,
+                                            Area = room.Area,
+                                            Images = room.Images
                                                     .OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
-                                                    .Select(i => new Image{
+                                                    .Select(i => new Image
+                                                    {
                                                         Url = i.Url
                                                     }).ToList()
                                         }).ToListAsync();
@@ -230,6 +235,13 @@ namespace BE.src.Repositories
             }
 
             return availableRooms;
+        }
+
+        public async Task<List<Room>> TrendingRoom(TypeRoomEnum roomType)
+        {
+            return await _context.Rooms.Where(r => r.TypeRoom == roomType)
+                                        .Include(r => r.Bookings)
+                                        .ToListAsync();
         }
     }
 }

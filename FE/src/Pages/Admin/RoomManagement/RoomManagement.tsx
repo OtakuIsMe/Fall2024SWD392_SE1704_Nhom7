@@ -1,89 +1,115 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './RoomManagement.css'
 import TableTpl from '../../../Components/Table/Table';
+import { ApiGateway } from '../../../Api/ApiGateway';
 
 const RoomManagement: React.FC = () => {
-  const rows = [
-    createData('India', 'IN', 1324171354, 3287263),
-    createData('China', 'CN', 1403500365, 9596961),
-    createData('Italy', 'IT', 60483973, 301340),
-    createData('United States', 'US', 327167434, 9833520),
-    createData('Canada', 'CA', 37602103, 9984670),
-    createData('Australia', 'AU', 25475400, 7692024),
-    createData('Germany', 'DE', 83019200, 357578),
-    createData('Ireland', 'IE', 4857000, 70273),
-    createData('Mexico', 'MX', 126577691, 1972550),
-    createData('Japan', 'JP', 126317000, 377973),
-    createData('France', 'FR', 67022000, 640679),
-    createData('United Kingdom', 'GB', 67545757, 242495),
-    createData('Russia', 'RU', 146793744, 17098246),
-    createData('Nigeria', 'NG', 200962417, 923768),
-    createData('Brazil', 'BR', 210147125, 8515767),
-  ];
+
+  const[ roomList, setRoomList ] = useState<any>([])
+  const data : any[] = [];
 
   interface Data {
+    // image?: string;
+    type: string;
     name: string;
-    code: string;
-    population: number;
-    size: number;
-    density: number;
+    price: number;
+    description: string;
+    status: number;
   }
   function createData(
+    // image: string,
+    type: string,
     name: string,
-    code: string,
-    population: number,
-    size: number,
+    price: number,
+    description: string,
+    status: number,
   ): Data {
-    const density = population / size;
-    return { name, code, population, size, density };
+    // return { image, type, name, price, description,status };
+    return { type, name, price, description,status };
   }
 
   interface Column {
-    id: 'name' | 'code' | 'population' | 'size' | 'density';
+    // id: 'image' | 'type' | 'name' | 'price' | 'description' | 'status';
+    id: 'type' | 'name' | 'price' | 'description' | 'status';
     label: string;
     minWidth?: number;
-    align?: 'right';
-    format?: (value: number) => string;
+    align?: 'right' | 'center';
+    format?: (value: any) => string | React.ReactNode;
   }
   const columns: Column[] = [
+    // { 
+    //   id: 'image', 
+    //   label: 'Image', 
+    //   minWidth: 170,
+    //   format: (value: any) =>(
+    //   <div>
+    //     <img src={value} alt="Room" style={{ width: '100px', height: 'auto' }}/>
+    //   </div>
+    //   ),
+    // },
     { 
-      id: 'name', 
-      label: 'Name', 
-      minWidth: 170 
-    },
-    { 
-      id: 'code', 
-      label: 'ISO\u00a0Code', 
-      minWidth: 100 
+      id: 'type', 
+      label: 'Type', 
+      minWidth: 100,
+      align: 'center',
     },
     {
-      id: 'population',
-      label: 'Population',
+      id: 'name',
+      label: 'Name',
+      minWidth: 170,
+    },
+    {
+      id: 'price',
+      label: 'Price\u00a0(VND\u00b2)',
       minWidth: 170,
       align: 'right',
       format: (value: number) => value.toLocaleString('en-US'),
     },
     {
-      id: 'size',
-      label: 'Size\u00a0(km\u00b2)',
+      id: 'description',
+      label: 'Description',
       minWidth: 170,
-      align: 'right',
-      format: (value: number) => value.toLocaleString('en-US'),
     },
     {
-      id: 'density',
-      label: 'Density',
-      minWidth: 170,
-      align: 'right',
-      format: (value: number) => value.toFixed(2),
+      id: 'status',
+      label: 'Status',
+      minWidth: 100,
+      align: 'center',
     },
   ];
+
+  useEffect(() => {
+    getRoomList();
+  },[])
+
+  const getRoomList = async (): Promise<void> => {
+    try{
+      let rowData : any[] = [] ;
+      const response = await ApiGateway.GetRoomList('', '', '', '')
+      response.forEach((row: any) => {
+        // rowData.push(createData(row.images?.[0]?.url || '', row.typeRoom, row.name, row.price, row.description, row.status))
+        rowData.push(createData(row.typeRoom, row.name, row.price, row.description, row.status))
+      })
+      rowData.sort((a, b) => {
+        if (a.type < b.type) return -1;
+        if (a.type > b.type) return 1;
+        return 0;
+      });
+      setRoomList(rowData)
+    } catch(err){
+      console.error('Error get room list :', err);
+    }
+  }
 
   return (
     <div id='room-mng'>
       <h1>Room Management</h1>
       <div className='content'>
-        <TableTpl rows={rows} columns={columns}/> 
+        {roomList ? 
+          <TableTpl columns={columns} rows={roomList}/>
+          :
+          <TableTpl columns={columns} rows={data}/>
+        } 
       </div>
     </div>
   )

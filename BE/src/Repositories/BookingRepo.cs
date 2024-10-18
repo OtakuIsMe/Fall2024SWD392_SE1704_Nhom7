@@ -63,32 +63,32 @@ namespace BE.src.Repositories
                                     .ToListAsync();
         }
 
-
+        
         public async Task<bool> AcceptBooking(Guid bookingId)
         {
             var booking = await _context.Bookings.FindAsync(bookingId);
-
+            
             if (booking == null) return false;
 
             booking.Status = StatusBookingEnum.Completed;
             booking.CreateAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-
+            
             return true;
         }
 
         public async Task<bool> DeclineBooking(Guid bookingId)
         {
             var booking = await _context.Bookings.FindAsync(bookingId);
+            
+            if (booking == null) return false; 
 
-            if (booking == null) return false;
-
-            booking.Status = StatusBookingEnum.Canceled;
+            booking.Status = StatusBookingEnum.Canceled; 
             booking.CreateAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
-
+            
             return true;
         }
 

@@ -15,6 +15,7 @@ namespace BE.src.Services
         Task<IActionResult> GetRoomBySearchInput(string inputInfo);
         Task<IActionResult> GetRoomByFilterTypeRoom(TypeRoomEnum typeRoom);
         Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
+        Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
 
         // Return room detail
         Task<IActionResult> ViewRoomDetail(Guid roomId);
@@ -253,9 +254,17 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
-        public async Task<IActionResult> TrendingRoom(){
+        public async Task<IActionResult> TrendingRoom()
+        {
             try
             {
+                // foreach (var roomType in Enum.GetValues(typeof(TypeRoomEnum)))
+                // {
+
+
+
+
+                // }
                 return SuccessResp.Ok("");
             }
             catch (System.Exception ex)
@@ -275,5 +284,6 @@ namespace BE.src.Services
                 return ErrorResp.BadRequest(ex.Message);
             }
         }
+
     }
 }
