@@ -15,7 +15,6 @@ namespace BE.src.Services
         Task<IActionResult> GetRoomBySearchInput(string inputInfo);
         Task<IActionResult> GetRoomByFilterTypeRoom(TypeRoomEnum typeRoom);
         Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
-        Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
 
         // Return room detail
         Task<IActionResult> ViewRoomDetail(Guid roomId);
