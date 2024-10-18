@@ -151,7 +151,7 @@ namespace BE.src.Repositories
                         })
                         .ToListAsync();
 
-            return bookingRequests;
+            return bookingRequests.OrderByDescending(b => b.DateBooking.Add(b.TimeBooking)).ToList();
         }
     }
 }
