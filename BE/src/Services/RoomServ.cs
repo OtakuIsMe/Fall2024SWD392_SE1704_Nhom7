@@ -14,7 +14,7 @@ namespace BE.src.Services
         // Search and filter room
         Task<IActionResult> GetRoomBySearchInput(string inputInfo);
         Task<IActionResult> GetRoomByFilterTypeRoom(TypeRoomEnum typeRoom);
-        Task<IActionResult> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate);
+        Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
 
         // Return room detail
         Task<IActionResult> ViewRoomDetail(Guid roomId);
@@ -247,6 +247,37 @@ namespace BE.src.Services
                 List<Booking> availableBookings = await _bookingRepo.ViewBookingAvailablePeriod(data.RoomId, data.StartDate, data.EndDate);
 
                 return SuccessResp.Ok(roomSchedules);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+        public async Task<IActionResult> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate)
+        {
+            try
+            {
+                List<Room> rooms = await _roomRepo.GetRoomListWithBookingTimes(areaId, typeRoom, startDate, endDate);
+                return SuccessResp.Ok(rooms);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> TrendingRoom()
+        {
+            try
+            {
+                // foreach (var roomType in Enum.GetValues(typeof(TypeRoomEnum)))
+                // {
+
+
+
+
+                // }
+                return SuccessResp.Ok("");
             }
             catch (System.Exception ex)
             {

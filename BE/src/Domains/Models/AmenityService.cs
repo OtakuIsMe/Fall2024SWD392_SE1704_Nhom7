@@ -10,5 +10,6 @@ namespace BE.src.Domains.Models
         public float Price { get; set; }
 
         public ICollection<BookingItem> BookingItems { get; set; } = null!;
+        public ICollection<SerivceDetail> SerivceDetails { get; set; } = null!;
     }
 }

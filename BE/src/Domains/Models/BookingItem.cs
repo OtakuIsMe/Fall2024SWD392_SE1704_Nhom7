@@ -14,6 +14,8 @@ namespace BE.src.Domains.Models
         public Booking Booking { get; set; } = null!;
         public Guid AmenityServiceId { get; set; }
         public AmenityService AmenityService { get; set; } = null!;
+        public Guid? ServiceDetailId { get; set; }
+        public SerivceDetail? SerivceDetail { get; set; } = null!;
         public ICollection<RefundItem> RefundItems { get; set; } = null!;
         public DeviceChecking DeviceChecking { get; set; } = null!;
     }

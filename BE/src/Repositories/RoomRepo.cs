@@ -13,7 +13,7 @@ namespace BE.src.Repositories
         // Search and filter room
         Task<List<Room>> SearchRoomByInput(string inputInfo);
         Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom);
-        Task<List<Room>> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate);
+        Task<List<Room>> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
         // Return room detail
         Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId);
         Task<List<RoomDto>> GetRoomsByAreaId(Guid areaId);
@@ -29,7 +29,7 @@ namespace BE.src.Repositories
         Task<Favourite?> GetFavouriteRoomByUser(Guid roomId, Guid userId);
         Task<bool> AddFavouriteRoom(Favourite favourite);
         Task<bool> DeleteFavouriteRoom(Favourite favourite);
-        Task<List<Room>>
+        Task<List<Room>> TrendingRoom(TypeRoomEnum roomType);
     }
     public class RoomRepo : IRoomRepo
     {
@@ -37,6 +37,96 @@ namespace BE.src.Repositories
         public RoomRepo(PodDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<Room>> SearchRoomByInput(string inputInfo)
+        {
+            return await _context.Rooms.Where(x =>
+                                    x.Name.Contains(inputInfo) ||
+                                    x.Price.ToString().Equals(inputInfo) ||
+                                    x.Area.Name.Contains(inputInfo))
+                                .Include(room => room.Images)
+                                .Include(room => room.Area)
+                                .Select(room => new Room
+                                {
+                                    Id = room.Id,
+                                    Name = room.Name,
+                                    Price = room.Price,
+                                    Area = room.Area,
+                                    Images = room.Images
+                                        .OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
+                                        .Select(i => new Image
+                                        {
+                                            Url = i.Url
+                                        }).ToList()
+                                }).ToListAsync();
+        }
+
+
+        public async Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom)
+        {
+            return await _context.Rooms.Where(x => x.TypeRoom.Equals(typeRoom))
+                                        .Include(room => room.Images)
+                                        .Include(room => room.Area)
+                                        .Select(room => new Room
+                                        {
+                                            Id = room.Id,
+                                            Name = room.Name,
+                                            Price = room.Price,
+                                            Area = room.Area,
+                                            Images = room.Images
+                                                    .OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
+                                                    .Select(i => new Image
+                                                    {
+                                                        Url = i.Url
+                                                    }).ToList()
+                                        }).ToListAsync();
+        }
+
+        public async Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId)
+        {
+            var room = await _context.Rooms
+                        .Include(r => r.Images)
+                        .Include(r => r.Area)
+                        .FirstOrDefaultAsync(r => r.Id == roomId);
+
+            var roomDetail = new RoomDetailDto
+            {
+                RoomId = room.Id,
+                Name = room.Name,
+                Price = room.Price,
+                Status = room.Status.ToString(),
+                Images = room.Images
+                            .OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
+                            .Select(i => i.Url)
+                            .ToList()
+            };
+
+            return roomDetail;
+        }
+
+        public async Task<List<RoomDto>> GetRoomsByAreaId(Guid areaId)
+        {
+            var rooms = await _context.Rooms
+                        .Where(r => r.AreaId == areaId)
+                        .Select(r => new Room
+                        {
+                            Id = r.Id,
+                            TypeRoom = r.TypeRoom,
+                            Images = r.Images
+                        }).ToListAsync();
+
+            var roomDtos = rooms.Select(r => new RoomDto
+            {
+                RoomId = r.Id,
+                TypeRoom = r.TypeRoom,
+                Images = r.Images
+                        .OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
+                        .Select(i => i.Url)
+                        .ToList()
+            }).ToList();
+
+            return roomDtos;
         }
 
         public async Task<bool> CreateRoom(Room room)
@@ -110,6 +200,48 @@ namespace BE.src.Repositories
         {
             _context.Favourites.Remove(favourite);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<Room>> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate)
+        {
+            var rooms = await _context.Rooms
+                .Include(r => r.Bookings)
+                .Include(r => r.Area)
+                .Include(r => r.Images)
+                .Where(r => (r.AreaId == r.AreaId || areaId == null) && (r.TypeRoom == typeRoom || typeRoom == null)
+                                    && r.Status == (int)StatusRoomEnum.Available)
+                .ToListAsync();
+
+            var availableRooms = new List<Room>();
+
+            foreach (var room in rooms)
+            {
+                bool hasConflictingBooking = room.Bookings.Any(b =>
+                {
+                    DateTime bookingStartTime = b.DateBooking;
+                    DateTime bookingEndTime = b.DateBooking.Add(b.TimeBooking);
+
+                    bool isDateRangeProvided = startDate != null && endDate != null;
+
+                    return isDateRangeProvided
+                        ? (bookingStartTime < endDate && bookingEndTime > startDate && b.Status != 0)
+                        : false;
+                });
+
+                if (!hasConflictingBooking)
+                {
+                    availableRooms.Add(room);
+                }
+            }
+
+            return availableRooms;
+        }
+
+        public async Task<List<Room>> TrendingRoom(TypeRoomEnum roomType)
+        {
+            return await _context.Rooms.Where(r => r.TypeRoom == roomType)
+                                        .Include(r => r.Bookings)
+                                        .ToListAsync();
         }
     }
 }
