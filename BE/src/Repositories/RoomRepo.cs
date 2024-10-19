@@ -208,8 +208,7 @@ namespace BE.src.Repositories
                 .Include(r => r.Bookings)
                 .Include(r => r.Area)
                 .Include(r => r.Images)
-                .Where(r => (r.AreaId == r.AreaId || areaId == null) && (r.TypeRoom == typeRoom || typeRoom == null)
-                                    && r.Status == (int)StatusRoomEnum.Available)
+                .Where(r => (r.AreaId == areaId || areaId == null) && (r.TypeRoom == typeRoom || typeRoom == null) && r.Status == (int)StatusRoomEnum.Available)
                 .ToListAsync();
 
             var availableRooms = new List<Room>();
@@ -221,11 +220,7 @@ namespace BE.src.Repositories
                     DateTime bookingStartTime = b.DateBooking;
                     DateTime bookingEndTime = b.DateBooking.Add(b.TimeBooking);
 
-                    bool isDateRangeProvided = startDate != null && endDate != null;
-
-                    return isDateRangeProvided
-                        ? (bookingStartTime < endDate && bookingEndTime > startDate && b.Status != 0)
-                        : false;
+                    return (bookingStartTime < endDate && bookingEndTime > startDate && b.Status != 0);
                 });
 
                 if (!hasConflictingBooking)

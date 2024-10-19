@@ -75,5 +75,16 @@ namespace BE.src.Controllers
         {
             return await _roomServ.GetScheduleRoom(data);
         }
+
+        [HttpGet("GetRoomListWithBookingTimes")]
+        public async Task<IActionResult> GetRoomListWithBookingTimes([FromQuery] Guid? areaId, [FromQuery] TypeRoomEnum? typeRoom,[FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        {
+            return await _roomServ.GetRoomListWithBookingTimes(areaId, typeRoom,startDate, endDate);
+        }
+
+        [HttpGet("Trending")]
+        public async Task<IActionResult> TrendingRoom(){
+            return await _roomServ.TrendingRoom();
+        }
     }
 }

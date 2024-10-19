@@ -39,7 +39,7 @@ namespace BE.src.Controllers
         {
             return await _transactionServ.PaymentPaypalSuccess(bookingId);
         }
-        [HttpGet("Statistic-Month/{year: int}")]
+        [HttpGet("Statistic-Month/{year}")]
         public async Task<IActionResult> StatisticMonthInYear(int year)
         {
             return await _transactionServ.StatisticMonthInYear(year);

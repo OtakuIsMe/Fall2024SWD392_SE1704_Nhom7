@@ -25,9 +25,9 @@
 #rooms > .filter-bar > .location-container,
 #rooms > .filter-bar > .type-container{
     margin: 0 25px;
-    padding-bottom: 10px;
     display: flex;
     flex-direction: column;
+    padding-bottom: 10px;
     border-bottom: 1px solid gray;
 }
 
@@ -41,26 +41,20 @@
 
 #rooms > .filter-bar .select {
     display: flex;
-    flex-direction: column;
+    padding: 10px;
 }
 
-#rooms > .filter-bar .select > label > .choose {
-    display: flex;
-    justify-content: space-between;
-
-    padding: 5px 10px;
-    border-radius: 3px;
-}
-
-#rooms > .filter-bar .select > label > .choose:hover {
-    background-color: rgb(230, 230, 230);
+#rooms > .filter-bar .select:focus {
+    outline-width: 0;
 }
 
 #rooms > .filter-bar div.date-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 0 25px;
+    margin: 0 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid gray;
 }
 
 #rooms > .filter-bar div.date-container > p {
@@ -92,7 +86,7 @@
     outline-width: 0;
 }
 
- #rooms > .filter-bar > .filter-btn {
+ #rooms > .filter-bar > .filter {
     padding-bottom: 10px;
     margin: 0 25px;
     border-bottom: 1px solid gray;
@@ -105,21 +99,61 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 } 
 
+#rooms > .filter-bar > .filter-btn {
+    padding: 10px;
+    margin: 0 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    font-size: 20px;
+    font-weight: bold;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    border: 5px solid gray;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#rooms > .filter-bar > .filter-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background-color: gray;
+    transition: all .2s;
+    z-index: -1;
+}
+
+#rooms > .filter-bar > .filter-btn:hover {
+    color: white;
+}
+
+#rooms > .filter-bar > .filter-btn:hover:before {
+    width: 100%;
+}
+
 #rooms > .room-list-container {
     min-height: 100vh;
     width: 100%;
 }
 
 #rooms > .room-list-container > .room-list {
-    height: 100%;
+    height: 100vh;
     background-color: #ebebeb;
 }
 
 #rooms > .room-list-container > .room-list > .list {
+    min-height: 100vh;
     height: fit-content;
     
-    display: grid;
-    grid-template-columns: 250px 250px 250px 250px;
+    /* display: grid;
+    grid-template-columns: 250px 250px 250px 250px; */
+    display: flex;
     background-color: white;
     padding: 25px;
     gap: 30px;

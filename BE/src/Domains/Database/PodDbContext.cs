@@ -46,11 +46,12 @@ namespace BE.src.Domains.Database
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
                   if (!optionsBuilder.IsConfigured)
-                  {
-                        optionsBuilder.UseLazyLoadingProxies(false)
-                                          .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
-                                          new MySqlServerVersion(new Version(8, 0, 27)));
-                  }
+                        if (!optionsBuilder.IsConfigured)
+                        {
+                              optionsBuilder.UseLazyLoadingProxies(false)
+                                                .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
+                                                new MySqlServerVersion(new Version(8, 0, 27)));
+                        }
             }
 
             protected override void OnModelCreating(ModelBuilder builder)
@@ -251,6 +252,14 @@ namespace BE.src.Domains.Database
                         entity.HasOne(i => i.User)
                         .WithOne(u => u.Image)
                         .HasForeignKey<Image>(i => i.UserId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                        entity.Property(i => i.AmenityServiceId)
+                        .IsRequired(false);
+
+                        entity.HasOne(i => i.AmenityService)
+                        .WithOne(u => u.Image)
+                        .HasForeignKey<Image>(i => i.AmenityServiceId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
 
