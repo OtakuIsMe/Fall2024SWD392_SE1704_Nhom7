@@ -30,7 +30,7 @@ const App: React.FC = () => {
       <AuthenProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/roomslist" element={<RoomList />} />
+          <Route path="/roomlist" element={<RoomList />} />
           <Route path="/roomDetail/:roomHashing" element={<RoomDetail />} />
           <Route path="/areadetails/:locationId" element={<AreaDetail />} />
           <Route path="/" element={<AdminLayout />}>

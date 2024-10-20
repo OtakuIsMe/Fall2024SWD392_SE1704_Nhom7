@@ -20,6 +20,9 @@ namespace BE.src.Repositories
         Task<User?> ViewProfileByUserId(Guid userId);
         Task<Membership?> GetMemberShipByUserId(Guid userId);
         Task<List<User>> GetListUserCustomer();
+        Task<bool> CreateImageUser(Image image);
+        Task<bool> UpdateImageUser(Image image);
+        Task<int> CountAllUser();
     }
     public class UserRepo : IUserRepo
     {
@@ -36,7 +39,9 @@ namespace BE.src.Repositories
 
         public async Task<User?> GetUserById(Guid userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            return await _context.Users
+                                    .Include(u => u.Image)
+                                    .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<User?> GetUserByEmail(string email)
@@ -63,10 +68,16 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<Membership?> GetMemberShipByUserId(Guid userId)
+        public async Task<bool> CreateImageUser(Image image)
         {
-            return (await _context.MembershipUsers.Where(u => u.UserId == userId && u.Status)
-                                                .Include(mu => mu.Membership).FirstOrDefaultAsync())?.Membership;
+            _context.Images.Add(image);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateImageUser(Image image)
+        {
+            _context.Images.Update(image);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<User?> ViewProfileByUserId(Guid userId)
@@ -78,9 +89,20 @@ namespace BE.src.Repositories
                                         .FirstOrDefaultAsync();
         }
 
+
+        public async Task<Membership?> GetMemberShipByUserId(Guid userId)
+        {
+            return (await _context.MembershipUsers.Where(u => u.UserId == userId && u.Status)
+                                                .Include(mu => mu.Membership).FirstOrDefaultAsync())?.Membership;
+        }
+
         public async Task<List<User>> GetListUserCustomer()
         {
             return await _context.Users.Where(u => u.Role.Name == RoleEnum.Customer).ToListAsync();
+        }
+
+        public async Task<int> CountAllUser(){
+            return await _context.Users.Where(u => u.Status == UserStatusEnum.Nornaml).CountAsync();
         }
     }
 }

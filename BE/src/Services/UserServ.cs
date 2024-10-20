@@ -17,8 +17,8 @@ namespace BE.src.Services
         Task<IActionResult> RegisterUser(RegisterRqDTO data);
         Task<IActionResult> ResetPassword(ResetPassRqDTO data);
         Task<IActionResult> ViewProfileByUserId(Guid userId);
-        Task<IActionResult> UpdateProfile(Guid userId, UpdateProfileDTO data);
         Task<IActionResult> GetListUserCustomer();
+        Task<IActionResult> UpdateUserProfile(UpdateProfileDTO data);
     }
     public class UserServ : IUserServ
     {
@@ -179,40 +179,6 @@ namespace BE.src.Services
             }
         }
 
-        public async Task<IActionResult> UpdateProfile(Guid userId, UpdateProfileDTO data)
-        {
-            try
-            {
-                var userInDb = await _userRepo.GetUserById(userId);
-                if (userInDb == null)
-                {
-                    return ErrorResp.NotFound("Not found this user");
-                }
-                userInDb.Name = data.Name;
-                userInDb.Username = data.Username;
-                userInDb.Email = data.Email;
-                userInDb.Phone = data.Phone;
-                userInDb.DOB = data.DOB;
-                userInDb.Image = new Image
-                {
-                    Url = data.Image[0]
-                };
-                userInDb.UpdateAt = DateTime.UtcNow;
-                bool isUpdated = await _userRepo.UpdateUser(userInDb);
-                if (isUpdated)
-                {
-                    return SuccessResp.Ok("Update user successfully");
-                }
-                else
-                {
-                    return ErrorResp.BadRequest("Fail to update user");
-                }
-            }
-            catch (System.Exception)
-            {
-                return ErrorResp.BadRequest("Fail to update user");
-            }
-        }
 
         public async Task<IActionResult> GetListUserCustomer()
         {
@@ -220,6 +186,56 @@ namespace BE.src.Services
             {
                 var users = await _userRepo.GetListUserCustomer();
                 return SuccessResp.Ok(users);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> UpdateUserProfile(UpdateProfileDTO data)
+        {
+            try
+            {
+                var user = await _userRepo.GetUserById(data.UserId);
+                if (user == null)
+                {
+                    return ErrorResp.BadRequest("Cant find user");
+                }
+                string? userImageUrl = await Utils.UploadImgToFirebase(data.Image, data.Username, "User");
+                if (userImageUrl == null)
+                {
+                    return ErrorResp.BadRequest("Cant get link image");
+                }
+                if (user.Image == null)
+                {
+                    Image image = new()
+                    {
+                        Url = userImageUrl,
+                        UserId = user.Id
+                    };
+                    bool isCreatedImage = await _userRepo.CreateImageUser(image);
+                }
+                else
+                {
+                    Image image = user.Image;
+                    image.Url = userImageUrl;
+                    bool isUpdateImage = await _userRepo.UpdateImageUser(image);
+                }
+
+                user.Name = data.Name;
+                user.Phone = data.Phone;
+                user.Username = data.Username;
+                user.DOB = data.DOB;
+                bool isUpdatedUser = await _userRepo.UpdateUser(user);
+                if (isUpdatedUser)
+                {
+                    return SuccessResp.Ok("UpdateSuccess");
+                }
+                else
+                {
+                    return ErrorResp.BadRequest("Update fail");
+                }
             }
             catch (System.Exception ex)
             {

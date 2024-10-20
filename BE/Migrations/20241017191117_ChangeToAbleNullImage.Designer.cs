@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BE.Migrations
 {
     [DbContext(typeof(PodDbContext))]
-    [Migration("20241014155023_AddRelationship")]
-    partial class AddRelationship
+    [Migration("20241017191117_ChangeToAbleNullImage")]
+    partial class ChangeToAbleNullImage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +41,11 @@ namespace BE.Migrations
 
                     b.Property<float>("Price")
                         .HasColumnType("float");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
@@ -111,6 +116,9 @@ namespace BE.Migrations
 
                     b.Property<DateTime>("DateBooking")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsPay")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<Guid?>("MembershipUserId")
                         .HasColumnType("char(36)");
@@ -286,6 +294,9 @@ namespace BE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("AmenityServiceId")
+                        .HasColumnType("char(36)");
+
                     b.Property<Guid?>("AreaId")
                         .HasColumnType("char(36)");
 
@@ -307,6 +318,9 @@ namespace BE.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AmenityServiceId")
+                        .IsUnique();
 
                     b.HasIndex("AreaId");
 
@@ -453,15 +467,23 @@ namespace BE.Migrations
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("PaymentType")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
                     b.Property<int>("PointBonus")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Satutus")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<float>("Total")
                         .HasColumnType("float");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
@@ -686,6 +708,9 @@ namespace BE.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("char(36)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
 
@@ -873,6 +898,11 @@ namespace BE.Migrations
 
             modelBuilder.Entity("BE.src.Domains.Models.Image", b =>
                 {
+                    b.HasOne("BE.src.Domains.Models.AmenityService", "AmenityService")
+                        .WithOne("Image")
+                        .HasForeignKey("BE.src.Domains.Models.Image", "AmenityServiceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("BE.src.Domains.Models.Area", "Area")
                         .WithMany("Images")
                         .HasForeignKey("AreaId")
@@ -887,6 +917,8 @@ namespace BE.Migrations
                         .WithOne("Image")
                         .HasForeignKey("BE.src.Domains.Models.Image", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("AmenityService");
 
                     b.Navigation("Area");
 
@@ -1065,6 +1097,9 @@ namespace BE.Migrations
             modelBuilder.Entity("BE.src.Domains.Models.AmenityService", b =>
                 {
                     b.Navigation("BookingItems");
+
+                    b.Navigation("Image")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BE.src.Domains.Models.Area", b =>
