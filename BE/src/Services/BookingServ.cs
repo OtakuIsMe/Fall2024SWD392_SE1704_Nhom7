@@ -15,6 +15,7 @@ namespace BE.src.Services
         Task<IActionResult> AcceptBooking(Guid bookingId);
         Task<IActionResult> CancelBooking(Guid bookingId);
         Task<IActionResult> GetBookingRequests();
+        Task<IActionResult> CancleBookingByCustomer(Guid bookingId);
     }
 
     public class BookingServ : IBookingServ
@@ -175,6 +176,24 @@ namespace BE.src.Services
                     return ErrorResp.NotFound("Can not find booking requests");
                 }
                 return SuccessResp.Ok(bookingRequests);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CancleBookingByCustomer(Guid bookingId)
+        {
+            try
+            {
+                var booking = await _bookingRepo.GetBookingWaitOrInProgressById(bookingId);
+                if (booking == null)
+                {
+                    return ErrorResp.BadRequest("Booking being cancle before");
+                }
+                booking.Status = StatusBookingEnum.Canceled;
+
             }
             catch (System.Exception ex)
             {
