@@ -1,4 +1,5 @@
 using BE.src.Domains.Database;
+using BE.src.Domains.DTOs.Booking;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ namespace BE.src.Repositories
         Task<bool> AcceptBooking(Guid bookingId);
         Task<bool> DeclineBooking(Guid bookingId);
         Task<List<Booking>> GetBookingRequests();
+        Task<List<BookingCheckAvailableDTO>> GetBookingCheckAvailableList(Guid bookingId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -152,6 +154,51 @@ namespace BE.src.Repositories
                         .ToListAsync();
 
             return bookingRequests.OrderByDescending(b => b.DateBooking.Add(b.TimeBooking)).ToList();
+        }
+
+        public async Task<List<BookingCheckAvailableDTO>> GetBookingCheckAvailableList(Guid bookingId)
+        {
+            var bookingAlreadyAvailable = await _context.Bookings
+                .Where(b => b.Id == bookingId && b.Status == StatusBookingEnum.Wait)
+                .Select(b => new BookingCheckAvailableDTO
+                {
+                    BookingId = b.Id,
+                    TimeBooking = b.TimeBooking,
+                    DateBooking = b.DateBooking,
+                    Total = b.Total,
+                    Status = b.Status,
+                    IsPay = b.IsPay,
+                    UserId = b.UserId,
+                    RoomId = b.RoomId,
+                    CreateAt = b.CreateAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (bookingAlreadyAvailable == null)
+                return new List<BookingCheckAvailableDTO>();
+
+            var bookingCheckAvailableList = await _context.Bookings
+                            .Where(b => b.Status == StatusBookingEnum.Wait &&
+                                        b.DateBooking.Day == bookingAlreadyAvailable.DateBooking.Day &&
+                                        b.CreateAt > bookingAlreadyAvailable.CreateAt)
+                            .Select(b => new BookingCheckAvailableDTO
+                            {
+                                BookingId = b.Id,
+                                TimeBooking = b.TimeBooking,
+                                DateBooking = b.DateBooking,
+                                Total = b.Total,
+                                Status = b.Status,
+                                IsPay = b.IsPay,
+                                UserId = b.UserId,
+                                RoomId = b.RoomId
+                            })                 
+                            .ToListAsync();
+
+            bool isAvailable = bookingCheckAvailableList
+                .Any(b => bookingAlreadyAvailable.DateBooking >= b.DateBooking.Add(b.TimeBooking) &&
+                          bookingAlreadyAvailable.DateBooking.Add(bookingAlreadyAvailable.TimeBooking) <= b.DateBooking);
+
+            return !isAvailable ? bookingCheckAvailableList : new List<BookingCheckAvailableDTO>() ;
         }
     }
 }

@@ -45,5 +45,11 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.GetBookingRequests();
         }
+
+        [HttpGet("GetBookingCheckAvailableList")]
+        public async Task<IActionResult> GetBookingCheckAvailableList([FromQuery] Guid bookingId)
+        {
+            return await _bookingServ.GetBookingCheckAvailableList(bookingId);
+        }
     }
 }

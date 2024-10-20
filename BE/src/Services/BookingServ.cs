@@ -15,6 +15,7 @@ namespace BE.src.Services
         Task<IActionResult> AcceptBooking(Guid bookingId);
         Task<IActionResult> CancelBooking(Guid bookingId);
         Task<IActionResult> GetBookingRequests();
+        Task<IActionResult> GetBookingCheckAvailableList(Guid bookingId);
     }
 
     public class BookingServ : IBookingServ
@@ -175,6 +176,23 @@ namespace BE.src.Services
                     return ErrorResp.NotFound("Can not find booking requests");
                 }
                 return SuccessResp.Ok(bookingRequests);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetBookingCheckAvailableList(Guid bookingId)
+        {
+            try
+            {
+                var bookingCheckAvailableList = await _bookingRepo.GetBookingCheckAvailableList(bookingId);
+                if (bookingCheckAvailableList == null)
+                {
+                    return ErrorResp.NotFound("Can not find booking check available list");
+                }
+                return SuccessResp.Ok(bookingCheckAvailableList);   
             }
             catch (System.Exception ex)
             {
