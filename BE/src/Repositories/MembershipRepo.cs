@@ -14,6 +14,8 @@ namespace BE.src.Repositories
         Task<Membership?> GetMembershipDetails(Guid userId);
         Task<bool> CreateMembership(Membership membership);
         Task<List<Membership>> GetAllMembership();
+        Task<bool> UpdateMembership(Membership membership);
+        Task<bool> DeleteMembership(Guid id);
     }
 
     public class MembershipRepo : IMembershipRepo
@@ -37,6 +39,20 @@ namespace BE.src.Repositories
         public async Task<List<Membership>> GetAllMembership()
         {
             return await _context.Memberships.ToListAsync();
+        }
+
+        public async Task<bool> UpdateMembership(Membership membership)
+        {
+            _context.Update(membership);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteMembership(Guid id)
+        {
+            var membership = await _context.Memberships.FindAsync(id);
+            if (membership == null) return false;
+            _context.Memberships.Remove(membership);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }
