@@ -37,6 +37,16 @@ namespace BE.src.Services
         {
             try
             {
+                Booking? CheckBooked = await _bookingRepo.CheckBookedRoom(data.RoomId, data.DateBooking, TimeSpan.FromHours(data.TimeHourBooking));
+                if (CheckBooked != null)
+                {
+                    return ErrorResp.BadRequest("There is another booking placed at the same time");
+                }
+                Booking? CheckIsRequest = await _bookingRepo.CheckBookReqUser(data.RoomId, data.UserId, data.DateBooking, TimeSpan.FromHours(data.TimeHourBooking));
+                if (CheckIsRequest != null)
+                {
+                    return ErrorResp.BadRequest("You have already request");
+                }
                 float total = 0;
                 Membership? userMembership = await _userRepo.GetMemberShipByUserId(data.UserId);
                 Booking booking = new()
@@ -193,7 +203,12 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Booking being cancle before");
                 }
                 booking.Status = StatusBookingEnum.Canceled;
-
+                var isUpdated = await _bookingRepo.UpdateBooking(booking);
+                if (!isUpdated)
+                {
+                    return ErrorResp.BadRequest("Cant update booking");
+                }
+                return SuccessResp.Ok("");
             }
             catch (System.Exception ex)
             {

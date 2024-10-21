@@ -2,6 +2,7 @@ using BE.src.Domains.Database;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Crypto.Engines;
 
 namespace BE.src.Repositories
@@ -18,6 +19,8 @@ namespace BE.src.Repositories
         Task<bool> DeclineBooking(Guid bookingId);
         Task<List<Booking>> GetBookingRequests();
         Task<Booking?> GetBookingWaitOrInProgressById(Guid id);
+        Task<Booking?> CheckBookedRoom(Guid roomId, DateTime DateBooking, TimeSpan TimeBooking);
+        Task<Booking?> CheckBookReqUser(Guid roomId, Guid userId, DateTime DateBooking, TimeSpan TimeBooking);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -114,6 +117,23 @@ namespace BE.src.Repositories
         {
             return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id &&
                                     (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.InProgress));
+        }
+
+        public async Task<Booking?> CheckBookedRoom(Guid roomId, DateTime DateBooking, TimeSpan TimeBooking)
+        {
+            return await _context.Bookings.FirstOrDefaultAsync(b => b.RoomId == roomId
+                                    && b.Status == StatusBookingEnum.InProgress
+                                    && (!(b.DateBooking.Add(b.TimeBooking) < DateBooking
+                                    || DateBooking.Add(TimeBooking) < b.DateBooking)));
+        }
+
+        public async Task<Booking?> CheckBookReqUser(Guid roomId, Guid userId, DateTime DateBooking, TimeSpan TimeBooking)
+        {
+            return await _context.Bookings.FirstOrDefaultAsync(b => b.RoomId == roomId
+                                    && b.UserId == userId
+                                    && b.Status == StatusBookingEnum.Wait
+                                    && (!(b.DateBooking.Add(b.TimeBooking) < DateBooking
+                                    || DateBooking.Add(TimeBooking) < b.DateBooking)));
         }
     }
 }
