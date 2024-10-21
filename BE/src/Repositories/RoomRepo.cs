@@ -13,7 +13,7 @@ namespace BE.src.Repositories
         // Search and filter room
         Task<List<Room>> SearchRoomByInput(string inputInfo);
         Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom);
-        Task<List<Room>> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
+        Task<List<Room>> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate);
         // Return room detail
         Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId);
         Task<List<RoomDto>> GetRoomsByAreaId(Guid areaId);
@@ -197,13 +197,15 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<Room>> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate)
+        public async Task<List<Room>> GetRoomListWithBookingTimes(Guid areaId, TypeRoomEnum typeRoom, DateTime startDate, DateTime endDate)
         {
             var rooms = await _context.Rooms
                 .Include(r => r.Bookings)
                 .Include(r => r.Area)
                 .Include(r => r.Images)
-                .Where(r => (r.AreaId == areaId || areaId == null) && (r.TypeRoom == typeRoom || typeRoom == null) &&  r.Status == (int)StatusRoomEnum.Available)
+                .Where(r => r.AreaId == areaId)
+                .Where(r => r.Status == (int)StatusRoomEnum.Available)
+                .Where(r => r.TypeRoom == typeRoom) 
                 .ToListAsync();
 
             var availableRooms = new List<Room>();

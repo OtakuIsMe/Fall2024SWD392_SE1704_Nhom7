@@ -43,12 +43,10 @@ namespace BE.src.Domains.Database
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
-                  if (!optionsBuilder.IsConfigured)
+                  if (!optionsBuilder.IsConfigured) // Check if already configured
                   {
-                        .UseLazyLoadingProxies(false)
-                        optionsBuilder
-                                          .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
-                                          new MySqlServerVersion(new Version(8, 0, 27)));
+                        optionsBuilder.UseMySql(_configuration.GetConnectionString("DefaultConnection"),
+                            new MySqlServerVersion(new Version(8, 0, 27)));
                   }
             }
 
@@ -62,13 +60,6 @@ namespace BE.src.Domains.Database
                         entity.Property(a => a.Name)
                         .IsRequired()
                         .HasMaxLength(100);
-                        entity.Property(a => a.Type)
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasConversion(
-                            v => v.ToString(),
-                            v => v.ToEnum<AmenityServiceTypeEnum>()
-                            );
                         entity.Property(a => a.Price)
                         .IsRequired();
                   });
@@ -243,14 +234,6 @@ namespace BE.src.Domains.Database
                         entity.HasOne(i => i.User)
                         .WithOne(u => u.Image)
                         .HasForeignKey<Image>(i => i.UserId)
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                        entity.Property(i => i.AmenityServiceId)
-                        .IsRequired(false);
-
-                        entity.HasOne(i => i.AmenityService)
-                        .WithOne(u=> u.Image)
-                        .HasForeignKey<Image>(i=> i.AmenityServiceId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
 
@@ -527,13 +510,6 @@ namespace BE.src.Domains.Database
 
                         entity.Property(u => u.Wallet)
                         .IsRequired();
-
-                        entity.Property(u => u.Status)
-                        .IsRequired()
-                        .HasConversion(
-                              v => (int)v,
-                              v => (UserStatusEnum)v
-                        );
 
                         entity.HasOne(u => u.Role)
                         .WithMany(r => r.Users)

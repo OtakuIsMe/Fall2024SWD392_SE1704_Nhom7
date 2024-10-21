@@ -6,7 +6,7 @@ namespace BE.src.Domains.Models
     {
         public string Name { get; set; } = null!;
         public float Discount { get; set; }
-        public int TimeLeft { get; set; }
+        public TimeSpan TimeLeft { get; set; }
         public float Price { get; set; }
         public int Rank { get; set; }
 

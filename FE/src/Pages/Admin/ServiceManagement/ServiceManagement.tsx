@@ -1,87 +1,89 @@
-import React, { useState, useEffect} from 'react'
+import React from 'react'
 import './ServiceManagement.css'
 import TableTpl from '../../../Components/Table/Table';
-import { ApiGateway } from '../../../Api/ApiGateway';
 
 const ServiceManagement: React.FC = () => {
-  const data : any[] = [];
-
-  const [ serviceList, setServiceList ] = useState<any>([])
+  const rows = [
+    createData('India', 'IN', 1324171354, 3287263),
+    createData('China', 'CN', 1403500365, 9596961),
+    createData('Italy', 'IT', 60483973, 301340),
+    createData('United States', 'US', 327167434, 9833520),
+    createData('Canada', 'CA', 37602103, 9984670),
+    createData('Australia', 'AU', 25475400, 7692024),
+    createData('Germany', 'DE', 83019200, 357578),
+    createData('Ireland', 'IE', 4857000, 70273),
+    createData('Mexico', 'MX', 126577691, 1972550),
+    createData('Japan', 'JP', 126317000, 377973),
+    createData('France', 'FR', 67022000, 640679),
+    createData('United Kingdom', 'GB', 67545757, 242495),
+    createData('Russia', 'RU', 146793744, 17098246),
+    createData('Nigeria', 'NG', 200962417, 923768),
+    createData('Brazil', 'BR', 210147125, 8515767),
+  ];
 
   interface Data {
-    index: number;
-    type: string;
     name: string;
-    price: number;
+    code: string;
+    population: number;
+    size: number;
+    density: number;
   }
   function createData(
-    index: number,
-    type: string,
     name: string,
-    price: number,
+    code: string,
+    population: number,
+    size: number,
   ): Data {
-    return { index, type, name, price };
+    const density = population / size;
+    return { name, code, population, size, density };
   }
 
   interface Column {
-    id: 'index' | 'type' | 'name' | 'price' ;
+    id: 'name' | 'code' | 'population' | 'size' | 'density';
     label: string;
     minWidth?: number;
     align?: 'right';
     format?: (value: number) => string;
   }
-
   const columns: Column[] = [
-    { 
-      id: 'index', 
-      label: 'Index', 
-      minWidth: 100 
-    },
-    { 
-      id: 'type', 
-      label: 'Type', 
-      minWidth: 100 
-    },
     { 
       id: 'name', 
       label: 'Name', 
       minWidth: 170 
     },
+    { 
+      id: 'code', 
+      label: 'ISO\u00a0Code', 
+      minWidth: 100 
+    },
     {
-      id: 'price',
-      label: 'Price',
+      id: 'population',
+      label: 'Population',
       minWidth: 170,
       align: 'right',
       format: (value: number) => value.toLocaleString('en-US'),
     },
+    {
+      id: 'size',
+      label: 'Size\u00a0(km\u00b2)',
+      minWidth: 170,
+      align: 'right',
+      format: (value: number) => value.toLocaleString('en-US'),
+    },
+    {
+      id: 'density',
+      label: 'Density',
+      minWidth: 170,
+      align: 'right',
+      format: (value: number) => value.toFixed(2),
+    },
   ];
-
-  useEffect(() => {
-    fetchServices()
-  },[])
-
-  const fetchServices = async (): Promise<void> => {
-    try {
-      let rowData : any[] = [] ;
-      const response = await ApiGateway.GetServices()
-      response.forEach((row: any, index: number) => {
-        rowData.push(createData(index , row.type, row.name, row.price))
-      })
-      setServiceList(rowData)
-    } catch (err) {
-      console.error('Error get servicelist :', err);
-    }
-  }
 
   return (
     <div id='service-mng'>
       <h1>Service Management</h1>
       <div className='content'>
-        {serviceList ? 
-          <TableTpl columns={columns} rows={serviceList}/>
-          :
-          <TableTpl columns={columns} rows={data}/>
-        } 
+        <TableTpl rows={rows} columns={columns}/>
       </div>
     </div>
   )

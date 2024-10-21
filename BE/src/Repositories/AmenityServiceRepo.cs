@@ -8,8 +8,6 @@ namespace BE.src.Repositories
     {
         Task<List<AmenityService>> GetAllAmenityService();
         Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId);
-        Task<bool> CreateService(AmenityService service);
-        Task<bool> CreateServiceImage (Image image);
     }
 
     public class AmenityServiceRepo : IAmenityServiceRepo
@@ -29,18 +27,6 @@ namespace BE.src.Repositories
         public async Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId)
         {
             return await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityServiceId);
-        }
-
-        public async Task<bool> CreateService(AmenityService service)
-        {
-            _context.AmenityServices.Add(service);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> CreateServiceImage(Image image)
-        {
-            _context.Images.Add(image);
-            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

@@ -42,18 +42,10 @@ const RoomDetail = () => {
 
   const [infoSelected, setInfoSelected] = useState("info-container")
   const [typeServiceSelected, setTypeServiceSelected] = useState("food");
-  const [typeNumberServiceSelected, setTypeNumberServiceSelected] = useState('0');
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopupMsg, setOpenPopupMsg] = useState(false);
 
   const [bookingId, setBookingId] = useState<any>()
-
-  const [payment, setPayment] = useState<string>('COD')
-
-  const [serviceListType1, setServiceListType1] = useState<any>([])
-  const [serviceListType2, setServiceListType2] = useState<any>([])
-  const [serviceListType3, setServiceListType3] = useState<any>([])
-  const [serviceList, setServiceList] = useState<ServiceData[]>([]);
 
   const utilities = [
     {
@@ -105,7 +97,57 @@ const RoomDetail = () => {
       name: "Hot water dispenser"
     }
   ]
-  
+
+  const food = [
+    {
+      id: "1",
+      name: "Trứng cá tầm",
+      price: 20,
+    },
+    {
+      id: "2",
+      name: "Bò wagyu",
+      price: 50,
+    },
+    {
+      id: "3",
+      name: "Nấm truffles",
+      price: 40,
+    },
+    {
+      id: "4",
+      name: "Cua hoàng đế",
+      price: 30,
+    }
+  ]
+
+  const drink = [
+    {
+      id: "1",
+      name: "Isabella’s Islay Whisky",
+      price: 2,
+    },
+    {
+      id: "2",
+      name: "Billionaire Vodka",
+      price: 5,
+    },
+    {
+      id: "3",
+      name: "The Macallan Valerio Adami 1926",
+      price: 3,
+    },
+    {
+      id: "4",
+      name: "Dictador M-City Golden Cities Series",
+      price: 4,
+    },
+    {
+      id: "5",
+      name: "Water",
+      price: 200,
+    },
+  ]
 
   const totalTime = (start: string, end: string) : string => {
     const startT = dayjs(start)
@@ -162,21 +204,6 @@ const RoomDetail = () => {
     setInfoSelected(type);
   }
 
-  interface ServiceData {
-    index: number;
-    type: string;
-    name: string;
-    price: number;
-  }
-  function createData(
-    index: number,
-    type: string,
-    name: string,
-    price: number,
-  ): ServiceData {
-    return { index, type, name, price };
-  }
-
   const { roomHashing } = useParams();
 
   interface Data {
@@ -185,76 +212,47 @@ const RoomDetail = () => {
   const fetchRoomDetail = async (): Promise<void> => {
     if (roomHashing != null) {
       const data: Data = await ApiGateway.GetRoomDetail(roomHashing);
-      setRoomInfo(data);
+      setRoomInfo(data.info);
     }
   }
 
   const postBookingRoom = async (e : React.FormEvent): Promise<void> => {
     e.preventDefault()
-    if (roomHashing != null) {
-      try {
-        const roomId = roomHashing;
-        const userId = user.id;
-        const bookingItemDTOs : any[] = [];
-        const timeHourBooking = parseInt(totalTimeInHour(startDate, endDate));
-        const dateBooking = startDate;
-        
-        const response = await ApiGateway.BookRoom(
-          userId,
-          roomId,
-          bookingItemDTOs,
-          timeHourBooking,
-          dateBooking
-        );
-        console.log('Booking successful:', response);
-        payBill(response);
-      } catch (error) {
-        console.error('Error booking room:', error);
-      }
-    }
-};
+    try {
+      const roomId = "a3f26dd6-b769-476a-8acd-6a60d01b8c9e";
+      const userId = user.id;
+      const bookingItemDTOs : any[] = [];
+      const timeBooking = { ticks: parseInt(totalTimeInHour(startDate, endDate)) };
+      const dateBooking = startDate;
 
-  const payBill = async (bookingId : any) : Promise<void> => {
-    try{
-      const bookId = bookingId;
-      if (payment === 'COD') {
-        const response = await ApiGateway.payCOD(bookId);
-        console.log(response);
-        setOpenPopupMsg(false);
-      } else if (payment === 'Paypal') {
-        const response = await ApiGateway.payBill(bookId);
-        console.log(response);
-      }
+      const response = await ApiGateway.BookRoom(
+        userId,
+        roomId,
+        bookingItemDTOs,
+        timeBooking,
+        dateBooking
+      );
+      console.log('Booking successful:', response);
+      setBookingId(response)
+      showMessage()
     } catch (error) {
       console.error('Error booking room:', error);
     }
-  }
-
-  const fetchServices = async (): Promise<void> => {
-    try {
-        const response = await ApiGateway.GetServices();
-        const rowData: ServiceData[] = [];
-
-        response.forEach((row: any, index: number) => {
-            const serviceData = createData(index, row.type, row.name, row.price);
-            rowData.push(serviceData);
-            console.log(rowData)
-            // Save to the appropriate state based on type
-            if (row.type === '0') {
-              setServiceListType1((prev: any) => [...prev, serviceData]);
-              console.log(serviceListType1)
-            } else if (row.type === '1') {
-              setServiceListType2((prev: any) => [...prev, serviceData]);
-              console.log(serviceListType2)
-            } else if (row.type === '2') {
-              setServiceListType3((prev: any) => [...prev, serviceData]);
-              console.log(serviceListType3)
-            }
-        });
-    } catch (err) {
-        console.error('Error getting service list:', err);
-    }
   };
+
+  const payBill = async () : Promise<void> => {
+    if (bookingId) {
+      try{
+        const bookId = bookingId;
+        const response = await ApiGateway.payBill(bookId);
+        console.log(response);
+        // window.location.href = response.;
+      } catch (error) {
+        console.error('Error booking room:', error);
+      }
+      
+    }
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -310,13 +308,6 @@ const RoomDetail = () => {
 
   const handleServiceNavbar = (type: string) => {
     setTypeServiceSelected(type);
-    if (type === 'food') {
-      setTypeNumberServiceSelected('0')
-    } else if (type === 'drink'){
-      setTypeNumberServiceSelected('1')
-    } else if (type === 'amenity'){
-      setTypeNumberServiceSelected('2')
-    }
   }
 
   function iconReturn(id: string) {
@@ -362,11 +353,12 @@ const RoomDetail = () => {
     }
   }
 
-  const handlePaymentChange = (e : React.ChangeEvent<HTMLInputElement>) : void => {
-    setPayment(e.target.value)
+  const showMessage = () : void => {
+    setOpenPopupMsg(true);
+    setTimeout(() => {
+      setOpenPopupMsg(false);
+    }, 2000);
   }
-
-  const filteredServices = serviceList.filter(service => service.type === typeNumberServiceSelected);
 
   interface CardPSevice {
     img: string,
@@ -465,7 +457,7 @@ const RoomDetail = () => {
             )}
           </div>
           <form className="room-booking" onSubmit={postBookingRoom}>
-            <p className="price-booking">{priceConvert(roomInfo?.price)}VND/h</p>
+            <p className="price-booking">{priceConvert(roomInfo.price)}VND/h</p>
             <div className="booking-detail">
               <div className="book-interval">
                 <div className="check-in box-time">
@@ -481,19 +473,6 @@ const RoomDetail = () => {
                 <p className='title'>TOTAL TIME STAY IN ROOM </p>
                 <span> {totalTime(startDate, endDate)} <FaRegClock /></span>
               </div>
-              <div className="payment-method">
-                <p className="title">PAYMENT METHOD</p>
-                <div className="method">
-                  <label>
-                    <input type="radio" name='method' value="COD" checked={payment === 'COD'} onChange={handlePaymentChange}/>
-                    <span>COD</span>
-                  </label>
-                  <label>
-                    <input type="radio" name='method' value="Paypal" checked={payment === 'Paypal'} onChange={handlePaymentChange}/>
-                    <span>Paypal</span>
-                  </label>
-                </div>
-              </div>
             </div>
             <div className="total">
               <p className="title">Your Price Sumary</p>
@@ -502,7 +481,7 @@ const RoomDetail = () => {
                   Room:
                 </span>
                 <span className='results'>
-                {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
+                {priceConvert(roomInfo.price)} X {totalTimeInHour(startDate, endDate)}h
                 </span>
               </div>
               <div className="services-price line">
@@ -526,62 +505,18 @@ const RoomDetail = () => {
                   Total Price:
                 </span>
                 <span className='results'>
-                  {totalPrice(roomInfo?.price, '0', startDate, endDate)}
+                  {totalPrice(roomInfo.price, '0', startDate, endDate)}
                 </span>
               </div>
             </div>
             <div className='service-btn but' onClick={() => setOpenPopup(true)}>Additional Services</div>
-            <div className='but' onClick={() => setOpenPopupMsg(true)} >Request To Book</div>
-            <div className="service-popup" style={!openPopupMsg ? {display: "none"}:{display: "flex"}}>
-              <div className="noti">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z"/></svg>
-                <p>Confirm booking</p>
-                <div className="total" style={{margin: "0", width: "100%"}}>
-                  <div className="Room-price line">
-                    <span className='title-result'>
-                      Room:
-                    </span>
-                    <span className='results'>
-                    {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
-                    </span>
-                  </div>
-                  <div className="services-price line">
-                    <span className='title-result'>
-                      Services:
-                    </span>
-                    <span className='results'>
-                      60K
-                    </span>
-                  </div>
-                  <div className="membsership-price line">
-                    <span className='title-result'>
-                      Membership:
-                    </span>
-                    <span className='results'>
-                      5%
-                    </span>
-                  </div>
-                  <div className="total-price line">
-                    <span className='title-result'>
-                      Total Price:
-                    </span>
-                    <span className='results'>
-                      {totalPrice(roomInfo?.price, '0', startDate, endDate)}
-                    </span>
-                  </div>
-                </div>
-                <div className='form-btns'>
-                  <div onClick={() => setOpenPopupMsg(false)}>Cancel</div>
-                  <button type='submit'>Confirm</button>
-                </div>
-              </div>
-            </div>
+            <button className='book-btn but' type='submit'>Request To Book</button>
           </form>
         </div>
       </div>
       <div className="service-popup" style={!openPopup ? {display: "none"}:{display: "flex"}}>
         <div className="service-board">
-    <div className="title-close" onClick={() => {setOpenPopup(false), fetchServices();}}>
+          <div className="title-close" onClick={() => setOpenPopup(false)}>
             <div>
               <p className="title">
                 Additional Services
@@ -613,18 +548,19 @@ const RoomDetail = () => {
                 </div>
               </div>
               <div className="services">
-                {filteredServices.map((service, index) => (
-                  <div key={index} className="service-item">
-                      <h3>{service.name}</h3>
-                      <p>{service.price}</p>
-                  </div>
-                ))}
+                
               </div>
             </div>
             <div className="booking-service">
 
             </div>
           </div>
+        </div>
+      </div>
+      <div className="service-popup" style={!openPopupMsg ? {display: "none"}:{display: "flex"}}>
+        <div className="noti">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z"/></svg>
+          <p>Booking successful!</p>
         </div>
       </div>
     </div>

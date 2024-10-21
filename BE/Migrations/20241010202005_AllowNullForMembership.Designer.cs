@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BE.Migrations
 {
     [DbContext(typeof(PodDbContext))]
-    [Migration("20241017185652_AddDB")]
-    partial class AddDB
+    [Migration("20241010202005_AllowNullForMembership")]
+    partial class AllowNullForMembership
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,11 +41,6 @@ namespace BE.Migrations
 
                     b.Property<float>("Price")
                         .HasColumnType("float");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
@@ -116,9 +111,6 @@ namespace BE.Migrations
 
                     b.Property<DateTime>("DateBooking")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsPay")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<Guid?>("MembershipUserId")
                         .HasColumnType("char(36)");
@@ -229,6 +221,9 @@ namespace BE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid>("BookingItemId")
+                        .HasColumnType("char(36)");
+
                     b.Property<Guid>("BookingItemsId")
                         .HasColumnType("char(36)");
 
@@ -237,8 +232,7 @@ namespace BE.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("StaffId")
                         .HasColumnType("char(36)");
@@ -253,10 +247,7 @@ namespace BE.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingItemsId")
-                        .IsUnique();
-
-                    b.HasIndex("StaffId");
+                    b.HasIndex("BookingItemId");
 
                     b.ToTable("DeviceCheckings");
                 });
@@ -294,9 +285,6 @@ namespace BE.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("AmenityServiceId")
-                        .HasColumnType("char(36)");
-
                     b.Property<Guid?>("AreaId")
                         .HasColumnType("char(36)");
 
@@ -318,9 +306,6 @@ namespace BE.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AmenityServiceId")
-                        .IsUnique();
 
                     b.HasIndex("AreaId");
 
@@ -467,23 +452,15 @@ namespace BE.Migrations
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("PaymentType")
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
                     b.Property<int>("PointBonus")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Satutus")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<float>("Total")
                         .HasColumnType("float");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
@@ -688,6 +665,9 @@ namespace BE.Migrations
                     b.Property<DateTime?>("DOB")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<Guid?>("DeviceCheckingId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -708,9 +688,6 @@ namespace BE.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime(6)");
 
@@ -722,6 +699,8 @@ namespace BE.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeviceCheckingId");
 
                     b.HasIndex("RoleId");
 
@@ -861,20 +840,12 @@ namespace BE.Migrations
             modelBuilder.Entity("BE.src.Domains.Models.DeviceChecking", b =>
                 {
                     b.HasOne("BE.src.Domains.Models.BookingItem", "BookingItem")
-                        .WithOne("DeviceChecking")
-                        .HasForeignKey("BE.src.Domains.Models.DeviceChecking", "BookingItemsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BE.src.Domains.Models.User", "Staff")
-                        .WithMany("DeviceCheckings")
-                        .HasForeignKey("StaffId")
+                        .WithMany()
+                        .HasForeignKey("BookingItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("BookingItem");
-
-                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("BE.src.Domains.Models.Favourite", b =>
@@ -898,11 +869,6 @@ namespace BE.Migrations
 
             modelBuilder.Entity("BE.src.Domains.Models.Image", b =>
                 {
-                    b.HasOne("BE.src.Domains.Models.AmenityService", "AmenityService")
-                        .WithOne("Image")
-                        .HasForeignKey("BE.src.Domains.Models.Image", "AmenityServiceId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("BE.src.Domains.Models.Area", "Area")
                         .WithMany("Images")
                         .HasForeignKey("AreaId")
@@ -917,8 +883,6 @@ namespace BE.Migrations
                         .WithOne("Image")
                         .HasForeignKey("BE.src.Domains.Models.Image", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("AmenityService");
 
                     b.Navigation("Area");
 
@@ -1051,6 +1015,10 @@ namespace BE.Migrations
 
             modelBuilder.Entity("BE.src.Domains.Models.User", b =>
                 {
+                    b.HasOne("BE.src.Domains.Models.DeviceChecking", null)
+                        .WithMany("Staffs")
+                        .HasForeignKey("DeviceCheckingId");
+
                     b.HasOne("BE.src.Domains.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
@@ -1097,9 +1065,6 @@ namespace BE.Migrations
             modelBuilder.Entity("BE.src.Domains.Models.AmenityService", b =>
                 {
                     b.Navigation("BookingItems");
-
-                    b.Navigation("Image")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("BE.src.Domains.Models.Area", b =>
@@ -1120,9 +1085,6 @@ namespace BE.Migrations
 
             modelBuilder.Entity("BE.src.Domains.Models.BookingItem", b =>
                 {
-                    b.Navigation("DeviceChecking")
-                        .IsRequired();
-
                     b.Navigation("RefundItems");
                 });
 
@@ -1130,6 +1092,11 @@ namespace BE.Migrations
                 {
                     b.Navigation("Transaction")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BE.src.Domains.Models.DeviceChecking", b =>
+                {
+                    b.Navigation("Staffs");
                 });
 
             modelBuilder.Entity("BE.src.Domains.Models.Location", b =>
@@ -1180,8 +1147,6 @@ namespace BE.Migrations
                     b.Navigation("Bookings");
 
                     b.Navigation("DepositWithdraws");
-
-                    b.Navigation("DeviceCheckings");
 
                     b.Navigation("Favourites");
 

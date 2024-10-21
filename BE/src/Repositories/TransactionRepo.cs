@@ -9,8 +9,7 @@ namespace BE.src.Repositories
     {
         Task<List<Transaction>> GetTransactions(Guid userId);
         Task<bool> CreatePaymentRefund(PaymentRefund paymentRefund);
-        Task<bool> CreateTransaction(Transaction transaction);    
-        Task<List<Transaction>> TransactionInYear(int year);    
+        Task<bool> CreateTransaction(Transaction transaction);        
     }
 
     public class TrasactionRepo : ITransactionRepo
@@ -46,10 +45,6 @@ namespace BE.src.Repositories
                                                 .ThenInclude(u => u.Image)
                                             .Include(t => t.DepositWithdraw)
                                             .ToListAsync();
-        }
-
-        public async Task<List<Transaction>> TransactionInYear(int year){
-            return await _context.Transactions.Where(t =>t.CreateAt.HasValue && t.CreateAt.Value.Year == year).ToListAsync();
         }
     }
 }

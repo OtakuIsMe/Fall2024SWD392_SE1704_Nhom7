@@ -48,7 +48,7 @@ const HomePage: React.FC = () => {
   ]
 
   const search = () => {
-    navigate('/roomlist')
+    navigate('/roomslist')
     sessionStorage.setItem('startDate', startDate)
     sessionStorage.setItem('endDate', endDate)
   }

@@ -1,82 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import './RequestManagement.css';
+import React from 'react'
+import './RequestManagement.css'
 import TableTpl from '../../../Components/Table/Table';
-import { ApiGateway } from '../../../Api/ApiGateway';
 
 const RequestManagement: React.FC = () => {
-  const data: any[] = [];
-  const [requestList, setRequestList] = useState<any>([]);
+  const rows = [
+    createData('India', 'IN', 1324171354, 3287263),
+    createData('China', 'CN', 1403500365, 9596961),
+    createData('Italy', 'IT', 60483973, 301340),
+    createData('United States', 'US', 327167434, 9833520),
+    createData('Canada', 'CA', 37602103, 9984670),
+    createData('Australia', 'AU', 25475400, 7692024),
+    createData('Germany', 'DE', 83019200, 357578),
+    createData('Ireland', 'IE', 4857000, 70273),
+    createData('Mexico', 'MX', 126577691, 1972550),
+    createData('Japan', 'JP', 126317000, 377973),
+    createData('France', 'FR', 67022000, 640679),
+    createData('United Kingdom', 'GB', 67545757, 242495),
+    createData('Russia', 'RU', 146793744, 17098246),
+    createData('Nigeria', 'NG', 200962417, 923768),
+    createData('Brazil', 'BR', 210147125, 8515767),
+  ];
 
   interface Data {
-    index: string;
-    room: string;
-    user: string;
-    total: string;
-    status: string;
-    isPay: string;
+    name: string;
+    code: string;
+    population: number;
+    size: number;
+    density: number;
   }
-
   function createData(
-    index: string,
-    room: string,
-    user: string,
-    total: string,
-    status: string,
-    isPay: string
+    name: string,
+    code: string,
+    population: number,
+    size: number,
   ): Data {
-    return { index, room, user, total, status, isPay };
+    const density = population / size;
+    return { name, code, population, size, density };
   }
 
   interface Column {
-    id: 'index' | 'room' | 'user' | 'total' | 'status' | 'isPay';
+    id: 'name' | 'code' | 'population' | 'size' | 'density';
     label: string;
     minWidth?: number;
-    align?: 'right' | 'center';
-    format?: (value: string) => string;
+    align?: 'right';
+    format?: (value: number) => string;
   }
-
   const columns: Column[] = [
-    { id: 'index', label: 'Index', minWidth: 170 },
-    { id: 'room', label: 'Room', minWidth: 100 },
-    { id: 'user', label: 'User', minWidth: 170 },
-    { id: 'total', label: 'Total', minWidth: 170, align: 'right' },
-    { id: 'status', label: 'Status', minWidth: 170, align: 'center' },
-    { id: 'isPay', label: 'Is Pay', minWidth: 170, align: 'center' },
+    { 
+      id: 'name', 
+      label: 'Name', 
+      minWidth: 170 
+    },
+    { 
+      id: 'code', 
+      label: 'ISO\u00a0Code', 
+      minWidth: 100 
+    },
+    {
+      id: 'population',
+      label: 'Population',
+      minWidth: 170,
+      align: 'right',
+      format: (value: number) => value.toLocaleString('en-US'),
+    },
+    {
+      id: 'size',
+      label: 'Size\u00a0(km\u00b2)',
+      minWidth: 170,
+      align: 'right',
+      format: (value: number) => value.toLocaleString('en-US'),
+    },
+    {
+      id: 'density',
+      label: 'Density',
+      minWidth: 170,
+      align: 'right',
+      format: (value: number) => value.toFixed(2),
+    },
   ];
-
-  useEffect(() => {
-    fetchRequest();
-  }, []);
-
-  const fetchRequest = async (): Promise<void> => {
-    try {
-      let rowData: any[] = [];
-      const response = await ApiGateway.GetRequest();
-
-      response.forEach((row: any, index: number) => {
-        console.log('Row Data:', row); // Log each row
-        rowData.push(createData((index+1).toString(), row.room.name, row.user.name, row.total, row.status, (row.isPay ? "Paid" : "Unpaid")));
-      });
-
-      setRequestList(rowData);
-      console.log('Updated Request List:', rowData); // Log the updated list
-    } catch (err) {
-      console.log("Get Request Error:", err);
-    }
-  };
 
   return (
     <div id='request-mng'>
       <h1>Request Management</h1>
       <div className='content'>
-        {requestList.length > 0 ? (
-          <TableTpl columns={columns} rows={requestList} />
-        ) : (
-          <TableTpl columns={columns} rows={data} />
-        )}
+        <TableTpl rows={rows} columns={columns}/>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RequestManagement;
+export default RequestManagement

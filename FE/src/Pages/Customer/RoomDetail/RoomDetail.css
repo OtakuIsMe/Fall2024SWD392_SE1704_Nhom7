@@ -233,7 +233,8 @@
     font-weight: 600;
 
     position: relative;
-    padding: 12px 5px 0;
+    padding: 12px 5px;
+
     display: flex;
     align-items: center;
     margin: 0;
@@ -246,25 +247,6 @@
     outline-width: 0;
 }
 
-#room-detail-page .room-detail-container .room-booking .booking-detail .payment-method {
-    margin-left: 10px;
-}
-
-#room-detail-page .room-detail-container .room-booking .booking-detail .payment-method .title {
-    color: #7d8b9a;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-#room-detail-page .room-detail-container .room-booking .booking-detail .payment-method .method {
-    display: flex;
-    justify-content: space-around;
-}
-
-#room-detail-page .room-detail-container .room-booking .booking-detail .payment-method .method label {
-    display: flex;
-}
-
 #room-detail-page .room-detail-container .room-booking .date {
     margin-left: 10px;
 }
@@ -275,8 +257,7 @@
     font-weight: 600;
 }
 
-#room-detail-page .room-detail-container .room-booking .date span,
-#room-detail-page .room-detail-container .room-booking .booking-detail .payment-method span {
+#room-detail-page .room-detail-container .room-booking .date span {
     color: #4e538b;
     display: flex;
     align-items: center;
@@ -288,12 +269,11 @@
     color: #7d8b9a;
 }
 
-.total {
+#room-detail-page .room-detail-container .total {
     margin-left: 10px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
-.total .title {
+#room-detail-page .room-detail-container .total .title {
     font-size: 18px;
     margin: 0;
     font-weight: 600;
@@ -302,33 +282,33 @@
     margin-bottom: 30px;
 }
 
-.total .line {
+#room-detail-page .room-detail-container .total .line {
     display: flex;
     justify-content: space-between;
     margin-bottom: 5px;
 }
 
-.total .line .title-result {
+#room-detail-page .room-detail-container .total .line .title-result {
     color: #55598f;
 }
 
-.total .line .results {
+#room-detail-page .room-detail-container .total .line .results {
     color: #181960;
     font-weight: 700;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-.total .total-price {
+#room-detail-page .room-detail-container .total .total-price {
     margin-top: 20px;
 }
 
-.total .total-price .title-result {
+#room-detail-page .room-detail-container .total .total-price .title-result {
     color: #1fb374;
     font-size: 22px;
     font-weight: 600;
 }
 
-.total .total-price .results {
+#room-detail-page .room-detail-container .total .total-price .results {
     color: #1fb374;
     font-size: 22px;
 }
@@ -348,13 +328,10 @@
 }
 
 #room-detail-page .room-detail-container .service-btn {
+    text-align: center;
     background-color: white;
     color: #405ae6;
     border: 2px solid #e3e5e6;
-}
-
-#room-detail-page .room-detail-container .but {
-    text-align: center;
 }
 
 #room-detail-page .service-popup {
@@ -385,44 +362,8 @@
 #room-detail-page .service-popup .noti {
     width: 20%;
     height: fit-content;
-    padding: 20px 30px;
+    padding: 30px;
     align-items: center;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-#room-detail-page .service-popup .noti p {
-    font-weight: 600;
-}
-
-#room-detail-page .service-popup .noti .form-btns {
-    width: 100%;
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-}
-
-#room-detail-page .service-popup .noti .form-btns button,
-#room-detail-page .service-popup .noti .form-btns div {
-    border: none;
-    background-color: transparent;
-    padding: 15px 45px;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-family: Arial, Helvetica, sans-serif;
-    cursor: pointer;
-}
-
-#room-detail-page .service-popup .noti .form-btns button {
-    background-color: #4DB051;
-}
-
-#room-detail-page .service-popup .noti .form-btns div:hover {
-    background-color: rgb(200, 200, 200);
-}
-
-#room-detail-page .service-popup .noti .form-btns button:hover {
-    background-color: #3c8b3f;
-    color: white;
 }
 
 #room-detail-page > .service-popup > .noti > p {

@@ -13,8 +13,5 @@ namespace BE.src.Domains.Models
 
         public Guid? UserId { get; set; }
         public User? User { get; set; } = null!;
-
-        public Guid? AmenityServiceId {get; set;}
-        public AmenityService? AmenityService {get; set;} = null!;
     }
 }

@@ -24,8 +24,7 @@ namespace BE.src.Services
         Task<IActionResult> TransactionHistory(Guid userId);
         Task<IActionResult> PaymentByPaypal(PaymentPayPalDto data);
         Task<IActionResult> PaymentPaypalSuccess(Guid bookingId);
-        Task<IActionResult> PaymentByCod(Guid bookingId);
-        Task<IActionResult> StatisticMonthInYear(int year);
+        Task<IActionResult> PaymentByCod(Guid bookingId);        
     }
 
     public class TrasactionServ : ITransactionServ
@@ -208,77 +207,6 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Cant create transaction");
                 }
                 return SuccessResp.Ok("Payment cod done");
-            }
-            catch (System.Exception ex)
-            {
-                return ErrorResp.BadRequest(ex.Message);
-            }
-        }
-
-        public async Task<IActionResult> StatisticMonthInYear(int year)
-        {
-            try
-            {
-                var transactions = await _transactionRepo.TransactionInYear(year);
-                List<StatisticMonth> returnValue = new(){
-                    new StatisticMonth(){
-                        Month = 1,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 2,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 3,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 4,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 5,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 6,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 7,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 8,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 9,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 10,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 11,
-                        Amount = 0
-                    },
-                    new StatisticMonth(){
-                        Month = 12,
-                        Amount = 0
-                    },
-
-                };
-                foreach (var transaction in transactions){
-                    foreach (var statisticMonth in returnValue){
-                        if(transaction.CreateAt.HasValue && statisticMonth.Month == transaction.CreateAt.Value.Month){
-                            statisticMonth.Amount += transaction.Total;
-                        }
-                    }
-                }
-                return SuccessResp.Ok(transactions);
             }
             catch (System.Exception ex)
             {
