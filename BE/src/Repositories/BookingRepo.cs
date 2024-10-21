@@ -19,6 +19,7 @@ namespace BE.src.Repositories
         Task<bool> DeclineBooking(Guid bookingId);
         Task<List<Booking>> GetBookingRequests();
         Task<List<BookingCheckAvailableDTO>> GetBookingCheckAvailableList(Guid bookingId);
+        Task<bool> ProcessRefund(Guid bookingId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -199,6 +200,59 @@ namespace BE.src.Repositories
                           bookingAlreadyAvailable.DateBooking.Add(bookingAlreadyAvailable.TimeBooking) <= b.DateBooking);
 
             return !isAvailable ? bookingCheckAvailableList : new List<BookingCheckAvailableDTO>() ;
+        }
+
+        public async Task<bool> ProcessRefund(Guid bookingId)
+        {
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            
+            if (booking == null) return false;
+
+            if (booking.Status != StatusBookingEnum.Canceled)
+            {
+                return false;
+            }
+            
+            var existingRefund = await _context.PaymentRefunds
+                .FirstOrDefaultAsync(r => r.BookingId == bookingId);
+
+            if (existingRefund != null) return false;
+
+            var refundAmount = CalculateRefundAmount(booking);
+
+            var refund = new PaymentRefund
+            {
+                Id = Guid.NewGuid(),
+                BookingId = bookingId,
+                Type = PaymentRefundEnum.Refund, 
+                Total = refundAmount,
+                PointBonus = 0,  
+                CreateAt = DateTime.UtcNow
+            };
+
+            await _context.PaymentRefunds.AddAsync(refund);
+
+            var transaction = new Transaction
+            {
+                Id = Guid.NewGuid(),
+                TransactionType = TypeTransactionEnum.Refund,
+                PaymentRefundId = refund.Id,
+                UserId = booking.UserId,
+                Total = refundAmount,
+                CreateAt = DateTime.UtcNow
+            };
+
+            await _context.Transactions.AddAsync(transaction);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        private float CalculateRefundAmount(Booking booking)
+        {
+            var room = _context.Rooms.FirstOrDefault(r => r.Id == booking.RoomId);
+            return room?.Price != null ? room.Price : 0;
         }
     }
 }

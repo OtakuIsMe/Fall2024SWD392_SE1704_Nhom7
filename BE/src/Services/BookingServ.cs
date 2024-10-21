@@ -153,14 +153,22 @@ namespace BE.src.Services
                 var isDecline = await _bookingRepo.DeclineBooking(bookingId);
                 if (isDecline)
                 {
-                    return SuccessResp.Ok("Decline booking success");
+                    var isRefunded = await _bookingRepo.ProcessRefund(bookingId);
+                    if (isRefunded)
+                    {
+                        return SuccessResp.Ok("Booking canceled and refund processed successfully.");
+                    }
+                    else
+                    {
+                        return ErrorResp.BadRequest("Booking canceled, but no refund applicable.");
+                    }
                 }
                 else
                 {
-                    return ErrorResp.NotFound("Can not find booking");
+                    return ErrorResp.NotFound("Cannot find booking");
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
             }
