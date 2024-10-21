@@ -47,7 +47,7 @@ namespace BE.src.Repositories
 
         public async Task<List<Area>> GetAreas()
         {
-            return await _context.Areas.ToListAsync();
+            return await _context.Areas.Include(a => a.Location).ToListAsync();
         }
     }
 }

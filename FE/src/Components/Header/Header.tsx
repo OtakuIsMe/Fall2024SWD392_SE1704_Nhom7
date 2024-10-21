@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom'
-import LoginPopup from "../LoginPopup/LoginPopup";
 import RegisterPopup from "../RegisterPopup/RegisterPopup";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -33,7 +32,6 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
 
   const beforeRule = CSSRulePlugin.getRule(".button::before");
 
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const context = useContext(AuthenContext);
   if (!context) {
@@ -44,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const open = Boolean(anchorEl);
 
   const handleLoginClick = () => {
-    setIsLoginOpen(true);
+    navigate('/login');
   };
 
   const handleRegisterClick = () => {
@@ -66,7 +64,6 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   };
 
   const closePopup = () => {
-    setIsLoginOpen(false);
     setIsRegisterOpen(false);
   };
 
@@ -245,7 +242,6 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
           </>
         )}
       </div>
-      {isLoginOpen && <LoginPopup onClose={closePopup} />}
       {isRegisterOpen && <RegisterPopup onClose={closePopup} />}
     </div>
   );

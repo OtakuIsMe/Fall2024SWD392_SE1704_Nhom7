@@ -2,6 +2,7 @@ import React,{ useState, useEffect } from 'react'
 import './AreaManagement.css'
 import TableTpl from '../../../Components/Table/Table'
 import { ApiGateway } from '../../../Api/ApiGateway'
+import AddBtn from '../../../Components/AddBtn/AddBtn'
 
 const AreaManagement: React.FC = () => {
 
@@ -27,30 +28,30 @@ const AreaManagement: React.FC = () => {
     id: 'index' | 'name' | 'description' | 'locationId' ;
     label: string;
     minWidth?: number;
-    align?: 'right';
+    align?: 'right' | 'center';
     format?: (value: number) => string;
   }
   const columns: Column[] = [
     { 
       id: 'index', 
-      label: 'Index', 
-      minWidth: 170 
+      label: 'No', 
+      align: 'center',
     },
     { 
       id: 'name', 
       label: 'Name', 
-      minWidth: 100 
+      minWidth: 170 
+    },
+    {
+      id: 'locationId',
+      label: 'Address',
+      minWidth: 240,
     },
     {
       id: 'description',
       label: 'Description',
       minWidth: 170,
     },
-    {
-      id: 'locationId',
-      label: 'LocationId',
-      minWidth: 170,
-    }
   ];
 
   useEffect(()=>{
@@ -62,10 +63,10 @@ const AreaManagement: React.FC = () => {
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetArea()
       response.forEach((row: any, index: number) => {
-        // rowData.push(createData(row.images?.[0]?.url || '', row.typeRoom, row.name, row.price, row.description, row.status))
-        rowData.push(createData(index + 1, row.name, row.description, row.locationId))
+        rowData.push(createData(index + 1, row.name, row.description, row.location.address))
       })
       setAreaList(rowData)
+      console.log(rowData)
     } catch(err){
       console.error('Error get room list :', err);
     }
@@ -74,9 +75,12 @@ const AreaManagement: React.FC = () => {
   return (
     <div id='area-mng'>
       <h1>Area Management</h1>
+      <div className='btn-container'>
+        <AddBtn/>
+      </div>
       <div className='content'>
         {areaList ? 
-          <TableTpl columns={columns} rows={areaList}/>
+          <TableTpl columns={columns} rows={areaList} editButton={true} deleteButton={true}/>
           :
           <TableTpl columns={columns} rows={data}/>
         }

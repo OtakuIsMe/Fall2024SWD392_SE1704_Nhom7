@@ -35,7 +35,7 @@
     flex: 1;
     margin: 0 10px;
     height: 120px;
-    background-color: #3438c9;
+    background-color: #8f93ff;
     border-radius: 15px;
     padding: 25px;
     box-sizing: border-box;
@@ -55,11 +55,11 @@
 }
 
 #dashboard .card-statistic .total-in-come {
-    background-color: #7d32d4;
+    background-color: #9a64d7;
 }
 
 #dashboard .card-statistic .total-booking {
-    background-color: #0e805e;
+    background-color: #35bc94;
 }
 
 #dashboard .contend-container {

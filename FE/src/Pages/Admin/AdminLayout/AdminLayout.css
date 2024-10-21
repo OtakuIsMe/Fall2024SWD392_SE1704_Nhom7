@@ -82,10 +82,18 @@
 #ad-layout > .content > .main-content {
     box-sizing: border-box;
     padding: 20px;
-    height: 100%;
+    height: 100%;   
     overflow: hidden;
 }
 
 #ad-layout > .content > .main-content > * {
     font-family: "Kanit", Arial, sans-serif;
+}
+
+#ad-layout > .content > .main-content > * > .btn-container {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    box-sizing: border-box;
+    padding: 0 50px;
 }
