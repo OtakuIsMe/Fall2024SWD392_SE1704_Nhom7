@@ -13,6 +13,10 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ id, img, type, price }) => {
     const navigate = useNavigate()
 
+    const priceConvert = (amount: number): string => {
+        return new Intl.NumberFormat('de-DE', { style: 'decimal' }).format(amount);
+    };
+
     return (
         <div id='card' onClick={() => navigate(`/roomDetail/${id}`)}>
             <div className="img_container">
@@ -23,7 +27,7 @@ const Card: React.FC<CardProps> = ({ id, img, type, price }) => {
                     <p className='title'>{type}</p>
                     {/* <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Magnam et at magni beatae laboriosam mollitia assume</p> */}
                 </div>
-                <p className='price'>{price}k/h</p>
+                <p className='price'>{priceConvert(price)}VND/h</p>
             </div>
         </div>
     )

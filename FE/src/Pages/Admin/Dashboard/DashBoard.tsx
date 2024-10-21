@@ -14,7 +14,7 @@ const DashBoard: React.FC = () => {
           </div>
           <div className="total-in-come card">
             <p className='title'>Total Income</p>
-            <p className="value">210,000</p>
+            <p className="value">210,000 VND</p>
           </div>
           <div className="total-booking card">
             <p className='title'>Total Bookings</p>

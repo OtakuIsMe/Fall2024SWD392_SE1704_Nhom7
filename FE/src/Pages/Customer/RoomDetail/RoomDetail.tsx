@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 import { ApiGateway } from '../../../Api/ApiGateway'
 import { AuthenContext } from '../../../Components/AuthenContext'
 import Header from '../../../Components/Header/Header'
+import ItemCard from '../../../Components/ItemCard/ItemCard'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration';
 import './RoomDetail.css'
@@ -16,10 +17,9 @@ import { PiOfficeChair } from "react-icons/pi";
 import { GiTheaterCurtains, GiDesk, GiWaterTank } from "react-icons/gi";
 import { SiSocketdotio } from "react-icons/si";
 import { MdRoomService, MdOutlineFoodBank, MdHomeRepairService } from "react-icons/md";
-import { TbAirConditioning, TbCurrencyDong } from "react-icons/tb";
+import { TbAirConditioning } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { RiDrinks2Fill } from "react-icons/ri";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 dayjs.extend(duration);
 
@@ -46,14 +46,18 @@ const RoomDetail = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopupMsg, setOpenPopupMsg] = useState(false);
 
-  const [bookingId, setBookingId] = useState<any>()
-
   const [payment, setPayment] = useState<string>('COD')
 
-  const [serviceListType1, setServiceListType1] = useState<any>([])
-  const [serviceListType2, setServiceListType2] = useState<any>([])
-  const [serviceListType3, setServiceListType3] = useState<any>([])
-  const [serviceList, setServiceList] = useState<ServiceData[]>([]);
+  const [serviceListType1, setServiceListType1] = useState<ServiceData[]>([])
+  const [serviceListType2, setServiceListType2] = useState<ServiceData[]>([])
+  const [serviceListType3, setServiceListType3] = useState<ServiceData[]>([])
+
+  interface SelectedItem {
+    id: string;
+    amount: number;
+  }
+  const [selectedItemList, setSelectedItemList] = useState<SelectedItem[]>([]);
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
   const utilities = [
     {
@@ -130,13 +134,6 @@ const RoomDetail = () => {
     return `${hours}`
   }
 
-  const hoursToTicks = (hour: string): number => {
-    const hours = parseFloat(hour)
-    const seconds = hours * 3600;
-    const ticks = seconds * 10_000_000;
-    return ticks;
-  };
-
   const totalPrice = (room: string, service: string, start: string, end: string) : string => {
     const total = Number(room) * Number(totalTimeInHour(start, end)) + Number(service)
     return priceConvert(total)
@@ -164,13 +161,13 @@ const RoomDetail = () => {
 
   interface ServiceData {
     index: number;
-    type: string;
+    type: number;
     name: string;
     price: number;
   }
   function createData(
     index: number,
-    type: string,
+    type: number,
     name: string,
     price: number,
   ): ServiceData {
@@ -233,25 +230,24 @@ const RoomDetail = () => {
   const fetchServices = async (): Promise<void> => {
     try {
         const response = await ApiGateway.GetServices();
-        const rowData: ServiceData[] = [];
+        const rowData1: ServiceData[] = [];
+        const rowData2: ServiceData[] = [];
+        const rowData3: ServiceData[] = [];
 
         response.forEach((row: any, index: number) => {
-            const serviceData = createData(index, row.type, row.name, row.price);
-            rowData.push(serviceData);
-            console.log(rowData)
-            // Save to the appropriate state based on type
-            if (row.type === '0') {
-              setServiceListType1((prev: any) => [...prev, serviceData]);
-              console.log(serviceListType1)
-            } else if (row.type === '1') {
-              setServiceListType2((prev: any) => [...prev, serviceData]);
-              console.log(serviceListType2)
-            } else if (row.type === '2') {
-              setServiceListType3((prev: any) => [...prev, serviceData]);
-              console.log(serviceListType3)
-            }
+          const serviceData = createData(index, row.type, row.name, row.price);
+          if (row.type === 0) {
+            rowData1.push(serviceData);
+          } else if (row.type === 1) {
+            rowData2.push(serviceData);
+          } else if (row.type === 2) {
+            rowData3.push(serviceData);
+          }
         });
-    } catch (err) {
+        setServiceListType1(rowData1);
+        setServiceListType2(rowData2);
+        setServiceListType3(rowData3);  
+      } catch (err) {
         console.error('Error getting service list:', err);
     }
   };
@@ -302,8 +298,8 @@ const RoomDetail = () => {
     } else if (typeServiceSelected === "drink") {
       let process2 = document.querySelector(".drink");
       process2?.classList.add("active");
-    } else if (typeServiceSelected === "amenity") {
-      let process2 = document.querySelector(".amenity");
+    } else if (typeServiceSelected === "device") {
+      let process2 = document.querySelector(".device");
       process2?.classList.add("active");
     }
   }, [typeServiceSelected])
@@ -314,7 +310,7 @@ const RoomDetail = () => {
       setTypeNumberServiceSelected('0')
     } else if (type === 'drink'){
       setTypeNumberServiceSelected('1')
-    } else if (type === 'amenity'){
+    } else if (type === 'device'){
       setTypeNumberServiceSelected('2')
     }
   }
@@ -366,23 +362,36 @@ const RoomDetail = () => {
     setPayment(e.target.value)
   }
 
-  const filteredServices = serviceList.filter(service => service.type === typeNumberServiceSelected);
+  const handleAddItem = (id: string) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1,
+    }));
 
-  interface CardPSevice {
-    img: string,
-    name: string,
-    price: number
-  }
+    setSelectedItemList((prev) => {
+      const existingItem = prev.find(item => item.id === id);
+      if (existingItem) {
+        return prev.map(item =>
+          item.id === id ? { ...item, amount: item.amount + 1 } : item
+        );
+      } else {
+        return [...prev, { id, amount: 1 }];
+      }
+    });
+  };
 
-  const Card: React.FC<CardPSevice> = ({ img, name, price }) => {
-    return (
-      <div className="card">
-        <img src={img} alt="" className="service-image" />
-        <p className="name">{name}</p>
-        <p className="price">{price}<TbCurrencyDong /></p>
-      </div>
-    )
-  }
+  const handleRemoveItem = (id: string) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [id]: Math.max((prev[id] || 0) - 1, 0),
+    }));
+
+    setSelectedItemList((prev) => {
+      return prev
+        .map(item => (item.id === id ? { ...item, amount: Math.max(item.amount - 1, 0) } : item))
+        .filter(item => item.amount > 0);
+    });
+  };
 
   return (
     <div id="room-detail-page">
@@ -390,24 +399,24 @@ const RoomDetail = () => {
       <div className="room-detail">
         <div className="room-images">
           <div className="main-image">
-            <img src={room1} alt="" />
+            <img src={roomInfo?.images?.[3] || room1} alt="" />
           </div>
           <div className="others-image">
             <div className="child-image">
-              <img src={room2} alt="" />
+              <img src={roomInfo?.images?.[2] || room2} alt="" />
             </div>
             <div className="child-image">
-              <img src={room3} alt="" />
+              <img src={roomInfo?.images?.[1] || room3} alt="" />
             </div>
             <div className="child-image">
-              <img src={room4} alt="" />
+              <img src={roomInfo?.images?.[0] || room4} alt="" />
             </div>
           </div>
         </div>
         <div className="room-detail-container">
           <div className="room-info">
             <div className="name-ratings">
-              <p className='room-name'>Room 101</p>
+              <p className='room-name'>{roomInfo.name}</p>
               <div className='ratings-area'>
                 <FaStar className='star' /> 5
                 <GoDotFill className='dot' /> Coworking Space
@@ -415,13 +424,13 @@ const RoomDetail = () => {
             </div>
             <div className="nav-bar">
               <div className="nav info-container" onClick={() => { handleNavbarClick("info-container") }}>
-                Thông tin
+                Infomation
               </div>
               <div className="nav schedule" onClick={() => { handleNavbarClick("schedule") }}>
-                Lịch Book
+                Book Arrangement
               </div>
               <div className="nav comments" onClick={() => { handleNavbarClick("comments") }}>
-                Đánh giá
+                Feedback
               </div>
             </div>
             {infoSelected === "info-container" && (
@@ -530,7 +539,7 @@ const RoomDetail = () => {
                 </span>
               </div>
             </div>
-            <div className='service-btn but' onClick={() => setOpenPopup(true)}>Additional Services</div>
+            <div className='service-btn but' onClick={async () => { await fetchServices(), setOpenPopup(true)}}>Additional Services</div>
             <div className='but' onClick={() => setOpenPopupMsg(true)} >Request To Book</div>
             <div className="service-popup" style={!openPopupMsg ? {display: "none"}:{display: "flex"}}>
               <div className="noti">
@@ -581,7 +590,7 @@ const RoomDetail = () => {
       </div>
       <div className="service-popup" style={!openPopup ? {display: "none"}:{display: "flex"}}>
         <div className="service-board">
-    <div className="title-close" onClick={() => {setOpenPopup(false), fetchServices();}}>
+          <div className="title-close" onClick={() => setOpenPopup(false)}>
             <div>
               <p className="title">
                 Additional Services
@@ -605,24 +614,67 @@ const RoomDetail = () => {
                   }}>
                   <RiDrinks2Fill /> Drink
                 </div>
-                <div className="nav amenity"
+                <div className="nav device"
                   onClick={() => {
-                    handleServiceNavbar("amenity");
+                    handleServiceNavbar("device");
                   }}>
-                  <MdHomeRepairService /> Amenity
+                  <MdHomeRepairService /> Device
                 </div>
               </div>
               <div className="services">
-                {filteredServices.map((service, index) => (
-                  <div key={index} className="service-item">
-                      <h3>{service.name}</h3>
-                      <p>{service.price}</p>
-                  </div>
-                ))}
+                {typeNumberServiceSelected === '0' ? 
+                  serviceListType1.map((service) => 
+                    <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
+                      <div className='quatity'>
+                        <div className="minus" onClick={() => handleRemoveItem(service.index.toString())}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z"/></svg>
+                        </div>
+                        <p>{quantities[service.index.toString()] || 0}</p>
+                        <div className='plus' onClick={() => handleAddItem(service.index.toString())}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+                        </div>
+                      </div>
+                    </ItemCard>
+                  )
+                : 
+                typeNumberServiceSelected === '1' ?
+                  serviceListType2.map((service) => 
+                    <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
+                      <div className='quatity'>
+                        <div className="minus" onClick={() => handleRemoveItem(service.index.toString())}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z"/></svg>
+                        </div>
+                        <p>{quantities[service.index.toString()] || 0}</p>
+                        <div className='plus' onClick={() => handleAddItem(service.index.toString())}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+                        </div>
+                      </div>
+                    </ItemCard>
+                  )
+                :
+                  serviceListType3.map((service) => 
+                    <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
+                      <div className='quatity'>
+                        <div className="minus" onClick={() => handleRemoveItem(service.index.toString())}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z"/></svg>
+                        </div>
+                        <p>{quantities[service.index.toString()] || 0}</p>
+                        <div className='plus' onClick={() => handleAddItem(service.index.toString())}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+                        </div>
+                      </div>
+                    </ItemCard>
+                  )
+                }
               </div>
             </div>
             <div className="booking-service">
+                <div className="services">
 
+                </div>
+                <div className="service-total">
+                  <div>Total: </div>
+                </div>
             </div>
           </div>
         </div>

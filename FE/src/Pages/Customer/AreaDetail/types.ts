@@ -1,4 +1,5 @@
-// Tạo một file mới hoặc thêm vào file kiểu hiện có, ví dụ `types.ts`
+import { type } from "os";
+
 export interface Review {
     user: string;
     comment: string;
@@ -11,4 +12,4 @@ export interface Review {
     description: string;
     reviews: Review[];
   }
-  
+  export default type;

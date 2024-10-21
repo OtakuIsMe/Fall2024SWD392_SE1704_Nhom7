@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './RoomManagement.css'
 import TableTpl from '../../../Components/Table/Table';
 import { ApiGateway } from '../../../Api/ApiGateway';
+import AddBtn from '../../../Components/AddBtn/AddBtn';
 
 const RoomManagement: React.FC = () => {
 
@@ -88,7 +89,7 @@ const RoomManagement: React.FC = () => {
       const response = await ApiGateway.GetRoomList('', '', '', '')
       response.forEach((row: any) => {
         // rowData.push(createData(row.images?.[0]?.url || '', row.typeRoom, row.name, row.price, row.description, row.status))
-        rowData.push(createData(row.typeRoom, row.name, row.price, row.description, row.status))
+        rowData.push(createData(row.typeRoom + 1, row.name, row.price, row.description, row.status))
       })
       rowData.sort((a, b) => {
         if (a.type < b.type) return -1;
@@ -104,6 +105,9 @@ const RoomManagement: React.FC = () => {
   return (
     <div id='room-mng'>
       <h1>Room Management</h1>
+      <div className='btn-container'>
+        <AddBtn/>
+      </div>
       <div className='content'>
         {roomList ? 
           <TableTpl columns={columns} rows={roomList}/>

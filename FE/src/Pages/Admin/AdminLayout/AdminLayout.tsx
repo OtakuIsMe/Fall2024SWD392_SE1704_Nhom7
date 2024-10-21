@@ -19,7 +19,7 @@ const AdminLayout:React.FC = () => {
   if (!context) {
     throw new Error("useAuthenContext must be used within an AuthenProvider");
   }
-  const { user } = context;
+  const { user, logout } = context;
 
   const navItems = [
     {name: 'Dashboard', href: '/dashboard', icon: <AssessmentIcon/>},
@@ -49,9 +49,9 @@ const AdminLayout:React.FC = () => {
         <div className="user">
           <div>
             <AccountCircleIcon sx={{fontSize: 28}}/>
-            <p>User</p>
+            <p>{user? user.email : "User"}</p>
           </div>
-          <div>
+          <div onClick={() => {logout(); window.location.reload();}}>
             <LogoutIcon/>
             <p>Log Out</p>
           </div>

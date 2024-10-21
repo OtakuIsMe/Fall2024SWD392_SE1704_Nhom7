@@ -45,8 +45,7 @@ namespace BE.src.Domains.Database
             {
                   if (!optionsBuilder.IsConfigured)
                   {
-                        .UseLazyLoadingProxies(false)
-                        optionsBuilder
+                        optionsBuilder.UseLazyLoadingProxies(false)
                                           .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
                                           new MySqlServerVersion(new Version(8, 0, 27)));
                   }
