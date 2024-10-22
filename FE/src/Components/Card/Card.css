@@ -41,6 +41,7 @@
 #card > .card_info > .price {
     margin: 0;
     font-size: 1.2rem;
+    text-align: right;
 }
 
 #card > .card_info > .info_container > .title {
