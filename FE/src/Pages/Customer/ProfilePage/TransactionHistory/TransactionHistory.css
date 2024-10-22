@@ -1,0 +1,88 @@
+.transaction-history-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #e0eafc, #cfdef3); /* Gradient Background */
+  min-height: 100vh;
+}
+
+h1 {
+  color: #222;
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.transaction-layout {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.transaction-left {
+  width: 35%;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Box shadow for a clean card effect */
+}
+
+.transaction-right {
+  width: 60%;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item {
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.transaction-item:hover {
+  background-color: #d1e7fd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item.active {
+  background-color: #007bff;
+  color: #fff;
+  border: 1px solid #007bff;
+}
+
+.transaction-details {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.transaction-details p {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #007bff;
+  font-weight: 700;
+}
+
+p {
+  font-size: 16px;
+  color: #555;
+}

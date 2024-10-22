@@ -9,7 +9,47 @@ export class ApiGateway {
             'Content-Type': 'application/json',
         },
     });
+    public static async ViewProfile<T>(userData: any): Promise<T> {
+    try {
+        const response = await this.axiosInstance.post<T>("user/ViewProfile", userData, {
+            headers: { 'Content-Type': 'application/json' } // Đảm bảo request là JSON
+        });
+        return response.data;
+    } catch (error) {
+        console.error("ViewProfile error:", error);
+        throw error;
+    }
+}
 
+    
+public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
+    try {
+        const response = await this.axiosInstance.get<T[]>(`transaction/History/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error("GetTransactionHistory error:", error);
+        throw error;
+    }
+}
+    
+
+    public static async UpdateUserProfile<T>(userData: any): Promise<T> {
+        try {
+            // Nếu userData là FormData, thì không đặt Content-Type
+            const headers = userData instanceof FormData ? {} : { 'Content-Type': 'application/json' };
+            const response = await this.axiosInstance.post<T>("user/UpdateUserProfile", userData, { headers });
+            return response.data;
+        } catch (error) {
+            console.error("UpdateUserProfile error:", error);
+            throw error;
+        }
+    }
+
+
+    
+    
+    
+    
     public static async GetServices<T>(): Promise<T[]> {
         try {
             const response = await this.axiosInstance.get<T[]>("http://localhost:5101/amenityservice/GetAll")
