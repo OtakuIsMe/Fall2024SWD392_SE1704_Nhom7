@@ -220,6 +220,14 @@ namespace BE.src.Repositories
 
             var refundAmount = CalculateRefundAmount(booking);
 
+            var user = await _context.Users.FindAsync(booking.UserId);
+
+            if(user == null) return false;
+
+            user.Wallet += refundAmount;
+
+            _context.Users.Update(user);
+
             var refund = new PaymentRefund
             {
                 Id = Guid.NewGuid(),
