@@ -370,7 +370,7 @@ namespace BE.src.Domains.Database
                               v => v.ToString(),
                               v => string.IsNullOrEmpty(v) ? default : v.ToEnum<PaymentTypeEnum>()
                         );
-                        entity.Property(pr => pr.Satutus)
+                        entity.Property(pr => pr.Status)
                         .IsRequired();
 
                         entity.HasOne(pr => pr.Booking)
