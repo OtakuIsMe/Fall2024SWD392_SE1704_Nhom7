@@ -104,7 +104,6 @@ namespace BE.src.Repositories
         {
             var bookingRequests = await _context.Bookings
                         .Include(b => b.BookingItems)
-                        .Include(b => b.BookingItems)
                             .ThenInclude(bi => bi.AmenityService)
                         .Include(b => b.Room)
                             .ThenInclude(r => r.Images)
