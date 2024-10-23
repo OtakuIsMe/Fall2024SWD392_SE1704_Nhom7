@@ -23,6 +23,7 @@ namespace BE.src.Repositories
         Task<bool> CreateImageUser(Image image);
         Task<bool> UpdateImageUser(Image image);
         Task<int> CountAllUser();
+        Task<bool> CreateNotification(Notification notification);
     }
     public class UserRepo : IUserRepo
     {
@@ -104,6 +105,12 @@ namespace BE.src.Repositories
         public async Task<int> CountAllUser()
         {
             return await _context.Users.Where(u => u.Status == UserStatusEnum.Nornaml).CountAsync();
+        }
+
+        public async Task<bool> CreateNotification(Notification notification)
+        {
+            _context.Notifications.Add(notification);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

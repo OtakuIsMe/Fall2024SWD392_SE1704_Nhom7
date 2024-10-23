@@ -3,6 +3,7 @@ using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using BE.src.Repositories;
 using BE.src.Shared.Type;
+using BE.src.Util;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx;
 
@@ -24,13 +25,15 @@ namespace BE.src.Services
         private readonly IUserRepo _userRepo;
         private readonly IAmenityServiceRepo _amenityRepo;
         private readonly IRoomRepo _roomRepo;
+        private readonly ITransactionRepo _transactionRepo;
 
-        public BookingServ(IBookingRepo bookingRepo, IUserRepo userRepo, IAmenityServiceRepo amenityRepo, IRoomRepo roomRepo)
+        public BookingServ(IBookingRepo bookingRepo, IUserRepo userRepo, IAmenityServiceRepo amenityRepo, IRoomRepo roomRepo, ITransactionRepo transactionRepo)
         {
             _bookingRepo = bookingRepo;
             _userRepo = userRepo;
             _amenityRepo = amenityRepo;
             _roomRepo = roomRepo;
+            _transactionRepo = transactionRepo;
         }
 
         public async Task<IActionResult> BookingRoom(BookingRoomRqDTO data)
@@ -208,7 +211,50 @@ namespace BE.src.Services
                 {
                     return ErrorResp.BadRequest("Cant update booking");
                 }
-                return SuccessResp.Ok("");
+                if (booking.IsPay == true && (booking.PaymentRefunds.FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment).PaymentType == PaymentTypeEnum.Paypal || booking.PaymentRefunds.FirstOrDefault().PaymentType == PaymentTypeEnum.Wallet))
+                {
+
+                    var user = await _userRepo.GetUserById(booking.UserId);
+                    if (user == null)
+                    {
+                        return ErrorResp.BadRequest("Cant find user");
+                    }
+                    user.Wallet += booking.Total * 0.85f;
+                    PaymentRefund paymentRefund = new()
+                    {
+                        Type = PaymentRefundEnum.Refund,
+                        BookingId = bookingId,
+                        Total = user.Wallet,
+                        PointBonus = 0,
+                        Status = true
+                    };
+                    var isUpdatedUser = await _userRepo.UpdateUser(user);
+                    if (!isUpdatedUser)
+                    {
+                        return ErrorResp.BadRequest("Cant update user");
+                    }
+                    var isCreatedPayment = await _transactionRepo.CreatePaymentRefund(paymentRefund);
+                    if (!isCreatedPayment)
+                    {
+                        return ErrorResp.BadRequest("Cant create payment refund");
+                    }
+                    if (paymentRefund.CreateAt == null)
+                    {
+                        return ErrorResp.BadRequest("Create at is null");
+                    }
+                    Notification notification = new()
+                    {
+                        Title = "Refund after canceling booking",
+                        Description = "Refund of " + paymentRefund.Total + " VND to you on " + Utils.ConvertDateTimeTime(paymentRefund.CreateAt.Value),
+                        UserId = user.Id,
+                    };
+                    var isCreatedNotification = await _userRepo.CreateNotification(notification);
+                    if (!isCreatedNotification)
+                    {
+                        return ErrorResp.BadRequest("Cant Create Notification");
+                    }
+                }
+                return SuccessResp.Ok("Cancle Service success");
             }
             catch (System.Exception ex)
             {
