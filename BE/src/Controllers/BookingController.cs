@@ -51,5 +51,11 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.CancleBookingByCustomer(bookingId);
         }
+
+        [HttpGet("GetBookingCheckAvailableList")]
+        public async Task<IActionResult> GetBookingCheckAvailableList([FromQuery] Guid bookingId)
+        {
+            return await _bookingServ.GetBookingCheckAvailableList(bookingId);
+        }
     }
 }

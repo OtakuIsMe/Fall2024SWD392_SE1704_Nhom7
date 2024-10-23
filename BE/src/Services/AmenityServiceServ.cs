@@ -13,6 +13,8 @@ namespace BE.src.Services
         Task<IActionResult> GetAllAmenityService();
         Task<IActionResult> CreateService(CreateServiceDTO data);
         Task<IActionResult> CreateServiceDetail(CreateServiceDetailDTO data);
+        Task<IActionResult> UpdateService(Guid id, CreateServiceDTO service);
+        Task<IActionResult> DeleteService(Guid amenityServiceId);
     }
 
     public class AmenityServiceServ : IAmenityServiceServ
@@ -108,6 +110,88 @@ namespace BE.src.Services
             catch (System.Exception)
             {
                 return ErrorResp.BadRequest("Error to get list Amenity and Service");
+            }
+        }
+
+        public async Task<IActionResult> UpdateService(Guid id, CreateServiceDTO service)
+        {
+            try
+            {
+                var serviceToUpdate = await _amenityServiceRepo.GetAmenityServiceById(id);
+
+                if (serviceToUpdate == null)
+                {
+                    return ErrorResp.BadRequest("Service not found");
+                }
+
+                serviceToUpdate.Name = service.Name;
+                serviceToUpdate.Price = service.Price;
+                serviceToUpdate.Type = service.Type;
+                serviceToUpdate.UpdateAt = DateTime.Now;
+
+                if (service.Image == null)
+                {
+                    return ErrorResp.BadRequest("Image is required");
+                }
+
+                string? url = await Utils.UploadImgToFirebase(service.Image, service.Name, "services");
+
+                if (url == null)
+                {
+                    return ErrorResp.BadRequest("Fail to get url Image");
+                }
+
+                var image = await _amenityServiceRepo.GetImageByServiceId(id);
+                if (image == null)
+                {
+                    return ErrorResp.BadRequest("Image not found");
+                }
+
+                image.Url = url;
+                image.UpdateAt = DateTime.Now;
+
+                bool isUpdated = await _amenityServiceRepo.UpdateService(serviceToUpdate);
+                if (!isUpdated)
+                {
+                    return ErrorResp.BadRequest("Fail to update service");
+                }
+
+                bool isUpdatedImage = await _amenityServiceRepo.UpdateServiceImage(image);
+                if (!isUpdatedImage)
+                {
+                    return ErrorResp.BadRequest("Fail to update image service");
+                }
+
+                return SuccessResp.Ok("Update service success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+
+        public async Task<IActionResult> DeleteService(Guid amenityServiceId)
+        {
+            try
+            {
+                bool isDeleted = await _amenityServiceRepo.DeleteService(amenityServiceId);
+                if (!isDeleted)
+                {
+                    return ErrorResp.BadRequest("Fail to delete service");
+                }
+
+                bool isDeletedImage = await _amenityServiceRepo.DeleteServiceImage(amenityServiceId);
+                if (!isDeletedImage)
+                {
+                    return ErrorResp.BadRequest("Fail to delete image service");
+                }
+
+                return SuccessResp.Ok("Delete service success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
             }
         }
     }

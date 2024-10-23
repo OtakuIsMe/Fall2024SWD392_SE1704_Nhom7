@@ -17,6 +17,7 @@ namespace BE.src.Services
         Task<IActionResult> CancelBooking(Guid bookingId);
         Task<IActionResult> GetBookingRequests();
         Task<IActionResult> CancleBookingByCustomer(Guid bookingId);
+        Task<IActionResult> GetBookingCheckAvailableList(Guid bookingId);
     }
 
     public class BookingServ : IBookingServ
@@ -146,6 +147,11 @@ namespace BE.src.Services
                 var isAccept = await _bookingRepo.AcceptBooking(bookingId);
                 if (isAccept)
                 {
+                    var isConfirmed = await _bookingRepo.ProcessAcceptBooking(bookingId);
+                    if (!isConfirmed)
+                    {
+                        return ErrorResp.BadRequest("Can not confirm booking");
+                    }
                     return SuccessResp.Ok("Accept booking success");
                 }
                 else
@@ -166,14 +172,22 @@ namespace BE.src.Services
                 var isDecline = await _bookingRepo.DeclineBooking(bookingId);
                 if (isDecline)
                 {
-                    return SuccessResp.Ok("Decline booking success");
+                    var isRefunded = await _bookingRepo.ProcessRefund(bookingId);
+                    if (isRefunded)
+                    {
+                        return SuccessResp.Ok("Booking canceled and refund processed successfully.");
+                    }
+                    else
+                    {
+                        return ErrorResp.BadRequest("Booking canceled, but no refund applicable.");
+                    }
                 }
                 else
                 {
-                    return ErrorResp.NotFound("Can not find booking");
+                    return ErrorResp.NotFound("Cannot find booking");
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return ErrorResp.BadRequest(ex.Message);
             }
@@ -255,6 +269,23 @@ namespace BE.src.Services
                     }
                 }
                 return SuccessResp.Ok("Cancle Service success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetBookingCheckAvailableList(Guid bookingId)
+        {
+            try
+            {
+                var bookingCheckAvailableList = await _bookingRepo.GetBookingCheckAvailableList(bookingId);
+                if (bookingCheckAvailableList == null)
+                {
+                    return ErrorResp.NotFound("Can not find booking check available list");
+                }
+                return SuccessResp.Ok(bookingCheckAvailableList);
             }
             catch (System.Exception ex)
             {

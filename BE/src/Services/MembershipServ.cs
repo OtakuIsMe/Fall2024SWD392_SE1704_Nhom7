@@ -16,6 +16,8 @@ namespace BE.src.Services
         Task<IActionResult> GetMembershipDetailsAsync(Guid membershipId);
         Task<IActionResult> CreateMembership(MembershipCreateDTO data);
         Task<IActionResult> GetAllMembership();
+        Task<IActionResult> UpdateMembership(Guid id, MembershipUpdateDTO data);
+        Task<IActionResult> DeleteMembership(Guid id);
     }
 
     public class MembershipServ : IMembershipServ
@@ -63,6 +65,54 @@ namespace BE.src.Services
             try
             {
                 return SuccessResp.Ok(await _membershipRepo.GetAllMembership());
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> UpdateMembership(Guid id, MembershipUpdateDTO data)
+        {
+            Membership membership = new()
+            {
+                Name = data.Name,
+                Discount = data.Discount,
+                TimeLeft = data.DayLeft,
+                Price = data.Price,
+                Rank = data.Rank
+            };
+            try
+            {
+                var membershipInfo = await _membershipRepo.GetMembershipDetails(id);
+                if (membershipInfo == null)
+                {
+                    return ErrorResp.BadRequest("Membership not found");
+                }
+
+                var isUpdated = await _membershipRepo.UpdateMembership(membership);
+                if (!isUpdated)
+                {
+                    return ErrorResp.BadRequest("Fail to update membership");
+                }
+                return SuccessResp.Ok("Updated membership");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> DeleteMembership(Guid id)
+        {
+            try
+            {
+                var isDeleted = await _membershipRepo.DeleteMembership(id);
+                if (!isDeleted)
+                {
+                    return ErrorResp.BadRequest("Fail to delete membership");
+                }
+                return SuccessResp.Ok("Deleted membership");
             }
             catch (System.Exception ex)
             {

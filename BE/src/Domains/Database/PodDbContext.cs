@@ -45,13 +45,13 @@ namespace BE.src.Domains.Database
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
+                  optionsBuilder.EnableSensitiveDataLogging();
                   if (!optionsBuilder.IsConfigured)
-                        if (!optionsBuilder.IsConfigured)
-                        {
-                              optionsBuilder.UseLazyLoadingProxies(false)
-                                                .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
-                                                new MySqlServerVersion(new Version(8, 0, 27)));
-                        }
+                  {
+                        optionsBuilder.UseLazyLoadingProxies(false)
+                                          .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
+                                          new MySqlServerVersion(new Version(8, 0, 27)));
+                  }
             }
 
             protected override void OnModelCreating(ModelBuilder builder)
