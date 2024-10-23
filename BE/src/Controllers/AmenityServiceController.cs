@@ -23,8 +23,14 @@ namespace BE.src.Controllers
         }
 
         [HttpPost("CreateService")]
-        public async Task<IActionResult> CreateService([FromForm] CreateServiceDTO data){
+        public async Task<IActionResult> CreateService([FromForm] CreateServiceDTO data)
+        {
             return await _amenityServiceServ.CreateService(data);
+        }
+        [HttpPost("CreateServiceDetail")]
+        public async Task<IActionResult> CreateServiceDetail([FromBody] CreateServiceDetailDTO data)
+        {
+            return await _amenityServiceServ.CreateServiceDetail(data);
         }
     }
 }

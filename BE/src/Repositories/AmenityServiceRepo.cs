@@ -9,7 +9,9 @@ namespace BE.src.Repositories
         Task<List<AmenityService>> GetAllAmenityService();
         Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId);
         Task<bool> CreateService(AmenityService service);
-        Task<bool> CreateServiceImage (Image image);
+        Task<bool> CreateServiceImage(Image image);
+        Task<int> CountServiceRemain(Guid serviceId);
+        Task<bool> CreateServiceDetail(SerivceDetail serivceDetail);
     }
 
     public class AmenityServiceRepo : IAmenityServiceRepo
@@ -23,7 +25,9 @@ namespace BE.src.Repositories
 
         public async Task<List<AmenityService>> GetAllAmenityService()
         {
-            return await _context.AmenityServices.ToListAsync();
+            return await _context.AmenityServices
+                                .Include(a => a.Image)
+                                .ToListAsync();
         }
 
         public async Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId)
@@ -40,6 +44,19 @@ namespace BE.src.Repositories
         public async Task<bool> CreateServiceImage(Image image)
         {
             _context.Images.Add(image);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<int> CountServiceRemain(Guid serviceId)
+        {
+            return await _context.SerivceDetails
+                        .Where(s => s.AmenitySerivceId == serviceId && s.IsInUse == false)
+                        .CountAsync();
+        }
+
+        public async Task<bool> CreateServiceDetail(SerivceDetail serivceDetail)
+        {
+            _context.SerivceDetails.Add(serivceDetail);
             return await _context.SaveChangesAsync() > 0;
         }
     }

@@ -12,6 +12,7 @@ namespace BE.src.Services
     {
         Task<IActionResult> GetAllAmenityService();
         Task<IActionResult> CreateService(CreateServiceDTO data);
+        Task<IActionResult> CreateServiceDetail(CreateServiceDetailDTO data);
     }
 
     public class AmenityServiceServ : IAmenityServiceServ
@@ -27,29 +28,58 @@ namespace BE.src.Services
         {
             try
             {
-                var service = new AmenityService(){
+                var service = new AmenityService()
+                {
                     Name = data.Name,
                     Type = data.Type,
                     Price = data.Price
                 };
-                string? url = await Utils.UploadImgToFirebase(data.Image,data.Name, "services" );
-                if(url == null){
+                string? url = await Utils.UploadImgToFirebase(data.Image, data.Name, "services");
+                if (url == null)
+                {
                     return ErrorResp.BadRequest("Fail to get url Image");
                 }
-                var image = new Image(){
+                var image = new Image()
+                {
                     Url = url,
                     AmenityServiceId = service.Id
                 };
                 bool isCreated = await _amenityServiceRepo.CreateService(service);
-                if(!isCreated){
+                if (!isCreated)
+                {
                     return ErrorResp.BadRequest("Fail to create service");
                 }
                 bool isCreatedImage = await _amenityServiceRepo.CreateServiceImage(image);
-                if(!isCreated){
+                if (!isCreated)
+                {
                     return ErrorResp.BadRequest("Fail to create service");
                 }
                 return SuccessResp.Created("Create service success");
 
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CreateServiceDetail(CreateServiceDetailDTO data)
+        {
+            try
+            {
+                SerivceDetail serivceDetail = new()
+                {
+                    Name = data.Name,
+                    IsNormal = true,
+                    IsInUse = false,
+                    AmenitySerivceId = data.AmenityServiceId
+                };
+                bool isCreated = await _amenityServiceRepo.CreateServiceDetail(serivceDetail);
+                if (!isCreated)
+                {
+                    return ErrorResp.BadRequest("Cant create service detail");
+                }
+                return SuccessResp.Created("Create Service Detail Success");
             }
             catch (System.Exception ex)
             {
@@ -62,7 +92,18 @@ namespace BE.src.Services
             try
             {
                 var amenityServices = await _amenityServiceRepo.GetAllAmenityService();
-                return SuccessResp.Ok(amenityServices);
+                List<GetServicesDTO> returnServices = new List<GetServicesDTO>();
+                foreach (AmenityService amenityService in amenityServices)
+                {
+                    int count = await _amenityServiceRepo.CountServiceRemain(amenityService.Id);
+                    GetServicesDTO returnService = new()
+                    {
+                        amenityService = amenityService,
+                        RemainingQuantity = count
+                    };
+                    returnServices.Add(returnService);
+                }
+                return SuccessResp.Ok(returnServices);
             }
             catch (System.Exception)
             {

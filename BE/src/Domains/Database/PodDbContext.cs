@@ -483,6 +483,9 @@ namespace BE.src.Domains.Database
                         entity.Property(s => s.IsNormal)
                         .IsRequired();
 
+                        entity.Property(s => s.IsInUse)
+                        .IsRequired();
+
                         entity.HasOne(s => s.AmenityService)
                         .WithMany(s => s.SerivceDetails)
                         .HasForeignKey(s => s.AmenitySerivceId)
