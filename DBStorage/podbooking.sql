@@ -37,7 +37,7 @@ CREATE TABLE `__efmigrationshistory` (
 
 LOCK TABLES `__efmigrationshistory` WRITE;
 /*!40000 ALTER TABLE `__efmigrationshistory` DISABLE KEYS */;
-INSERT INTO `__efmigrationshistory` VALUES ('20241017185652_AddDB','8.0.10'),('20241017191117_ChangeToAbleNullImage','8.0.10'),('20241023073820_serviceDetail','8.0.10');
+INSERT INTO `__efmigrationshistory` VALUES ('20241023082709_db','8.0.10');
 /*!40000 ALTER TABLE `__efmigrationshistory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,9 +137,9 @@ CREATE TABLE `bookingitems` (
   `Status` int NOT NULL,
   `BookingId` char(36) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
   `AmenityServiceId` char(36) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `ServiceDetailId` char(36) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   `CreateAt` datetime(6) DEFAULT NULL,
   `UpdateAt` datetime(6) DEFAULT NULL,
-  `ServiceDetailId` char(36) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   PRIMARY KEY (`Id`),
   KEY `IX_BookingItems_AmenityServiceId` (`AmenityServiceId`),
   KEY `IX_BookingItems_BookingId` (`BookingId`),
@@ -457,7 +457,7 @@ CREATE TABLE `paymentrefunds` (
   `Total` float NOT NULL,
   `PointBonus` int NOT NULL,
   `PaymentType` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `Satutus` tinyint(1) NOT NULL,
+  `Status` tinyint(1) NOT NULL,
   `BookingId` char(36) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
   `CreateAt` datetime(6) DEFAULT NULL,
   `UpdateAt` datetime(6) DEFAULT NULL,
@@ -653,7 +653,6 @@ CREATE TABLE `serivcedetails` (
 
 LOCK TABLES `serivcedetails` WRITE;
 /*!40000 ALTER TABLE `serivcedetails` DISABLE KEYS */;
-INSERT INTO `serivcedetails` VALUES ('095ed3fe-9797-4405-bbb7-e63350c9c0ca','White Board 1',1,0,'480443d7-ff53-4cc3-8eda-716c63857af8','2024-10-23 15:00:13.170729','2024-10-23 15:00:13.170731'),('17ee9e67-0b73-4dd7-9918-b90bff26b949','White Board 2',1,0,'480443d7-ff53-4cc3-8eda-716c63857af8','2024-10-23 15:00:23.012840','2024-10-23 15:00:23.012841'),('83cd4d61-a84a-43bd-b301-0e31c0adedc0','Tivi 3',1,0,'286c6f55-bca7-4ec0-a946-8a34d5e18a23','2024-10-23 14:59:31.766781','2024-10-23 14:59:31.766783'),('856b219b-c248-4abb-9bcf-bf62f058eeb9','White Board 3',1,0,'480443d7-ff53-4cc3-8eda-716c63857af8','2024-10-23 15:00:26.376460','2024-10-23 15:00:26.376462'),('93f7420e-0e60-426f-98f1-7a93592c040a','Tivi 5',1,0,'286c6f55-bca7-4ec0-a946-8a34d5e18a23','2024-10-23 14:59:40.167964','2024-10-23 14:59:40.167966'),('9bfdcc6e-6a45-4966-9dc2-95dad6adb206','Tivi 1',1,0,'286c6f55-bca7-4ec0-a946-8a34d5e18a23','2024-10-23 14:59:21.248030','2024-10-23 14:59:21.248083'),('b5fb16b6-86fb-4730-a858-796b4175d1bd','White Board 4',1,0,'480443d7-ff53-4cc3-8eda-716c63857af8','2024-10-23 15:00:28.793629','2024-10-23 15:00:28.793631'),('f72c4989-7779-494c-8707-8fa90484dc38','Tivi 2',1,0,'286c6f55-bca7-4ec0-a946-8a34d5e18a23','2024-10-23 14:59:27.122683','2024-10-23 14:59:27.122685'),('fef3a30c-f720-4831-89c9-a0679aff2352','Tivi 4',1,0,'286c6f55-bca7-4ec0-a946-8a34d5e18a23','2024-10-23 14:59:35.834622','2024-10-23 14:59:35.834624');
 /*!40000 ALTER TABLE `serivcedetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -796,4 +795,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-23 15:08:03
+-- Dump completed on 2024-10-23 15:30:43
