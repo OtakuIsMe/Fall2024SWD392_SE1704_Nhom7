@@ -26,5 +26,15 @@ namespace BE.src.Controllers
         public async Task<IActionResult> CreateService([FromForm] CreateServiceDTO data){
             return await _amenityServiceServ.CreateService(data);
         }
+
+        [HttpPut("UpdateService/{id}")]
+        public async Task<IActionResult> UpdateService(Guid id, [FromForm] CreateServiceDTO service){
+            return await _amenityServiceServ.UpdateService(id, service);
+        }
+
+        [HttpDelete("DeleteService/{amenityServiceId}")]
+        public async Task<IActionResult> DeleteService(Guid amenityServiceId){
+            return await _amenityServiceServ.DeleteService(amenityServiceId);
+        }
     }
 }

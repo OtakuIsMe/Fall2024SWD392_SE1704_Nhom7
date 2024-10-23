@@ -10,6 +10,11 @@ namespace BE.src.Repositories
         Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId);
         Task<bool> CreateService(AmenityService service);
         Task<bool> CreateServiceImage (Image image);
+        Task<bool> UpdateService(AmenityService service);
+        Task<bool> DeleteService(Guid amenityServiceId);
+        Task<bool> UpdateServiceImage(Image image);
+        Task<bool> DeleteServiceImage(Guid amenityServiceId);
+        Task<Image?> GetImageByServiceId(Guid amenityServiceId);
     }
 
     public class AmenityServiceRepo : IAmenityServiceRepo
@@ -41,6 +46,45 @@ namespace BE.src.Repositories
         {
             _context.Images.Add(image);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateService(AmenityService service)
+        {
+            _context.AmenityServices.Update(service);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteService(Guid amenityServiceId)
+        {
+            var service = await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityServiceId);
+            if (service == null)
+            {
+                return false;
+            }
+            _context.AmenityServices.Remove(service);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateServiceImage(Image image)
+        {
+            _context.Images.Update(image);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteServiceImage(Guid amenityServiceId)
+        {
+            var image = await _context.Images.FirstOrDefaultAsync(i => i.AmenityServiceId == amenityServiceId);
+            if (image == null)
+            {
+                return false;
+            }
+            _context.Images.Remove(image);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Image?> GetImageByServiceId(Guid amenityServiceId)
+        {
+            return await _context.Images.FirstOrDefaultAsync(i => i.AmenityServiceId == amenityServiceId);
         }
     }
 }

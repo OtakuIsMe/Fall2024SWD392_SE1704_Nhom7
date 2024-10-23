@@ -133,6 +133,11 @@ namespace BE.src.Services
                 var isAccept = await _bookingRepo.AcceptBooking(bookingId);
                 if (isAccept)
                 {
+                    var isConfirmed = await _bookingRepo.ProcessAcceptBooking(bookingId);
+                    if (!isConfirmed)
+                    {
+                        return ErrorResp.BadRequest("Can not confirm booking");
+                    }
                     return SuccessResp.Ok("Accept booking success");
                 }
                 else

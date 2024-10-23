@@ -20,6 +20,7 @@ namespace BE.src.Repositories
         Task<List<Booking>> GetBookingRequests();
         Task<List<BookingCheckAvailableDTO>> GetBookingCheckAvailableList(Guid bookingId);
         Task<bool> ProcessRefund(Guid bookingId);
+        Task<bool> ProcessAcceptBooking(Guid bookingId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -261,6 +262,38 @@ namespace BE.src.Repositories
         {
             var room = _context.Rooms.FirstOrDefault(r => r.Id == booking.RoomId);
             return room?.Price != null ? room.Price : 0;
+        }
+
+        public async Task<bool> ProcessAcceptBooking(Guid bookingId)
+        {
+            var booking = await _context.Bookings.FindAsync(bookingId);
+            
+            if (booking == null) return false;
+
+            if (booking.Status != StatusBookingEnum.Canceled)
+            {
+                return false;
+            }
+
+            var transaction = await _context.Transactions
+                .FirstOrDefaultAsync(t => t.PaymentRefundId != null && t.PaymentRefund.BookingId == bookingId && 
+                                    t.UserId == booking.UserId && t.PaymentRefund.PaymentType == PaymentTypeEnum.Paypal);
+
+            if(transaction == null) return false;
+
+            var totalAmount = CalculateRefundAmount(booking);
+
+            var user = await _context.Users.FindAsync(booking.UserId);
+
+            if(user == null) return false;
+
+            user.Wallet -= totalAmount;
+
+            _context.Users.Update(user);
+
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }
