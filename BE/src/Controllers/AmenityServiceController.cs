@@ -28,7 +28,7 @@ namespace BE.src.Controllers
         }
 
         [HttpPut("UpdateService/{id}")]
-        public async Task<IActionResult> UpdateService(Guid id, [FromForm] CreateServiceDTO service){
+        public async Task<IActionResult> UpdateService(Guid id, [FromForm] UpdateServiceDTO service){
             return await _amenityServiceServ.UpdateService(id, service);
         }
 
