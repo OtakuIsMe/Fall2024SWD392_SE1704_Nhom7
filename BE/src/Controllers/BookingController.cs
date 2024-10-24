@@ -57,5 +57,11 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.GetBookingCheckAvailableList(bookingId);
         }
+
+        [HttpGet("GetScheduleBookingForStaff")]
+        public async Task<IActionResult> GetScheduleBookingForStaff([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            return await _bookingServ.GetScheduleBookingForStaff(startDate, endDate);
+        }
     }
 }

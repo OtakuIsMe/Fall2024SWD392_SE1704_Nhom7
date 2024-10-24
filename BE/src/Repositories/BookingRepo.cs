@@ -25,6 +25,7 @@ namespace BE.src.Repositories
         Task<Booking?> GetBookingWaitOrInProgressById(Guid id);
         Task<Booking?> CheckBookedRoom(Guid roomId, DateTime DateBooking, TimeSpan TimeBooking);
         Task<Booking?> CheckBookReqUser(Guid roomId, Guid userId, DateTime DateBooking, TimeSpan TimeBooking);
+        Task<List<Booking>> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -319,6 +320,14 @@ namespace BE.src.Repositories
                                     && b.Status == StatusBookingEnum.Wait
                                     && (!(b.DateBooking.Add(b.TimeBooking) < DateBooking
                                     || DateBooking.Add(TimeBooking) < b.DateBooking)));
+        }
+
+        public async Task<List<Booking>> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate)
+        {
+            return await _context.Bookings.Where(b =>
+                        b.Status == StatusBookingEnum.InProgress &&
+                        b.DateBooking >= startDate &&
+                        b.DateBooking <= endDate).ToListAsync();
         }
     }
 }

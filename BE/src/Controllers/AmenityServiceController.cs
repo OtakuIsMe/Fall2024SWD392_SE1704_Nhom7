@@ -46,7 +46,7 @@ namespace BE.src.Controllers
             return await _amenityServiceServ.DeleteService(amenityServiceId);
         }
 
-        [HttpPut("CheckService")]
+        [HttpPost("CheckService")]
         public async Task<IActionResult> CheckService([FromQuery] Guid BookingItemsId, [FromQuery] Guid StaffId, [FromBody] DeviceCheckingDTO data)
         {
             return await _amenityServiceServ.CheckService(BookingItemsId, StaffId, data);
