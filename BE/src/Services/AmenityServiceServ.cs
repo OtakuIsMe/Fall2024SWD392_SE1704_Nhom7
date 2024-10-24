@@ -15,6 +15,7 @@ namespace BE.src.Services
         Task<IActionResult> CreateServiceDetail(CreateServiceDetailDTO data);
         Task<IActionResult> UpdateService(Guid id, CreateServiceDTO service);
         Task<IActionResult> DeleteService(Guid amenityServiceId);
+        Task<IActionResult> CheckService(Guid BookingItemsId, Guid StaffId, DeviceCheckingDTO data);
     }
 
     public class AmenityServiceServ : IAmenityServiceServ
@@ -188,6 +189,45 @@ namespace BE.src.Services
                 }
 
                 return SuccessResp.Ok("Delete service success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CheckService(Guid BookingItemsId, Guid StaffId, DeviceCheckingDTO data)
+        {
+            try
+            {
+                var checkService = await _amenityServiceRepo.GetDeviceChecking(BookingItemsId);
+                if (checkService != null)
+                {
+                    checkService.StaffId = StaffId;
+                    checkService.Status = data.Status;
+                    checkService.Description = data.Description;
+                    var isUpdated = await _amenityServiceRepo.UpdateDeviceChecking(checkService);
+                    if (!isUpdated)
+                    {
+                        return ErrorResp.BadRequest("Error to update check device");
+                    }
+                }
+                else
+                {
+                    DeviceChecking deviceChecking = new()
+                    {
+                        StaffId = StaffId,
+                        BookingItemsId = BookingItemsId,
+                        Status = data.Status,
+                        Description = data.Description
+                    };
+                    var IsAddded = await _amenityServiceRepo.AddDeviceChecking(deviceChecking);
+                    if (!IsAddded)
+                    {
+                        return ErrorResp.BadRequest("Error to add device check");
+                    }
+                }
+                return SuccessResp.Ok("Check Device Success");
             }
             catch (System.Exception ex)
             {

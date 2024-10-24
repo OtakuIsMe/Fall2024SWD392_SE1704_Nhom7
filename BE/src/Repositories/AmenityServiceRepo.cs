@@ -17,6 +17,9 @@ namespace BE.src.Repositories
         Task<bool> UpdateServiceImage(Image image);
         Task<bool> DeleteServiceImage(Guid amenityServiceId);
         Task<Image?> GetImageByServiceId(Guid amenityServiceId);
+        Task<DeviceChecking?> GetDeviceChecking(Guid BookingItemsId);
+        Task<bool> AddDeviceChecking(DeviceChecking deviceChecking);
+        Task<bool> UpdateDeviceChecking(DeviceChecking deviceChecking);
     }
 
     public class AmenityServiceRepo : IAmenityServiceRepo
@@ -102,6 +105,23 @@ namespace BE.src.Repositories
         public async Task<Image?> GetImageByServiceId(Guid amenityServiceId)
         {
             return await _context.Images.FirstOrDefaultAsync(i => i.AmenityServiceId == amenityServiceId);
+        }
+
+        public async Task<DeviceChecking?> GetDeviceChecking(Guid bookingItemsId)
+        {
+            return await _context.DeviceCheckings.FirstOrDefaultAsync(d => d.BookingItemsId == bookingItemsId);
+        }
+
+        public async Task<bool> AddDeviceChecking(DeviceChecking deviceChecking)
+        {
+            _context.DeviceCheckings.Add(deviceChecking);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateDeviceChecking(DeviceChecking deviceChecking)
+        {
+            _context.DeviceCheckings.Update(deviceChecking);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

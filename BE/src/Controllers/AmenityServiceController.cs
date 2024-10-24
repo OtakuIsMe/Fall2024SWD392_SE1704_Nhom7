@@ -1,4 +1,5 @@
 using BE.src.Domains.DTOs.AmenityService;
+using BE.src.Domains.Models;
 using BE.src.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,6 +44,12 @@ namespace BE.src.Controllers
         public async Task<IActionResult> DeleteService(Guid amenityServiceId)
         {
             return await _amenityServiceServ.DeleteService(amenityServiceId);
+        }
+
+        [HttpPut("CheckService")]
+        public async Task<IActionResult> CheckService([FromQuery] Guid BookingItemsId, [FromQuery] Guid StaffId, [FromBody] DeviceCheckingDTO data)
+        {
+            return await _amenityServiceServ.CheckService(BookingItemsId, StaffId, data);
         }
     }
 }

@@ -24,6 +24,8 @@ namespace BE.src.Repositories
         Task<bool> UpdateImageUser(Image image);
         Task<int> CountAllUser();
         Task<bool> CreateNotification(Notification notification);
+        Task<List<Notification>> ViewNotification(Guid userId);
+        Task<bool> AddFeedback(RatingFeedback ratingFeedback);
     }
     public class UserRepo : IUserRepo
     {
@@ -112,5 +114,21 @@ namespace BE.src.Repositories
             _context.Notifications.Add(notification);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<List<Notification>> ViewNotification(Guid userId)
+        {
+            return await _context.Notifications.Where(n => n.UserId == userId)
+                                            .Include(n => n.User)
+                                                .ThenInclude(u => u.Image)
+                                            .ToListAsync();
+        }
+
+        public async Task<bool> AddFeedback(RatingFeedback ratingFeedback)
+        {
+            _context.RatingFeedbacks.Add(ratingFeedback);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+
     }
 }
