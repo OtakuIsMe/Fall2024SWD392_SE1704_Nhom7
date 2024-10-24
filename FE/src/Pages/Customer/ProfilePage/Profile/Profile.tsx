@@ -2,7 +2,9 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthenContext } from '../../../../Components/AuthenContext';
 import { TextField, Button, Avatar } from '@mui/material';
 import { Home, Favorite, Receipt, Book, ArrowBack } from '@mui/icons-material';
+import { NavLink } from 'react-router-dom';  // Use NavLink for page transitions
 import './Profile.css';
+import TransactionHistory from './../../TransactionHistory/TransactionHistory';
 
 const Profile = () => {
   const context = useContext(AuthenContext);
@@ -11,7 +13,7 @@ const Profile = () => {
   }
 
   const { user, viewProfile, updateUserProfile } = context;
-  
+
   const [userData, setUserData] = useState({
     username: '',
     name: '',
@@ -86,19 +88,39 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
-      <div className="sidebar">
+      <nav className="sidebar">
         <ul>
-          <li><ArrowBack /> <a href="/">Back to Homepage</a></li> 
-          <li><Home /> User info</li>
-          <li><Favorite /> Favorites</li>
-          <li><Receipt /> Transactions</li>
-          <li><Book /> Pending Bookings</li>
+          <li>
+            <NavLink to="/" className="sidebar-link">
+              <ArrowBack /> Back to Homepage
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/profile" className="sidebar-link" activeClassName="active">
+              <Home /> User info
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/favorites" className="sidebar-link" activeClassName="active">
+              <Favorite /> Favorites
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/transaction-history" className="sidebar-link" activeClassName="active">
+              <Receipt /> Transaction History
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/pending-bookings" className="sidebar-link" activeClassName="active">
+              <Book /> Pending Bookings
+            </NavLink>
+          </li>
         </ul>
-      </div>
+      </nav>
 
       <form onSubmit={handleSubmit} className="profile-form">
         <div className="profile-header">
-          <Avatar alt="User Avatar" src={userData.imageUrl} sx={{ width: 120, height: 120 }} className="avatar"/>
+          <Avatar alt="User Avatar" src={userData.imageUrl} sx={{ width: 120, height: 120 }} className="avatar" />
           {isEditing && (
             <input
               type="file"
@@ -109,7 +131,7 @@ const Profile = () => {
           )}
           <div className="user-info">
             <h2>{userData.name}</h2>
-            <p>Số dư ví: {userData.wallet} VND</p> 
+            <p>Số dư ví: {userData.wallet} VND</p>
           </div>
         </div>
 

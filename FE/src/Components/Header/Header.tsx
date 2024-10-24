@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import RegisterPopup from "../RegisterPopup/RegisterPopup";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -8,6 +8,7 @@ import { Button, IconButton, Menu, MenuItem } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Header.css';
 import { AuthenContext } from '../AuthenContext';
+import Profile from './../../Pages/Customer/ProfilePage/Profile/Profile';
 
 // Define the props type
 interface HeaderProps {
@@ -232,6 +233,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>{user.username}</MenuItem>
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
               <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
             </Menu>
           </>
