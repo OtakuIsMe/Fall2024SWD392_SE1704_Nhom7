@@ -6,7 +6,8 @@ import AddBtn from '../../../Components/AddBtn/AddBtn';
 
 const RoomManagement: React.FC = () => {
 
-  const[ roomList, setRoomList ] = useState<any>([])
+  const [ roomList, setRoomList ] = useState<any>([])
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
   const data : any[] = [];
 
   interface Data {
@@ -83,6 +84,16 @@ const RoomManagement: React.FC = () => {
     getRoomList();
   },[])
 
+  const openModal = () => {
+    setIsModalOpen(true);
+    console.log('open')
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    console.log('close')
+  };
+
   const getRoomList = async (): Promise<void> => {
     try{
       let rowData : any[] = [] ;
@@ -106,7 +117,7 @@ const RoomManagement: React.FC = () => {
     <div id='room-mng'>
       <h1>Room Management</h1>
       <div className='btn-container'>
-        <AddBtn/>
+        <AddBtn openModal={openModal}/>
       </div>
       <div className='content'>
         {roomList ? 

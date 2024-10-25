@@ -7,7 +7,9 @@ import AddBtn from '../../../Components/AddBtn/AddBtn'
 const AreaManagement: React.FC = () => {
 
   const [ areaList, setAreaList ] = useState<any>([])
-  const data : any[] = [];
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
+  const data : any[] = [];  
+
 
   interface Data {
     index: number;
@@ -58,6 +60,16 @@ const AreaManagement: React.FC = () => {
     fetchAreas()
   },[])
 
+  const openModal = () => {
+    setIsModalOpen(true);
+    console.log('open')
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    console.log('close')
+  };
+
   const fetchAreas = async (): Promise<void> => {
     try{
       let rowData : any[] = [] ;
@@ -76,7 +88,7 @@ const AreaManagement: React.FC = () => {
     <div id='area-mng'>
       <h1>Area Management</h1>
       <div className='btn-container'>
-        <AddBtn/>
+        <AddBtn openModal={openModal}/>
       </div>
       <div className='content'>
         {areaList ? 

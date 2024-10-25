@@ -9,7 +9,7 @@ const ServiceManagement: React.FC = () => {
   const data : any[] = [];
 
   const [ serviceList, setServiceList ] = useState<any>([])
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
 
   interface Data {
     index: number;
