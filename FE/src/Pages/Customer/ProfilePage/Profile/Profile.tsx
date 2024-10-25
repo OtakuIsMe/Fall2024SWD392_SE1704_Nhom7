@@ -4,7 +4,7 @@ import { TextField, Button, Avatar } from '@mui/material';
 import { Home, Favorite, Receipt, Book, ArrowBack } from '@mui/icons-material';
 import { NavLink } from 'react-router-dom';  // Use NavLink for page transitions
 import './Profile.css';
-import TransactionHistory from './../../TransactionHistory/TransactionHistory';
+import TransactionHistory from '../TransactionHistory/TransactionHistory';
 
 const Profile = () => {
   const context = useContext(AuthenContext);

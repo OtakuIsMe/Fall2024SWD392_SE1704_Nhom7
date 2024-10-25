@@ -68,13 +68,13 @@ const TransactionHistory = () => {
       </div>
 
       <div className="transaction-history-container">
-        {/* <div className="profile-header">
-          <Avatar alt="User Avatar" src={user.imageUrl} sx={{ width: 120, height: 120 }} />
+        <div className="profile-header">
+        <Avatar alt="User Avatar" src={user.imageUrl} sx={{ width: 120, height: 120 }} className="avatar" />
           <div className="user-info">
             <h2>{user.name}</h2>
             <p>Số dư ví: {user.wallet} VND</p>
           </div>
-        </div> */}
+        </div>
 
         <div className="transaction-layout">
           <div className="transaction-left">
@@ -117,7 +117,7 @@ const TransactionHistory = () => {
             {selectedTransaction ? (
               <div className="transaction-details">
                 <h3>Transaction Details</h3>
-                <p>Payment Refund: {selectedTransaction.paymentRefund?.TxHash}</p>
+                
                 <p>Status: {selectedTransaction.status ? 'Completed' : 'Pending'}</p>
                 <p>Amount: {selectedTransaction.total} VND</p>
                 <p>Date: {selectedTransaction.createAt}</p>

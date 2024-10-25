@@ -1,0 +1,81 @@
+.profile-container {
+  display: flex;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #f4f4f4;
+  padding: 20px;
+}
+
+.favorite-list {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.room-list {
+  list-style: none;
+  padding: 0;
+}
+
+.room-item {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.room-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.3s;
+}
+
+.room-image:hover {
+  transform: scale(1.05);
+}
+
+.heart-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #ff4d4f;
+  font-size: 28px;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.heart-icon:hover {
+  color: darkred;
+  transform: scale(1.1);
+}
+
+.room-details {
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+}
+
+h3 {
+  margin: 5px 0;
+}
+
+p {
+  margin: 3px 0;
+}
