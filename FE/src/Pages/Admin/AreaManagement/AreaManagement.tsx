@@ -90,6 +90,7 @@ const AreaManagement: React.FC = () => {
       <div className='btn-container'>
         <AddBtn openModal={openModal}/>
       </div>
+      
       <div className='content'>
         {areaList ? 
           <TableTpl columns={columns} rows={areaList} editButton={true} deleteButton={true}/>
