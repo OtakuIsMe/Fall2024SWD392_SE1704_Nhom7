@@ -308,7 +308,7 @@ namespace BE.src.Repositories
 
         public async Task<Booking?> CheckBookedRoom(Guid roomId, DateTime DateBooking, TimeSpan TimeBooking)
         {
-            return await _context.Bookings.FirstOrDefaultAsync(b => b.RoomId == roomId
+            return _context.Bookings.AsEnumerable().FirstOrDefault(b => b.RoomId == roomId
                                     && b.Status == StatusBookingEnum.InProgress
                                     && (!(b.DateBooking.Add(b.TimeBooking) < DateBooking
                                     || DateBooking.Add(TimeBooking) < b.DateBooking)));
@@ -316,7 +316,7 @@ namespace BE.src.Repositories
 
         public async Task<Booking?> CheckBookReqUser(Guid roomId, Guid userId, DateTime DateBooking, TimeSpan TimeBooking)
         {
-            return await _context.Bookings.FirstOrDefaultAsync(b => b.RoomId == roomId
+            return _context.Bookings.AsEnumerable().FirstOrDefault(b => b.RoomId == roomId
                                     && b.UserId == userId
                                     && b.Status == StatusBookingEnum.Wait
                                     && (!(b.DateBooking.Add(b.TimeBooking) < DateBooking
