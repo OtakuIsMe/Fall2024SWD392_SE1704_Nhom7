@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './MembershipManagement.css'
 import TableTpl from '../../../Components/Table/Table';
+import AddBtn from '../../../Components/AddBtn/AddBtn';
 
 const MembershipManagement: React.FC = () => {
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
+
   const rows = [
     createData('India', 'IN', 1324171354, 3287263),
     createData('China', 'CN', 1403500365, 9596961),
@@ -79,11 +82,25 @@ const MembershipManagement: React.FC = () => {
     },
   ];
 
+  const openModal = () => {
+    setIsModalOpen(true);
+    console.log('open')
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    console.log('close')
+  };
+
+
   return (
     <div id='membership-mng'>
       <h1>Membership Management</h1>
+      <div className='btn-container'>
+        <AddBtn openModal={openModal}/>
+      </div>
       <div className='content'>
-        <TableTpl rows={rows} columns={columns}/>
+        {/* <TableTpl rows={rows} columns={columns}/> */}
       </div>
     </div>
   )
