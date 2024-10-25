@@ -152,8 +152,7 @@ export class ApiGateway {
 
     public static async payBill<T>(bookingId: string): Promise<T> {
         try {
-            const bookingid = bookingId;
-            const response = await this.axiosInstance.post<T>(`transaction/Payment-PayPal-Create`, bookingid);
+            const response = await this.axiosInstance.post<T>(`transaction/Payment-PayPal-Create`, bookingId);
             
             console.log(response.data);
             return response.data
@@ -180,6 +179,45 @@ export class ApiGateway {
             return response.data
         } catch (error) {
             console.log("Get Request Error: ", error)
+            throw error
+        }
+    }
+
+    public static async ApproveBooking<T>(bookingId: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.put<T>(`booking/AcceptBooking/${bookingId}`)
+            return response.data
+        } catch (error) {
+            console.log("Accept Request Error: ", error)
+            throw error
+        }
+    }
+
+    public static async CancelBooking<T>(bookingId: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.put<T>(`booking/CancelBooking/${bookingId}`)
+            return response.data
+        } catch (error) {
+            console.log("Accept Request Error: ", error)
+            throw error
+        }
+    }
+
+    public static async CreateService<T>(name: string, type: number, price: number, image: File): Promise<T> {
+        try {
+            const formData = new FormData();
+                formData.append("Name", name);      
+                formData.append("Type", type.toString());
+                formData.append("Price", price.toString());
+                formData.append("Image", image);
+            const response = await axios.post<T>(`amenityservice/CreateService`, formData , {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data
+        } catch (error) {
+            console.log("Create Service Error: ", error)
             throw error
         }
     }

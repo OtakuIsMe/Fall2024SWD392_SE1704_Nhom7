@@ -1,5 +1,4 @@
-import React, { ReactNode, useState } from 'react'
-import { useNavigate } from 'react-router';
+import React, { ReactNode } from 'react'
 import Food from '../../Assets/Food.webp'
 import Drink from '../../Assets/Drink.jpg'
 import Device from '../../Assets/Device.jpg'
@@ -15,14 +14,12 @@ interface ItemCardProps {
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({ id, img, name , type, price, children}) => {
-    const navigate = useNavigate()
-
     const priceConvert = (amount: number): string => {
         return new Intl.NumberFormat('de-DE', { style: 'decimal' }).format(amount);
     }
 
     return (
-        <div id='item_card' onClick={() => navigate('/roomDetail/ff0fe7135acf8a5035a4371b146c4c79e7e6469b84e091a53508dde6415c2152')}>
+        <div id='item_card'>
             <div className="img_container">
                 {type === 0 ?
                     <img src={Food} alt="" />

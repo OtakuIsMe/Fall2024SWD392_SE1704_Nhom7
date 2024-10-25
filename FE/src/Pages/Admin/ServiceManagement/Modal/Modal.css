@@ -1,0 +1,152 @@
+#service_modal {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    transition: all 0s;
+}
+
+#service_modal::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+
+    background-color: rgb(200, 200, 200, .3);
+    z-index: 2;
+}
+
+#service_modal > .modal {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    min-height: 50vh;
+    max-height: 80vh;
+    padding: 15px 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    border-radius: 20px;
+    background-color: white;
+    overflow: hidden;
+    z-index: 3;
+}
+
+#service_modal > .modal > .popup-header > h1 {
+    margin: 0;
+}
+
+#service_modal > .modal > .popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#service_modal > .modal > .modal-btns {
+    position: relative;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+}
+
+#service_modal > .modal > .modal-btns > .btn {
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#service_modal > .modal > .modal-btns > .modal-confirm {
+    border: none;
+    background-color: rgb(93, 190, 163);
+    color: white;
+}
+
+#service_modal > .modal > .modal-btns > .modal-confirm:hover {
+    background-color: rgb(72, 147, 126);
+}
+
+#service_modal > .modal > .modal-btns > .modal-cancel:hover {
+    color: rgb(150, 150, 150);
+}
+
+#service_modal > .modal > .modal-content {
+    min-height: calc(50vh - 30px - 44px);
+    max-height: calc(80vh - 30px - 44px);
+    overflow-y: auto;
+}
+
+#service_modal > .modal > .modal-content > .content {
+    min-height: calc(50vh - 30px - 44px);
+    max-height: calc(80vh - 30px - 44px);
+    display: flex;
+    gap: 10px;
+}
+
+#service_modal > .modal > .modal-content > .content > .column1 {
+    min-height: calc(50vh - 30px - 44px);
+    max-height: calc(80vh - 30px - 44px);
+    background-color: lightgray;
+    border-radius: 10px;
+    flex: 1;
+    overflow: hidden;
+}
+
+#service_modal > .modal > .modal-content > .content > .column1 > .img-container {
+    height: 100%;
+}
+ 
+#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-placeholder {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-selected > .image-label,
+#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-placeholder > .image-label {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-selected > .image-label > img {
+    width: 100%;
+    height: auto;
+}
+
+#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-placeholder > .image-label > div {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#service_modal > .modal > .modal-content > .content > .column2 {
+    min-height: calc(50vh - 30px - 44px);
+    max-height: calc(80vh - 30px - 44px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+#service_modal > .modal > .modal-content > .content > .column2 > label > p {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+#service_modal > .modal > .modal-content > .content > .column2 > label > select {
+    padding: 8.5px 14px;
+}
+
+#service_modal > .modal > .modal-content > .content > .column2 > label > select:focus {
+    outline-width: 0;
+}

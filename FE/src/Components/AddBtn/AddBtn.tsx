@@ -2,11 +2,15 @@ import React from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import './AddBtn.css'
 
-const AddBtn:React.FC = () => {
+interface AddIcon {
+  openModal: () => void;
+}
+
+const AddBtn:React.FC<AddIcon> = ({ openModal }) => {
   
   return (
     <>
-        <div id='ad_add_btn'>
+        <div id='ad_add_btn' onClick={openModal}>
             <span><AddIcon/></span>
             Add
         </div>
