@@ -63,5 +63,11 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.GetScheduleBookingForStaff(startDate, endDate);
         }
+
+        [HttpGet("check-in")]
+        public async Task<IActionResult> GetBookingRequestsInProgressForStaff()
+        {
+            return await _bookingServ.GetBookingRequestsInProgressForStaff();
+        }
     }
 }

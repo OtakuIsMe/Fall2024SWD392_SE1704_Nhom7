@@ -13,7 +13,7 @@ namespace BE.src.Services
         Task<IActionResult> GetAllAmenityService();
         Task<IActionResult> CreateService(CreateServiceDTO data);
         Task<IActionResult> CreateServiceDetail(CreateServiceDetailDTO data);
-        Task<IActionResult> UpdateService(Guid id, CreateServiceDTO service);
+        Task<IActionResult> UpdateService(Guid id, UpdateServiceDTO service);
         Task<IActionResult> DeleteService(Guid amenityServiceId);
         Task<IActionResult> CheckService(Guid BookingItemsId, Guid StaffId, DeviceCheckingDTO data);
     }
@@ -114,7 +114,7 @@ namespace BE.src.Services
             }
         }
 
-        public async Task<IActionResult> UpdateService(Guid id, CreateServiceDTO service)
+        public async Task<IActionResult> UpdateService(Guid id, UpdateServiceDTO service)
         {
             try
             {
@@ -127,7 +127,6 @@ namespace BE.src.Services
 
                 serviceToUpdate.Name = service.Name;
                 serviceToUpdate.Price = service.Price;
-                serviceToUpdate.Type = service.Type;
                 serviceToUpdate.UpdateAt = DateTime.Now;
 
                 if (service.Image == null)
