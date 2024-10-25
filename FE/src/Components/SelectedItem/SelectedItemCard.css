@@ -1,0 +1,39 @@
+#slt-item {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ccc;
+}
+
+#slt-item > .image {
+    height: 70px;
+}
+
+#slt-item > .image img{
+    height: 100%;
+}
+
+#slt-item > .info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 10px 5px 5px;
+}
+
+#slt-item > .info p {
+    margin: 0;
+}
+
+#slt-item > .info > .name {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+#slt-item > .info > .price {
+    color: rgb(90, 90, 90);
+    font-size: .9em;
+}
+#slt-item > .info > .amount {
+    text-align: end;
+}

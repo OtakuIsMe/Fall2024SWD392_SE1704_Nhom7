@@ -485,14 +485,51 @@
     position: relative;
 }
 
+#room-detail-page .service-popup .service-content .booking-service .services {
+    height: 460px;
+    overflow-y: scroll;
+}
+
+#room-detail-page .service-popup .service-content .booking-service .services .item-container {
+    height: fit-content;
+}
+
 #room-detail-page .service-popup .service-content .booking-service .service-total {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
     position: absolute;
     bottom: 0;
     left: 0;
     font-size: 1.3rem;
     font-weight: 600;
     box-sizing: border-box;
-    padding: 15px 5px;
+    padding: 15px;
+    border-top: 1px solid #ccc;
+    gap: 10px;
+    z-index: 6;
+}
+
+#room-detail-page .service-popup .service-content .booking-service .service-total div {
+    display: flex;
+    justify-content: space-between;
+}
+
+#room-detail-page .service-popup .service-content .booking-service .service-total .confirm {
+    display: flex;
+    justify-content: end;
+}
+
+#room-detail-page .service-popup .service-content .booking-service .service-total .confirm-btn {
+    padding: 10px;
+    background-color: #4DB051;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+#room-detail-page .service-popup .service-content .booking-service .service-total .confirm-btn:hover {
+    color: white;
+    background-color: #3c8b3f;
 }
 
 #room-detail-page .service-popup .nav-bar {

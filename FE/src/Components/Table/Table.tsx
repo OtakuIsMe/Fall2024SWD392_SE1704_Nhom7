@@ -20,6 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import './Table.css'
+import { ApiGateway } from '../../Api/ApiGateway';
 
 interface Data {
     columns: any[];
@@ -33,10 +34,14 @@ interface Data {
     accessButton?: boolean;
     unAccessButton?: boolean;
     cancelButton?: boolean;
+    function1?: (value: any) => Promise<any>;
+    function2?: (value: any) => Promise<any>;
+    function3?: () => Promise<any>;
 }
 
 interface Rows {
     index: string;
+    id: string;
     room: string;
     user: string;
     email: string;
@@ -47,6 +52,9 @@ interface Rows {
     status: string;
     isPay: string;
     services?: subRows[];
+    function1?: (value: any) => Promise<any>;
+    function2?: (value: any) => Promise<any>;
+    function3?: () => Promise<any>;
 }
 
 interface subRows {
@@ -61,7 +69,22 @@ interface service {
     price: string;
 }
 
-const TableTpl:React.FC<Data> = ({columns, rows, haveSubrows, editButton, deleteButton, approveButton, declineButton, accessButton, unAccessButton, cancelButton}) => {
+const TableTpl:React.FC<Data> = (
+    {
+        columns, 
+        rows, 
+        haveSubrows, 
+        editButton, 
+        deleteButton, 
+        approveButton, 
+        declineButton, 
+        accessButton, 
+        unAccessButton, 
+        cancelButton, 
+        function1, 
+        function2, 
+        function3
+    }) => {
     
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(15);
@@ -85,10 +108,27 @@ const TableTpl:React.FC<Data> = ({columns, rows, haveSubrows, editButton, delete
         setPage(0);
     };
 
-    const Row:React.FC<Rows> = ({ index, room, user, email, total, bookedDate, start, end, status, isPay, services}) =>{
+    const Row:React.FC<Rows> = ({ index, id, room, user, email, total, bookedDate, start, end, status, isPay, services, function1, function2,function3}) =>{
         const [open, setOpen] = React.useState(false);
         const row = { index, room, user, email, total, bookedDate, start, end, status, isPay };
 
+        function handleFunction1() {
+            if(function1){
+                function1(id);
+            }
+        }
+
+        function handleFunction2() {
+            if(function2){
+                function2(id);
+            }
+        }
+        
+        function handleFunction3() {
+            if(function3){
+                function3();
+            }
+        }
         return(
             <React.Fragment>
                 <TableRow hover role="checkbox" tabIndex={-1} >
@@ -117,7 +157,15 @@ const TableTpl:React.FC<Data> = ({columns, rows, haveSubrows, editButton, delete
                     {actionButtons.map((button, index) =>
                         button.condition ? (
                             <TableCell align='center'>
-                                <div className={`tblButton btn${index+1}`}>{button.icon}</div>
+                                <div 
+                                    className={`tblButton btn${index+1}`} 
+                                    onClick={() => {
+                                        if(button.label === 'Edit'){
+                                            handleFunction3()
+                                        }else{
+                                            (index + 1) % 2 === 0 ? handleFunction2() : handleFunction1()
+                                        }
+                                    }}>{button.icon}</div>
                             </TableCell>
                         ) : null
                     )}
@@ -205,6 +253,7 @@ const TableTpl:React.FC<Data> = ({columns, rows, haveSubrows, editButton, delete
                                 return (
                                     <Row 
                                         index={row.index}
+                                        id={row.id}
                                         room={row.room} 
                                         user={row.user} 
                                         email={row.email}
@@ -214,7 +263,11 @@ const TableTpl:React.FC<Data> = ({columns, rows, haveSubrows, editButton, delete
                                         end={row.end}
                                         status={row.status}
                                         isPay={row.isPay}
-                                        services={row.services} />
+                                        services={row.services} 
+                                        function1={function1}
+                                        function2={function2}
+                                        function3={function3}
+                                        />
                                 );
                         })
                         :
@@ -236,7 +289,7 @@ const TableTpl:React.FC<Data> = ({columns, rows, haveSubrows, editButton, delete
                                     {actionButtons.map((button, index) =>
                                         button.condition ? (
                                             <TableCell align='center'>
-                                                <div className={`tblButton btn${index+1}`}>{button.icon}</div>
+                                                <div className={`tblButton btn${index+1}`} >{button.icon}</div>
                                             </TableCell>
                                         ) : null
                                     )}

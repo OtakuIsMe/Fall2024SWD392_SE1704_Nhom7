@@ -29,6 +29,7 @@ const AuthenProvider = ({ children }: { children: ReactNode }) => {
                 try{
                     const response = await ApiGateway.GetUserByToken<any>(token);
                     setUser(response);
+                    console.log(response)
                 } catch (err){
                     console.error(err);
                 } finally {
@@ -73,6 +74,7 @@ const AuthenProvider = ({ children }: { children: ReactNode }) => {
                 try{
                     const response = await ApiGateway.GetUserByToken<any>(token);
                     setUser(response);
+                    console.log(response);
                 } catch (err){
                     console.error(err);
                 }
