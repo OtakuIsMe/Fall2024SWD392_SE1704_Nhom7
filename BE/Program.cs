@@ -60,6 +60,7 @@ builder.Services.AddScoped<IBookingServ, BookingServ>();
 builder.Services.AddScoped<IAmenityServiceServ, AmenityServiceServ>();
 builder.Services.AddScoped<ITransactionServ, TrasactionServ>();
 builder.Services.AddScoped<IAnalysticServ, AnalysticServ>();
+builder.Services.AddScoped<IReportServ, ReportServ>();
 
 builder.Services.AddScoped<IUserRepo, UserRepo>(); builder.Services.AddScoped<IRoomRepo, RoomRepo>();
 builder.Services.AddScoped<IMembershipRepo, MembershipRepo>();
@@ -70,6 +71,7 @@ builder.Services.AddScoped<IBookingRepo, BookingRepo>();
 builder.Services.AddScoped<IAmenityServiceRepo, AmenityServiceRepo>();
 builder.Services.AddScoped<ITransactionRepo, TrasactionRepo>();
 builder.Services.AddScoped<IAnalysticRepo, AnalysticRepo>();
+builder.Services.AddScoped<IReportRepo, ReportRepo>();
 
 builder.Services.AddDbContext<PodDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),

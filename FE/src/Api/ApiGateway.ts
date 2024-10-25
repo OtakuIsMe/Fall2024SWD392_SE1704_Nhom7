@@ -32,7 +32,7 @@ export class ApiGateway {
             console.error("Login error:", error);
             throw error;
         }
-    }public static async Register<T>(email: string, password: string,username:string, phone: string): Promise<T> {
+    } public static async Register<T>(email: string, password: string, username: string, phone: string): Promise<T> {
         try {
             const data = {
                 Email: email,
@@ -73,7 +73,7 @@ export class ApiGateway {
         }
     }
 
-    public static async GetRoomList<T>(areaId: string = '', typeRoom: string = '', startDate: string = '', endDate: string = '' ): Promise<T[]> {
+    public static async GetRoomList<T>(areaId: string = '', typeRoom: string = '', startDate: string = '', endDate: string = ''): Promise<T[]> {
         try {
             let fetchLink = 'room/GetRoomListWithBookingTimes?';
             const params: string[] = [];
@@ -124,9 +124,9 @@ export class ApiGateway {
             };
 
             console.log(bookingData)
-    
+
             const response = await this.axiosInstance.post<T>(`booking/room/`, bookingData);
-    
+
             console.log(response.data);
             return response.data;
         } catch (error) {
@@ -144,7 +144,7 @@ export class ApiGateway {
             return response.data;
         } catch (err) {
             console.error("Transaction error:", err);
-            console.error("Input:",bookingId)
+            console.error("Input:", bookingId)
             throw err;
         }
 
@@ -152,13 +152,16 @@ export class ApiGateway {
 
     public static async payBill<T>(bookingId: string): Promise<T> {
         try {
-            const response = await this.axiosInstance.post<T>(`transaction/Payment-PayPal-Create`, bookingId);
-            
+            const data = {
+                bookingId
+            }
+            const response = await this.axiosInstance.post<T>(`transaction/Payment-PayPal-Create`, data);
+
             console.log(response.data);
             return response.data
         } catch (error) {
             console.error("Transaction error:", error);
-            console.error("Input:",bookingId)
+            console.error("Input:", bookingId)
             throw error;
         }
     }
@@ -206,13 +209,13 @@ export class ApiGateway {
     public static async CreateService<T>(name: string, type: number, price: number, image: File): Promise<T> {
         try {
             const formData = new FormData();
-                formData.append("Name", name);      
-                formData.append("Type", type.toString());
-                formData.append("Price", price.toString());
-                formData.append("Image", image);
-            const response = await axios.post<T>(`amenityservice/CreateService`, formData , {
+            formData.append("Name", name);
+            formData.append("Type", type.toString());
+            formData.append("Price", price.toString());
+            formData.append("Image", image);
+            const response = await axios.post<T>(`amenityservice/CreateService`, formData, {
                 headers: {
-                  'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'multipart/form-data',
                 },
             });
             return response.data

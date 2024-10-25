@@ -19,6 +19,8 @@ namespace BE.src.Services
         Task<IActionResult> ViewProfileByUserId(Guid userId);
         Task<IActionResult> GetListUserCustomer();
         Task<IActionResult> UpdateUserProfile(UpdateProfileDTO data);
+        Task<IActionResult> ViewNotification(Guid userId);
+        Task<IActionResult> AddFeedback(Guid userId, Guid roomId, AddFeedBackDTO data);
     }
     public class UserServ : IUserServ
     {
@@ -236,6 +238,42 @@ namespace BE.src.Services
                 {
                     return ErrorResp.BadRequest("Update fail");
                 }
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+        public async Task<IActionResult> ViewNotification(Guid userId)
+        {
+            try
+            {
+                var notifications = await _userRepo.ViewNotification(userId);
+                return SuccessResp.Ok(notifications);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> AddFeedback(Guid userId, Guid roomId, AddFeedBackDTO data)
+        {
+            try
+            {
+                RatingFeedback ratingFeedback = new()
+                {
+                    UserId = userId,
+                    RoomId = roomId,
+                    Feedback = data.Feedback,
+                    RatingStar = data.RatingStar
+                };
+                var IsAddded = await _userRepo.AddFeedback(ratingFeedback);
+                if (!IsAddded)
+                {
+                    return ErrorResp.BadRequest("Fail to Add Feedback");
+                }
+                return SuccessResp.Created("Add rating feedback successfull");
             }
             catch (System.Exception ex)
             {

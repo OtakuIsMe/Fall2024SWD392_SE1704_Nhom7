@@ -32,5 +32,15 @@ namespace BE.src.Controllers
         public async Task<IActionResult> GetAllMembership(){
             return await _membershipServ.GetAllMembership();
         }
+
+        [HttpPut("Update-membership/{id}")]
+        public async Task<IActionResult> UpdateMembership(Guid id, [FromBody] MembershipUpdateDTO data){
+            return await _membershipServ.UpdateMembership(id, data);
+        }
+
+        [HttpDelete("Delete-membership/{id}")]
+        public async Task<IActionResult> DeleteMembership(Guid id){
+            return await _membershipServ.DeleteMembership(id);
+        }
     }
 }

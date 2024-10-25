@@ -126,5 +126,10 @@ namespace BE.src.Util
         {
             return input.Replace(" ", "_");
         }
+
+        public static string ConvertDateTimeTime(DateTime time)
+        {
+            return time.ToString("dd/MM/yyyy HH:mm");
+        }
     }
 }

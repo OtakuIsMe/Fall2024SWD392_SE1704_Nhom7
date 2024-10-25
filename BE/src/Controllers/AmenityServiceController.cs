@@ -1,4 +1,5 @@
 using BE.src.Domains.DTOs.AmenityService;
+using BE.src.Domains.Models;
 using BE.src.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,8 +24,32 @@ namespace BE.src.Controllers
         }
 
         [HttpPost("CreateService")]
-        public async Task<IActionResult> CreateService([FromForm] CreateServiceDTO data){
+        public async Task<IActionResult> CreateService([FromForm] CreateServiceDTO data)
+        {
             return await _amenityServiceServ.CreateService(data);
+        }
+        [HttpPost("CreateServiceDetail")]
+        public async Task<IActionResult> CreateServiceDetail([FromBody] CreateServiceDetailDTO data)
+        {
+            return await _amenityServiceServ.CreateServiceDetail(data);
+        }
+
+        [HttpPut("UpdateService/{id}")]
+        public async Task<IActionResult> UpdateService(Guid id, [FromForm] UpdateServiceDTO service)
+        {
+            return await _amenityServiceServ.UpdateService(id, service);
+        }
+
+        [HttpDelete("DeleteService/{amenityServiceId}")]
+        public async Task<IActionResult> DeleteService(Guid amenityServiceId)
+        {
+            return await _amenityServiceServ.DeleteService(amenityServiceId);
+        }
+
+        [HttpPost("CheckService")]
+        public async Task<IActionResult> CheckService([FromQuery] Guid BookingItemsId, [FromQuery] Guid StaffId, [FromBody] DeviceCheckingDTO data)
+        {
+            return await _amenityServiceServ.CheckService(BookingItemsId, StaffId, data);
         }
     }
 }

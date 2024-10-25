@@ -34,3 +34,5 @@ msbuild.wrn
 .vs/
 
 Config/
+.fake
+Migrations

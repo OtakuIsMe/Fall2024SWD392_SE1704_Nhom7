@@ -28,22 +28,46 @@ namespace BE.src.Controllers
             return await _bookingServ.ViewBookingListOfRoom(roomId);
         }
 
-        [HttpPut("AcceptBooking/{bookingId:guid}")]
+        [HttpPut("AcceptBookingByManager/{bookingId:guid}")]
         public async Task<IActionResult> AcceptBooking(Guid bookingId)
         {
             return await _bookingServ.AcceptBooking(bookingId);
         }
 
-        [HttpPut("CancelBooking/{bookingId:guid}")]
+        [HttpPut("CancelBookingByManager/{bookingId:guid}")]
         public async Task<IActionResult> CancelBooking(Guid bookingId)
         {
             return await _bookingServ.CancelBooking(bookingId);
-        }   
+        }
 
         [HttpGet("GetBookingRequests")]
         public async Task<IActionResult> GetBookingRequests()
         {
             return await _bookingServ.GetBookingRequests();
+        }
+
+        [HttpGet("CancleBookingByCustomrer/{bookingId:guid}")]
+        public async Task<IActionResult> CancleBookingByCustomer(Guid bookingId)
+        {
+            return await _bookingServ.CancleBookingByCustomer(bookingId);
+        }
+
+        [HttpGet("GetBookingCheckAvailableList")]
+        public async Task<IActionResult> GetBookingCheckAvailableList([FromQuery] Guid bookingId)
+        {
+            return await _bookingServ.GetBookingCheckAvailableList(bookingId);
+        }
+
+        [HttpGet("GetScheduleBookingForStaff")]
+        public async Task<IActionResult> GetScheduleBookingForStaff([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            return await _bookingServ.GetScheduleBookingForStaff(startDate, endDate);
+        }
+
+        [HttpGet("check-in")]
+        public async Task<IActionResult> GetBookingRequestsInProgressForStaff()
+        {
+            return await _bookingServ.GetBookingRequestsInProgressForStaff();
         }
     }
 }

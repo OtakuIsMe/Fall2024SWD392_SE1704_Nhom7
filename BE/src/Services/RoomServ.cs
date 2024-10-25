@@ -257,14 +257,27 @@ namespace BE.src.Services
         {
             try
             {
-                // foreach (var roomType in Enum.GetValues(typeof(TypeRoomEnum)))
-                // {
+                List<TrendingRoomRpDTO> returnValues = new List<TrendingRoomRpDTO>();
+                foreach (TypeRoomEnum roomType in Enum.GetValues(typeof(TypeRoomEnum)))
+                {
+                    List<RoomAnalysticDTO> rooms = await _roomRepo.TrendingRoom(roomType);
+                    float totalComeIn = 0;
+                    int TotalBooking = 0;
+                    foreach (var room in rooms)
+                    {
+                        totalComeIn += room.TotalRevenue;
+                        TotalBooking += room.CountBooking;
+                    }
 
-
-
-
-                // }
-                return SuccessResp.Ok("");
+                    TrendingRoomRpDTO returnValue = new()
+                    {
+                        Type = roomType,
+                        Amount = totalComeIn,
+                        BookingsCount = TotalBooking
+                    };
+                    returnValues.Add(returnValue);
+                }
+                return SuccessResp.Ok(returnValues);
             }
             catch (System.Exception ex)
             {

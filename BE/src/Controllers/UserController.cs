@@ -71,5 +71,17 @@ namespace BE.src.Controllers
         {
             return await _userServ.UpdateUserProfile(data);
         }
+
+        [HttpGet("ViewNotification/{userId:Guid}")]
+        public async Task<IActionResult> ViewNotification(Guid userId)
+        {
+            return await _userServ.ViewNotification(userId);
+        }
+
+        [HttpPost("AddFeedback")]
+        public async Task<IActionResult> AddFeedback([FromQuery] Guid userId, [FromQuery] Guid roomId, [FromBody] AddFeedBackDTO data)
+        {
+            return await _userServ.AddFeedback(userId, roomId, data);
+        }
     }
 }
