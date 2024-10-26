@@ -4,7 +4,8 @@ import { TextField, Button, Avatar } from '@mui/material';
 import { Home, Favorite, Receipt, Book, ArrowBack } from '@mui/icons-material';
 import { NavLink } from 'react-router-dom';  // Use NavLink for page transitions
 import './Profile.css';
-import TransactionHistory from '../TransactionHistory/TransactionHistory';
+import { ApiGateway } from '../../../../Api/ApiGateway';
+
 
 const Profile = () => {
   const context = useContext(AuthenContext);
@@ -12,8 +13,31 @@ const Profile = () => {
     throw new Error("AuthenContext must be used within an AuthenProvider");
   }
 
-  const { user, viewProfile, updateUserProfile } = context;
-
+  const { user } = context;
+  const viewProfile = async (): Promise<void> => {
+    if (user && user.id) {
+        try {
+            const response = await ApiGateway.ViewProfile<any>({ userId: user.id });
+            setUserData(response);
+        } catch (error) {
+            console.error("Lỗi khi lấy thông tin hồ sơ:", error);
+        }
+    }
+};
+  const updateUserProfile = async (userData: any): Promise<void> => {
+    try {
+        const updatedUser = {
+            ...userData,
+            userId: user.userId || user.id,
+        };
+        await ApiGateway.UpdateUserProfile(updatedUser);
+        setUserData(updatedUser);
+        alert("Profile updated successfully");
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        alert("Failed to update profile");
+    }
+};
   const [userData, setUserData] = useState({
     username: '',
     name: '',

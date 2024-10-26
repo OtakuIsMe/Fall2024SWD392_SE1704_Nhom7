@@ -45,7 +45,9 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const handleLoginClick = () => {
     navigate('/login');
   };
-
+const handleProfileCLick = () => {
+  navigate('/profile');
+}
   const handleRegisterClick = () => {
     setIsRegisterOpen(true);
   };
@@ -233,7 +235,7 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>{user.username}</MenuItem>
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleProfileCLick}>Profile</MenuItem>
               <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
             </Menu>
           </>

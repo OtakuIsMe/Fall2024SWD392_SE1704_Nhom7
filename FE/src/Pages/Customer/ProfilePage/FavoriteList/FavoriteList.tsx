@@ -3,6 +3,7 @@ import { AuthenContext } from '../../../../Components/AuthenContext';
 import { NavLink } from 'react-router-dom';
 import { Home, Favorite, Receipt, Book, ArrowBack, Favorite as FilledHeart } from '@mui/icons-material';
 import './FavoriteList.css';
+import { ApiGateway } from '../../../../Api/ApiGateway';
 
 const FavoriteList = () => {
   const context = useContext(AuthenContext);
@@ -10,11 +11,35 @@ const FavoriteList = () => {
     throw new Error("useAuthenContext must be used within an AuthenProvider");
   }
 
-  const { user, fetchFavoriteRooms, unfavoriteRoom } = context;
+  const { user } = context;
   const [favoriteRooms, setFavoriteRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const fetchFavoriteRooms = async (): Promise<any[]> => {
+    if (user && user.id) {
+        try {
+            const response = await ApiGateway.GetFavoriteRooms<any>(user.id);
+            return response; // Trả về danh sách phòng yêu thích
+        } catch (error) {
+            console.error("Error fetching favorite rooms:", error);
+            return []; // Trả về mảng rỗng nếu có lỗi
+        }
+    }
+    return [];
+};
 
+// Thêm hoặc xóa phòng khỏi danh sách yêu thích
+const unfavoriteRoom = async (roomId: string): Promise<void> => {
+    if (user && user.id) {
+        try {
+            await ApiGateway.UnfavoriteRoom<any>(user.id, roomId);
+            const updatedFavorites = await fetchFavoriteRooms(); // Lấy lại danh sách yêu thích
+            setFavoriteRooms(updatedFavorites); // Cập nhật danh sách yêu thích
+        } catch (error) {
+            console.error("Error unfavoriting room:", error);
+        }
+    }
+};
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -46,8 +71,8 @@ const FavoriteList = () => {
     }
   };
 
-  if (loading) return <div>Loading favorite rooms...</div>;
-  if (error) return <div>{error}</div>;
+  // if (loading) return <div>Loading favorite rooms...</div>;
+  // if (error) return <div>{error}</div>;
 
   return (
     <div className="profile-container">
