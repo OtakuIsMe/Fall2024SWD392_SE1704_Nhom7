@@ -1,6 +1,7 @@
 using BE.src.Domains.Database;
 using BE.src.Domains.DTOs;
 using BE.src.Domains.DTOs.Booking;
+using BE.src.Domains.DTOs.Room;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using BE.src.Util;
@@ -29,7 +30,7 @@ namespace BE.src.Repositories
         Task<Favourite?> GetFavouriteRoomByUser(Guid roomId, Guid userId);
         Task<bool> AddFavouriteRoom(Favourite favourite);
         Task<bool> DeleteFavouriteRoom(Favourite favourite);
-        Task<List<Room>> TrendingRoom(TypeRoomEnum roomType);
+        Task<List<RoomAnalysticDTO>> TrendingRoom(TypeRoomEnum roomType);
     }
     public class RoomRepo : IRoomRepo
     {
@@ -208,7 +209,8 @@ namespace BE.src.Repositories
                 .Include(r => r.Bookings)
                 .Include(r => r.Area)
                 .Include(r => r.Images)
-                .Where(r => (r.AreaId == areaId || areaId == null) && (r.TypeRoom == typeRoom || typeRoom == null) && r.Status == (int)StatusRoomEnum.Available)
+                .Where(r => (r.AreaId == r.AreaId || areaId == null) && (r.TypeRoom == typeRoom || typeRoom == null)
+                                    && r.Status == (int)StatusRoomEnum.Available)
                 .ToListAsync();
 
             var availableRooms = new List<Room>();
@@ -220,7 +222,11 @@ namespace BE.src.Repositories
                     DateTime bookingStartTime = b.DateBooking;
                     DateTime bookingEndTime = b.DateBooking.Add(b.TimeBooking);
 
-                    return (bookingStartTime < endDate && bookingEndTime > startDate && b.Status != 0);
+                    bool isDateRangeProvided = startDate != null && endDate != null;
+
+                    return isDateRangeProvided
+                        ? (bookingStartTime < endDate && bookingEndTime > startDate && b.Status != 0)
+                        : false;
                 });
 
                 if (!hasConflictingBooking)
@@ -232,11 +238,17 @@ namespace BE.src.Repositories
             return availableRooms;
         }
 
-        public async Task<List<Room>> TrendingRoom(TypeRoomEnum roomType)
+        public async Task<List<RoomAnalysticDTO>> TrendingRoom(TypeRoomEnum roomType)
         {
             return await _context.Rooms.Where(r => r.TypeRoom == roomType)
-                                        .Include(r => r.Bookings)
-                                        .ToListAsync();
+                                       .Include(r => r.Bookings.Where(b => b.Status == StatusBookingEnum.Completed))
+                                       .Select(r => new RoomAnalysticDTO
+                                       {
+                                           Room = r,
+                                           CountBooking = r.Bookings.Count(),
+                                           TotalRevenue = r.Bookings.Sum(b => b.Total)
+                                       })
+                                       .ToListAsync();
         }
     }
 }

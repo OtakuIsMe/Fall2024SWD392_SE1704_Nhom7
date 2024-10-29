@@ -3,12 +3,13 @@ import './ServiceManagement.css'
 import TableTpl from '../../../Components/Table/Table';
 import AddBtn from '../../../Components/AddBtn/AddBtn';
 import { ApiGateway } from '../../../Api/ApiGateway';
-import Modal from '../../../Components/Modal/Modal';
+import Modal from './ServiceModal/ServiceModal';
 
 const ServiceManagement: React.FC = () => {
   const data : any[] = [];
 
   const [ serviceList, setServiceList ] = useState<any>([])
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
 
   interface Data {
     index: number;
@@ -36,23 +37,19 @@ const ServiceManagement: React.FC = () => {
   const columns: Column[] = [
     { 
       id: 'index', 
-      label: 'No', 
-      minWidth: 10
-    },
-    { 
-      id: 'type', 
-      label: 'Type', 
-      minWidth: 50 
+      label: 'No',
     },
     { 
       id: 'name', 
-      label: 'Name', 
-      minWidth: 170 
+      label: 'Name',
+    },
+    { 
+      id: 'type', 
+      label: 'Type',
     },
     {
       id: 'price',
       label: 'Price',
-      minWidth: 170,
       align: 'right',
       format: (value: number) => value.toLocaleString('en-US'),
     },
@@ -61,6 +58,16 @@ const ServiceManagement: React.FC = () => {
   useEffect(() => {
     fetchServices()
   },[])
+
+  const openModal = () => {
+    setIsModalOpen(true);
+    console.log('open')
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    console.log('close')
+  };
 
   const getService = (type: number): string => {
     switch (type) {
@@ -76,9 +83,10 @@ const ServiceManagement: React.FC = () => {
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetServices()
       response.forEach((row: any, index: number) => {
-        rowData.push(createData(index+1 , getService(row.type), row.name, row.price))
+        rowData.push(createData(index+1 , getService(row.amenityService.type), row.amenityService.name, row.amenityService.price))
       })
       setServiceList(rowData)
+      console.log(response)
     } catch (err) {
       console.error('Error get servicelist :', err);
     }
@@ -88,16 +96,16 @@ const ServiceManagement: React.FC = () => {
     <div id='service-mng'>
       <h1>Service Management</h1>
       <div className='btn-container'>
-        <AddBtn/>
+        <AddBtn openModal={openModal}/>
       </div>
       <div className='content'>
         {serviceList ? 
           <TableTpl columns={columns} rows={serviceList} editButton={true} deleteButton={true}/>
           :
-          <TableTpl columns={columns} rows={data}/>
+          <p style={{textAlign: "center"}}>There are no service in here</p>
         } 
       </div>
-      <Modal popupType='Something' open={true} />
+      {isModalOpen && <Modal closeModal={closeModal} />}
     </div>
   )
 }

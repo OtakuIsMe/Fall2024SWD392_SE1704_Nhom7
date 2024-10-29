@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Reflection.Emit;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Connections;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 
 namespace BE.src.Domains.Database
 {
@@ -30,6 +31,7 @@ namespace BE.src.Domains.Database
             public DbSet<Favourite> Favourites { get; set; } = null!;
             public DbSet<UserAreaManagement> UserAreaManagements { get; set; } = null!;
             public DbSet<Location> Locations { get; set; } = null!;
+            public DbSet<SerivceDetail> SerivceDetails { get; set; } = null!;
             public DbSet<Transaction> Transactions { get; set; } = null!;
             public DbSet<Utility> Utilities { get; set; } = null!;
 
@@ -43,11 +45,10 @@ namespace BE.src.Domains.Database
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
+                  optionsBuilder.EnableSensitiveDataLogging();
                   if (!optionsBuilder.IsConfigured)
                   {
-                        
-                        optionsBuilder
-                        .UseLazyLoadingProxies(false)
+                        optionsBuilder.UseLazyLoadingProxies(false)
                                           .UseMySql(_configuration.GetConnectionString("DefaultConnection"),
                                           new MySqlServerVersion(new Version(8, 0, 27)));
                   }
@@ -143,6 +144,13 @@ namespace BE.src.Domains.Database
                             v => (int)v,
                             v => (StatusBookingItemEnum)v
                             );
+
+                        entity.Property(bi => bi.ServiceDetailId)
+                        .IsRequired(false);
+
+                        entity.HasOne(bi => bi.SerivceDetail)
+                        .WithMany(s => s.BookingItems)
+                        .HasForeignKey(bi => bi.ServiceDetailId);
 
                         entity.HasOne(bi => bi.Booking)
                         .WithMany(b => b.BookingItems)
@@ -250,8 +258,8 @@ namespace BE.src.Domains.Database
                         .IsRequired(false);
 
                         entity.HasOne(i => i.AmenityService)
-                        .WithOne(u=> u.Image)
-                        .HasForeignKey<Image>(i=> i.AmenityServiceId)
+                        .WithOne(u => u.Image)
+                        .HasForeignKey<Image>(i => i.AmenityServiceId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
 
@@ -362,7 +370,7 @@ namespace BE.src.Domains.Database
                               v => v.ToString(),
                               v => string.IsNullOrEmpty(v) ? default : v.ToEnum<PaymentTypeEnum>()
                         );
-                        entity.Property(pr => pr.Satutus)
+                        entity.Property(pr => pr.Status)
                         .IsRequired();
 
                         entity.HasOne(pr => pr.Booking)
@@ -464,6 +472,26 @@ namespace BE.src.Domains.Database
                         .HasForeignKey(r => r.AreaId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
+                  builder.Entity<SerivceDetail>(entity =>
+                  {
+                        entity.HasKey(s => s.Id);
+
+                        entity.Property(s => s.Name)
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                        entity.Property(s => s.IsNormal)
+                        .IsRequired();
+
+                        entity.Property(s => s.IsInUse)
+                        .IsRequired();
+
+                        entity.HasOne(s => s.AmenityService)
+                        .WithMany(s => s.SerivceDetails)
+                        .HasForeignKey(s => s.AmenitySerivceId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                  }
+                  );
                   builder.Entity<Transaction>(entity =>
                   {
                         entity.HasKey(t => t.Id);

@@ -6,10 +6,10 @@ import LoadingComp from "./LoadingComp/LoadingComp";
 interface AuthenContextProps {
     user: any;
     login: (email: string, password: string) => Promise<void>;
-    register: (email: string, username: string, phone: string, password: string) => Promise<void>;
+    register: (email: string, username: string, phone: string, password: string) =>Promise<void>;
     logout: () => void;
     
-   
+    fetchUser:()=> Promise<void>;
 }
 
 interface loginResponse {
@@ -19,76 +19,74 @@ interface loginResponse {
 export const AuthenContext = createContext<AuthenContextProps | undefined>(undefined);
 
 const AuthenProvider = ({ children }: { children: ReactNode }) => {
+    const navigate = useNavigate()
     const [user, setUser] = useState<any>(null);
-    const [favoriteRooms, setFavoriteRooms] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    // Fetch user by token
-    const fetchUserByToken = async () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const response = await ApiGateway.GetUserByToken<any>(token);
-                setUser(response);
-            } catch (error) {
-                console.error("Error fetching user by token:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        } else {
-            setIsLoading(false);
-        }
-    };
+    const [isLoading, setIsLoading] = useState<any>(true);
 
     useEffect(() => {
-        fetchUserByToken();
-    }, []);
+            const fetchUser = async () : Promise<void> =>{
+                const token = localStorage.getItem('token');
+                if (token) {
+                try{
+                    const response = await ApiGateway.GetUserByToken<any>(token);
+                    setUser(response);
+                    console.log(response)
+                } catch (err){
+                    console.error(err);
+                } finally {
+                    setIsLoading(false)
+                }
+            } else {
+                setIsLoading(false)
+            }
+            }
+            fetchUser();
+    }, [])
+
+
 
     const login = async (email: string, password: string): Promise<void> => {
         try {
             const loginData = await ApiGateway.LoginDefault<loginResponse>(email, password);
             localStorage.setItem('token', loginData.token);
-            await fetchUserByToken();
         } catch (error) {
-            alert("Login failed");
+            alert("Đăng nhập thất bại")
         }
-    };
+    }
 
     const register = async (email: string, username: string, phone: string, password: string): Promise<void> => {
         try {
-            await ApiGateway.Register(email, username, phone, password);
-            alert("Registration successful");
+            // Giả sử hàm ApiGateway.Register yêu cầu từng tham số riêng lẻ
+            await ApiGateway.Register(email, username, phone, password); // Truyền đủ 4 tham số
+            alert("Đăng ký thành công");
         } catch (error) {
-            console.error("Registration failed", error);
+            throw new Error("Đăng ký thất bại");
         }
     };
 
+      
     const logout = () => {
         localStorage.removeItem('token');
-        setUser(null);
-        setFavoriteRooms([]); // Reset danh sách yêu thích khi đăng xuất
-    };
+    }
 
-    
-
-   
-
-    // Lấy danh sách phòng yêu thích của người dùng
-
+    const fetchUser = async()=>{
+        const token = localStorage.getItem('token');
+                if (token) {
+                try{
+                    const response = await ApiGateway.GetUserByToken<any>(token);
+                    setUser(response);
+                    console.log(response);
+                } catch (err){
+                    console.error(err);
+                }
+            }
+    }
 
     return (
-        <AuthenContext.Provider value={{
-            user,
-            favoriteRooms,
-            login,
-            register,
-            logout,
-            
-            
-        }}>
-            {isLoading ? <LoadingComp /> : children}
+        <AuthenContext.Provider value={{ user, login, register, logout , fetchUser}}>
+            {isLoading ? <LoadingComp/> : children}
         </AuthenContext.Provider>
     );
-};
+}
 
 export default AuthenProvider;

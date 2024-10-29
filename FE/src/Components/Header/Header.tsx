@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import RegisterPopup from "../RegisterPopup/RegisterPopup";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -8,7 +8,6 @@ import { Button, IconButton, Menu, MenuItem } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Header.css';
 import { AuthenContext } from '../AuthenContext';
-import Profile from './../../Pages/Customer/ProfilePage/Profile/Profile';
 
 // Define the props type
 interface HeaderProps {
@@ -235,7 +234,6 @@ const handleProfileCLick = () => {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>{user.username}</MenuItem>
-              <MenuItem onClick={handleProfileCLick}>Profile</MenuItem>
               <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
             </Menu>
           </>

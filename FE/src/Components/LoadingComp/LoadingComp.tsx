@@ -6,7 +6,7 @@ const LoadingComp = () => {
   return (
     <div id='loading'>
         <div>
-            <RefreshIcon/>
+            <RefreshIcon sx={{fontSize: "64px"}}/>
         </div>
     </div>
   )

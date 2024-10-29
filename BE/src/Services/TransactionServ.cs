@@ -139,7 +139,7 @@ namespace BE.src.Services
                     PointBonus = 0,
                     BookingId = bookingId,
                     PaymentType = PaymentTypeEnum.Paypal,
-                    Satutus = true
+                    Status = true
                 };
                 bool isCreatedPayment = await _transactionRepo.CreatePaymentRefund(payment);
                 if (!isCreatedPayment)
@@ -188,7 +188,7 @@ namespace BE.src.Services
                     PointBonus = 0,
                     BookingId = bookingId,
                     PaymentType = PaymentTypeEnum.COD,
-                    Satutus = false
+                    Status = false
                 };
                 bool isCreatedPayment = await _transactionRepo.CreatePaymentRefund(payment);
                 if (!isCreatedPayment)
@@ -271,9 +271,12 @@ namespace BE.src.Services
                     },
 
                 };
-                foreach (var transaction in transactions){
-                    foreach (var statisticMonth in returnValue){
-                        if(transaction.CreateAt.HasValue && statisticMonth.Month == transaction.CreateAt.Value.Month){
+                foreach (var transaction in transactions)
+                {
+                    foreach (var statisticMonth in returnValue)
+                    {
+                        if (transaction.CreateAt.HasValue && statisticMonth.Month == transaction.CreateAt.Value.Month)
+                        {
                             statisticMonth.Amount += transaction.Total;
                         }
                     }

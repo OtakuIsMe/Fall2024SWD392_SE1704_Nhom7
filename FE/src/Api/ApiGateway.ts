@@ -9,59 +9,7 @@ export class ApiGateway {
             'Content-Type': 'application/json',
         },
     });
-    public static async ViewProfile<T>(data: any): Promise<T> {
-    try {
-        const response = await this.axiosInstance.post<T>("user/ViewProfile", data, {
-            headers: { 'Content-Type': 'application/json' } 
-        });
-        return response.data;
-    } catch (error) {
-        console.error("ViewProfile error:", error);
-        throw error;
-    }
-}
-public static async LoginDefault<T>(email: string, password: string): Promise<T> {
-    try {
-        const data = {
-            Email: email,
-            Password: password
-        };
-        const response = await this.axiosInstance.post<T>("user/LoginDefault", data);
-        return response.data;
-    } catch (error) {
-        console.error("Login error:", error);
-        throw error;
-    }
-}
-    
-public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
-    try {
-        const response = await this.axiosInstance.get<T[]>(`transaction/History/${userId}`);
-        return response.data;
-    } catch (error) {
-        console.error("GetTransactionHistory error:", error);
-        throw error;
-    }
-}
-    
 
-    public static async UpdateUserProfile<T>(userData: any): Promise<T> {
-        try {
-            // Nếu userData là FormData, thì không đặt Content-Type
-            const headers = userData instanceof FormData ? {} : { 'Content-Type': 'application/json' };
-            const response = await this.axiosInstance.post<T>("user/UpdateUserProfile", userData, { headers });
-            return response.data;
-        } catch (error) {
-            console.error("UpdateUserProfile error:", error);
-            throw error;
-        }
-    }
-
-
-    
-    
-    
-    
     public static async GetServices<T>(): Promise<T[]> {
         try {
             const response = await this.axiosInstance.get<T[]>("http://localhost:5101/amenityservice/GetAll")
@@ -72,8 +20,19 @@ public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
         }
     }
 
-    
-    public static async Register<T>(email: string, password: string,username:string, phone: string): Promise<T> {
+    public static async LoginDefault<T>(email: string, password: string): Promise<T> {
+        try {
+            const data = {
+                Email: email,
+                Password: password
+            };
+            const response = await this.axiosInstance.post<T>("user/LoginDefault", data);
+            return response.data;
+        } catch (error) {
+            console.error("Login error:", error);
+            throw error;
+        }
+    } public static async Register<T>(email: string, password: string, username: string, phone: string): Promise<T> {
         try {
             const data = {
                 Email: email,
@@ -114,7 +73,7 @@ public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
         }
     }
 
-    public static async GetRoomList<T>(areaId: string = '', typeRoom: string = '', startDate: string = '', endDate: string = '' ): Promise<T[]> {
+    public static async GetRoomList<T>(areaId: string = '', typeRoom: string = '', startDate: string = '', endDate: string = ''): Promise<T[]> {
         try {
             let fetchLink = 'room/GetRoomListWithBookingTimes?';
             const params: string[] = [];
@@ -142,32 +101,7 @@ public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
             throw error;
         }
     }
-   
-        public static async GetFavoriteRooms<T>(userId: string): Promise<T[]> {
-            try {
-                const response = await this.axiosInstance.get<T[]>(`room/ViewListFavourite/${userId}`);
-                return response.data;
-            } catch (error) {
-                console.error("GetFavoriteRooms error:", error);
-                throw error;
-            }
-        }
-    
-       
-    
 
-    // Thêm hoặc xóa phòng khỏi danh sách yêu thích
-    public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T> {
-        try {
-            const response = await this.axiosInstance.get<T>(
-                `room/(Un)Favourite?userId=${userId}&roomId=${roomId}`
-            );
-            return response.data;
-        } catch (error) {
-            console.error("UnfavoriteRoom error:", error);
-            throw error;
-        }
-    }
     public static async GetRoomDetail<T>(hashCode: string): Promise<T> {
         try {
             const response = await this.axiosInstance.get<T>(`room/${hashCode}`);
@@ -190,9 +124,9 @@ public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
             };
 
             console.log(bookingData)
-    
+
             const response = await this.axiosInstance.post<T>(`booking/room/`, bookingData);
-    
+
             console.log(response.data);
             return response.data;
         } catch (error) {
@@ -210,7 +144,7 @@ public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
             return response.data;
         } catch (err) {
             console.error("Transaction error:", err);
-            console.error("Input:",bookingId)
+            console.error("Input:", bookingId)
             throw err;
         }
 
@@ -218,14 +152,16 @@ public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
 
     public static async payBill<T>(bookingId: string): Promise<T> {
         try {
-            const bookingid = bookingId;
-            const response = await this.axiosInstance.post<T>(`transaction/Payment-PayPal-Create`, bookingid);
-            
+            const data = {
+                bookingId
+            }
+            const response = await this.axiosInstance.post<T>(`transaction/Payment-PayPal-Create`, data);
+
             console.log(response.data);
             return response.data
         } catch (error) {
             console.error("Transaction error:", error);
-            console.error("Input:",bookingId)
+            console.error("Input:", bookingId)
             throw error;
         }
     }
@@ -246,6 +182,66 @@ public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
             return response.data
         } catch (error) {
             console.log("Get Request Error: ", error)
+            throw error
+        }
+    }
+
+    public static async ApproveBooking<T>(bookingId: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.put<T>(`booking/AcceptBooking/${bookingId}`)
+            return response.data
+        } catch (error) {
+            console.log("Accept Request Error: ", error)
+            throw error
+        }
+    }
+
+    public static async CancelBooking<T>(bookingId: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.put<T>(`booking/CancelBooking/${bookingId}`)
+            return response.data
+        } catch (error) {
+            console.log("Accept Request Error: ", error)
+            throw error
+        }
+    }
+
+    public static async CreateService<T>(name: string, type: number, price: number, image: File): Promise<T> {
+        try {
+            const formData = new FormData();
+            formData.append("Name", name);
+            formData.append("Type", type.toString());
+            formData.append("Price", price.toString());
+            formData.append("Image", image);
+            const response = await axios.post<T>(`http://localhost:5101/amenityservice/CreateService`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data
+        } catch (error) {
+            console.log("Create Service Error: ", error)
+            throw error
+        }
+    }
+
+    public static async GetMembership<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`membership/Get-All`)
+            console.log(response.data)
+            return response.data
+        } catch (error) {
+            console.error("Get Membership Error: ", error)
+            throw error
+        }
+    }
+
+    public static async GetFeedback<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`report/rating-feedbacks`)
+            return response.data
+        } catch (error) {
+            console.error("Get Feedback Error: ", error)
             throw error
         }
     }

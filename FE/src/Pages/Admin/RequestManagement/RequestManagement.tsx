@@ -12,6 +12,7 @@ const RequestManagement: React.FC = () => {
 
   interface Data {
     index: string;
+    id: string;
     room: string;
     user: string;
     email: string;
@@ -26,6 +27,7 @@ const RequestManagement: React.FC = () => {
 
   function createData(
     index: string,
+    id: string,
     room: string,
     user: string,
     email: string,  
@@ -37,7 +39,7 @@ const RequestManagement: React.FC = () => {
     isPay: string,
     services?: subRows[],
   ): Data {
-    return { index, room, user, email, total, bookedDate, start, end, status, isPay, services };
+    return { index, id, room, user, email, total, bookedDate, start, end, status, isPay, services };
   }
 
   interface subRows {
@@ -115,6 +117,7 @@ const RequestManagement: React.FC = () => {
         rowData.push(
           createData(
             (index+1).toString(), 
+            row.id,
             row.room.name, 
             row.user.name, 
             row.user.email, 
@@ -129,7 +132,7 @@ const RequestManagement: React.FC = () => {
                 createSubrows(
                   createService(
                     item.amenityService.name, 
-                    (item.amenityService.type === '0' ? 'Food' : (item.amenityService.type === '1' ? 'Drink' : 'Device')), 
+                    (item.amenityService.type === 0 ? 'Food' : (item.amenityService.type === 1 ? 'Drink' : 'Device')), 
                     item.amenityService.price,
                   ), 
                   item.total,
@@ -146,14 +149,34 @@ const RequestManagement: React.FC = () => {
     }
   };
 
+  const approveBooking = async (bookingId: string) : Promise<void> => {
+    try {
+        console.log(bookingId);
+        const response = await ApiGateway.ApproveBooking(bookingId)
+        await fetchRequest()
+    } catch (error) {
+        console.error("Approve booking error",error);
+    }
+  }
+
+  const declineBooking = async (bookingId: string) : Promise<void> => {
+    try {
+        console.log(bookingId);
+        const response = await ApiGateway.ApproveBooking(bookingId)
+        await fetchRequest()
+    } catch (error) {
+        console.error("Approve booking error",error);
+    }
+  }
+
   return (
     <div id='request-mng'>
       <h1>Request Management</h1>
       <div className='content'>
         {requestList.length > 0 ? (
-          <TableTpl columns={columns} rows={requestList} haveSubrows={true} approveButton={true} declineButton={true}/>
+          <TableTpl columns={columns} rows={requestList} haveSubrows={true} approveButton={true} declineButton={true} function1={approveBooking} function2={declineBooking}/>
         ) : (
-          <TableTpl columns={columns} rows={data} />
+          <p style={{textAlign: "center"}}>There are no Request</p>
         )}
       </div>
     </div>
