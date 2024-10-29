@@ -123,7 +123,7 @@ const RoomManagement: React.FC = () => {
         {roomList ? 
           <TableTpl columns={columns} rows={roomList}/>
           :
-          <TableTpl columns={columns} rows={data}/>
+          <p style={{textAlign: "center"}}>There are no Room</p>
         } 
       </div>
     </div>

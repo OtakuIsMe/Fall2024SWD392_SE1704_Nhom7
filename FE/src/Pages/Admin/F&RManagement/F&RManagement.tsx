@@ -1,89 +1,106 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './F&RManagement.css'
 import TableTpl from '../../../Components/Table/Table';
+import { ApiGateway } from '../../../Api/ApiGateway';
 
 const FRManagement: React.FC = () => {
-  const rows = [
-    createData('India', 'IN', 1324171354, 3287263),
-    createData('China', 'CN', 1403500365, 9596961),
-    createData('Italy', 'IT', 60483973, 301340),
-    createData('United States', 'US', 327167434, 9833520),
-    createData('Canada', 'CA', 37602103, 9984670),
-    createData('Australia', 'AU', 25475400, 7692024),
-    createData('Germany', 'DE', 83019200, 357578),
-    createData('Ireland', 'IE', 4857000, 70273),
-    createData('Mexico', 'MX', 126577691, 1972550),
-    createData('Japan', 'JP', 126317000, 377973),
-    createData('France', 'FR', 67022000, 640679),
-    createData('United Kingdom', 'GB', 67545757, 242495),
-    createData('Russia', 'RU', 146793744, 17098246),
-    createData('Nigeria', 'NG', 200962417, 923768),
-    createData('Brazil', 'BR', 210147125, 8515767),
-  ];
+  const [ feedbackList, setFeedbackList ] = useState<any[]>([])
 
   interface Data {
-    name: string;
-    code: string;
-    population: number;
-    size: number;
-    density: number;
+    index: number;
+    feedback: string;
+    ratingStar: number;
+    userId: string;
+    roomId: string;
+    createAt: string;
+    updateAt: string;
   }
   function createData(
-    name: string,
-    code: string,
-    population: number,
-    size: number,
+    index: number,
+    feedback: string,
+    ratingStar: number,
+    userId: string,
+    roomId: string,
+    createAt: string,
+    updateAt: string,
   ): Data {
-    const density = population / size;
-    return { name, code, population, size, density };
+    return { index, feedback, ratingStar, userId, roomId, createAt, updateAt, };
   }
 
   interface Column {
-    id: 'name' | 'code' | 'population' | 'size' | 'density';
+    id: 'index' | 'feedback' | 'ratingStar' | 'userId' | 'roomId' | 'createAt'| 'updateAt';
     label: string;
     minWidth?: number;
-    align?: 'right';
-    format?: (value: number) => string;
+    align?: 'right' | 'center';
   }
   const columns: Column[] = [
     { 
-      id: 'name', 
-      label: 'Name', 
-      minWidth: 170 
+      id: 'index', 
+      label: 'No', 
     },
     { 
-      id: 'code', 
-      label: 'ISO\u00a0Code', 
+      id: 'feedback', 
+      label: 'Feedback', 
       minWidth: 100 
     },
     {
-      id: 'population',
-      label: 'Population',
-      minWidth: 170,
-      align: 'right',
-      format: (value: number) => value.toLocaleString('en-US'),
+      id: 'ratingStar',
+      label: 'Rating',
+      align: 'center',
     },
     {
-      id: 'size',
-      label: 'Size\u00a0(km\u00b2)',
+      id: 'userId',
+      label: 'User Id',
       minWidth: 170,
       align: 'right',
-      format: (value: number) => value.toLocaleString('en-US'),
     },
     {
-      id: 'density',
-      label: 'Density',
+      id: 'roomId',
+      label: 'Room Id',
       minWidth: 170,
       align: 'right',
-      format: (value: number) => value.toFixed(2),
+    },
+    {
+      id: 'createAt',
+      label: 'Create At',
+      minWidth: 170,
+      align: 'right',
+    },
+    {
+      id: 'updateAt',
+      label: 'Update At',
+      minWidth: 170,
+      align: 'right',
     },
   ];
+
+  useEffect(() => {
+    fetchFeedback()
+  },[]);
+
+  const fetchFeedback = async () : Promise<void> => {
+    try {
+      let rowData : any[] = [];
+      const response = await ApiGateway.GetFeedback();
+      response.forEach((row : any, index: number) => {
+        rowData.push(createData(index+1, row.feedback, row.ratingStar, row.userId, row.roomId, row.createAt, row.updateAt));
+      })
+      setFeedbackList(rowData)
+      console.log(rowData)
+    } catch (error) {
+      console.error("Fetch Feedback Error", error);
+    }
+  }
 
   return (
     <div id='fr-mng'>
       <h1>Feedbacks & Requests Management</h1>
       <div className='content'>
-        <TableTpl rows={rows} columns={columns}/>  
+        { feedbackList.length > 0 ?
+            <TableTpl rows={feedbackList} columns={columns}/>
+            :
+            <p style={{textAlign: "center"}}>There are no feedbacks</p>
+        }
       </div>
     </div>
   )

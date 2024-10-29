@@ -1,5 +1,5 @@
 import React, { ReactNode, useState } from "react";
-import './Modal.css'
+import './RoomModal.css'
 
 interface PopupType {
   popupType: string;

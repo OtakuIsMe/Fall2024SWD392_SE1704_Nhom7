@@ -176,7 +176,7 @@ const RequestManagement: React.FC = () => {
         {requestList.length > 0 ? (
           <TableTpl columns={columns} rows={requestList} haveSubrows={true} approveButton={true} declineButton={true} function1={approveBooking} function2={declineBooking}/>
         ) : (
-          <TableTpl columns={columns} rows={data} />
+          <p style={{textAlign: "center"}}>There are no Request</p>
         )}
       </div>
     </div>

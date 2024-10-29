@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react'
 import TableTpl from '../../../Components/Table/Table' 
 import { ApiGateway } from '../../../Api/ApiGateway'
 import './UserManagement.css'
+import AddBtn from '../../../Components/AddBtn/AddBtn'
+import Modal from './UserModal/UserModal'
 
 const UserManagement: React.FC = () => {
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
 
   interface Data {
     username: string;
@@ -30,29 +33,23 @@ const UserManagement: React.FC = () => {
   const columns: Column[] = [
     { 
       id: 'username', 
-      label: 'User name', 
-      // minWidth: 170 
+      label: 'User name',
     },
     { 
       id: 'email', 
       label: 'Email', 
-      // minWidth: 100 
     },
     {
       id: 'phone',
       label: 'Phone',
-      // minWidth: 170,
     },
     {
       id: 'wallet',
       label: 'Wallet',
-      // minWidth: 170,
       align: 'right',
       format: (value: number) => value.toLocaleString('en-US'),
     },
   ];
-
-  const data: any[] = [];
 
   const [ userList, setUserList ] = useState<any>()
 
@@ -72,16 +69,31 @@ const UserManagement: React.FC = () => {
     return userList
   }
 
+  
+  const openModal = () => {
+    setIsModalOpen(true);
+    console.log('open')
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    console.log('close')
+  };
+
   return (
     <div id='user-mng'>
       <h1>User Management</h1>
+      <div className='btn-container'>
+        <AddBtn openModal={openModal}/>
+      </div>
       <div className='content'>
         {userList ? 
           <TableTpl columns={columns} rows={userList}/>
           :
-          <TableTpl columns={columns} rows={data}/>
+          <p style={{textAlign: "center"}}>There are no User</p>
         }
       </div>
+      {isModalOpen && <Modal closeModal={closeModal} />}
     </div>
   )
 }

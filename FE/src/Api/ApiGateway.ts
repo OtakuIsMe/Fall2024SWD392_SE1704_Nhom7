@@ -213,7 +213,7 @@ export class ApiGateway {
             formData.append("Type", type.toString());
             formData.append("Price", price.toString());
             formData.append("Image", image);
-            const response = await axios.post<T>(`amenityservice/CreateService`, formData, {
+            const response = await axios.post<T>(`http://localhost:5101/amenityservice/CreateService`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -221,6 +221,27 @@ export class ApiGateway {
             return response.data
         } catch (error) {
             console.log("Create Service Error: ", error)
+            throw error
+        }
+    }
+
+    public static async GetMembership<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`membership/Get-All`)
+            console.log(response.data)
+            return response.data
+        } catch (error) {
+            console.error("Get Membership Error: ", error)
+            throw error
+        }
+    }
+
+    public static async GetFeedback<T>(): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`report/rating-feedbacks`)
+            return response.data
+        } catch (error) {
+            console.error("Get Feedback Error: ", error)
             throw error
         }
     }

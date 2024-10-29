@@ -3,7 +3,7 @@ import './ServiceManagement.css'
 import TableTpl from '../../../Components/Table/Table';
 import AddBtn from '../../../Components/AddBtn/AddBtn';
 import { ApiGateway } from '../../../Api/ApiGateway';
-import Modal from './Modal/Modal';
+import Modal from './ServiceModal/ServiceModal';
 
 const ServiceManagement: React.FC = () => {
   const data : any[] = [];
@@ -83,10 +83,10 @@ const ServiceManagement: React.FC = () => {
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetServices()
       response.forEach((row: any, index: number) => {
-        rowData.push(createData(index+1 , getService(row.type), row.name, row.price))
+        rowData.push(createData(index+1 , getService(row.amenityService.type), row.amenityService.name, row.amenityService.price))
       })
       setServiceList(rowData)
-      console.log(rowData)
+      console.log(response)
     } catch (err) {
       console.error('Error get servicelist :', err);
     }
@@ -102,7 +102,7 @@ const ServiceManagement: React.FC = () => {
         {serviceList ? 
           <TableTpl columns={columns} rows={serviceList} editButton={true} deleteButton={true}/>
           :
-          <TableTpl columns={columns} rows={data}/>
+          <p style={{textAlign: "center"}}>There are no service in here</p>
         } 
       </div>
       {isModalOpen && <Modal closeModal={closeModal} />}

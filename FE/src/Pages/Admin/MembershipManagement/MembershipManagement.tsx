@@ -1,86 +1,95 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './MembershipManagement.css'
 import TableTpl from '../../../Components/Table/Table';
 import AddBtn from '../../../Components/AddBtn/AddBtn';
+import { ApiGateway } from '../../../Api/ApiGateway';
 
 const MembershipManagement: React.FC = () => {
+  const [ membershipList, setMembershipList ] = useState<any[]>([])
   const [ isModalOpen, setIsModalOpen ] = useState(false);
 
-  const rows = [
-    createData('India', 'IN', 1324171354, 3287263),
-    createData('China', 'CN', 1403500365, 9596961),
-    createData('Italy', 'IT', 60483973, 301340),
-    createData('United States', 'US', 327167434, 9833520),
-    createData('Canada', 'CA', 37602103, 9984670),
-    createData('Australia', 'AU', 25475400, 7692024),
-    createData('Germany', 'DE', 83019200, 357578),
-    createData('Ireland', 'IE', 4857000, 70273),
-    createData('Mexico', 'MX', 126577691, 1972550),
-    createData('Japan', 'JP', 126317000, 377973),
-    createData('France', 'FR', 67022000, 640679),
-    createData('United Kingdom', 'GB', 67545757, 242495),
-    createData('Russia', 'RU', 146793744, 17098246),
-    createData('Nigeria', 'NG', 200962417, 923768),
-    createData('Brazil', 'BR', 210147125, 8515767),
-  ];
-
   interface Data {
+    index: number;
     name: string;
-    code: string;
-    population: number;
-    size: number;
-    density: number;
+    rank: number;
+    discount: number;
+    price: number;
+    timeleft: number;
+    membershipUsers: number;
   }
   function createData(
+    index: number,
     name: string,
-    code: string,
-    population: number,
-    size: number,
+    rank: number,
+    discount: number,
+    price: number,
+    timeleft: number,
+    membershipUsers: number,
   ): Data {
-    const density = population / size;
-    return { name, code, population, size, density };
+    return { index, name, rank, discount, price, timeleft, membershipUsers, };
   }
 
   interface Column {
-    id: 'name' | 'code' | 'population' | 'size' | 'density';
+    id: 'index' | 'name' | 'rank' |'discount' |  'price' | 'timeleft' | 'membershipUsers';
     label: string;
     minWidth?: number;
-    align?: 'right';
+    align?: 'right' | 'center';
     format?: (value: number) => string;
   }
   const columns: Column[] = [
     { 
-      id: 'name', 
-      label: 'Name', 
-      minWidth: 170 
+      id: 'index', 
+      label: 'Index', 
     },
     { 
-      id: 'code', 
-      label: 'ISO\u00a0Code', 
+      id: 'name', 
+      label: 'Name', 
       minWidth: 100 
     },
-    {
-      id: 'population',
-      label: 'Population',
-      minWidth: 170,
-      align: 'right',
-      format: (value: number) => value.toLocaleString('en-US'),
+    { 
+      id: 'discount', 
+      label: 'Discount', 
+      align: 'center'
     },
     {
-      id: 'size',
-      label: 'Size\u00a0(km\u00b2)',
-      minWidth: 170,
+      id: 'rank',
+      label: 'Rank',
       align: 'right',
-      format: (value: number) => value.toLocaleString('en-US'),
     },
     {
-      id: 'density',
-      label: 'Density',
-      minWidth: 170,
+      id: 'price',
+      label: 'Price\u00a0(VND)',
       align: 'right',
-      format: (value: number) => value.toFixed(2),
+    },
+    {
+      id: 'timeleft',
+      label: 'Time Expired',
+      align: 'center',
+    },
+    {
+      id: 'membershipUsers',
+      label: 'Membership Users',
+      align: 'right',
     },
   ];
+
+  useEffect(() => {
+    fetchMembership()
+  }, [])
+
+  const fetchMembership = async (): Promise<void> => {
+    try {
+      let rowData : any[] = [] ;
+      const response = await ApiGateway.GetMembership()
+      response.forEach((row: any, index: number) => {
+        rowData.push(createData(index+1 , row.name, row.rank, row.discount, row.price, row.timeLeft, (row.membershipUser ? row.membershipUser.length : 0)))
+      })
+      setMembershipList(rowData)
+      console.log(rowData)
+    } catch (error) {
+      console.error('Error get membership list :', error);
+    }
+  }
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -100,7 +109,11 @@ const MembershipManagement: React.FC = () => {
         <AddBtn openModal={openModal}/>
       </div>
       <div className='content'>
-        {/* <TableTpl rows={rows} columns={columns}/> */}
+        {membershipList ?
+          <TableTpl rows={membershipList} columns={columns}/>
+          :
+          <p style={{textAlign: "center"}}>There are no Membership available</p>
+        }
       </div>
     </div>
   )

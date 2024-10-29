@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import './Modal.css'
+import './ServiceModal.css'
 import { ApiGateway } from "../../../../Api/ApiGateway";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { TextField } from "@mui/material";
