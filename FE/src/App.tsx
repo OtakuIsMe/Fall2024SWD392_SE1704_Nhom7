@@ -19,6 +19,8 @@ import TransactionHistory from "./Pages/Customer/TransactionHistory/TransactionH
 import { Login } from "./Pages/Login/Login.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
 
+import Profile from "./Pages/Customer/ProfilePage/Profile/Profile.tsx";
+import { Register } from "./Pages/Register/Register.tsx";
 const App: React.FC = () => {
   const location = useLocation();
 
@@ -38,6 +40,9 @@ const App: React.FC = () => {
           <Route path="/roomDetail/:roomHashing" element={<RoomDetail />} />
           <Route path="/areadetails/:locationId" element={<AreaDetail />} />
           <Route path="/transaction-history" element={<TransactionHistory />} />
+          <Route path="/profile" element={<Profile />} />
+          {/* <Route path="/favorites" element={<FavoriteList />} /> */}
+          <Route path="/register" element={<Register />} />
 
           <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '42feaeb5-fc53-4163-98b5-d28cfceafa7c', '5a4226d9-e58a-42c4-a786-dba8369b234b']} />}>
             <Route path="/" element={<AdminLayout />}>

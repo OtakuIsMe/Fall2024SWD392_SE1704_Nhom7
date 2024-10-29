@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useEffect, useState } from "react";
+mport React, { createContext, ReactNode, useEffect, useState } from "react";
 import { ApiGateway } from "../Api/ApiGateway";
 import { useNavigate } from "react-router";
 import LoadingComp from "./LoadingComp/LoadingComp";
@@ -8,7 +8,6 @@ interface AuthenContextProps {
     login: (email: string, password: string) => Promise<void>;
     register: (email: string, username: string, phone: string, password: string) =>Promise<void>;
     logout: () => void;
-    
     fetchUser:()=> Promise<void>;
 }
 
