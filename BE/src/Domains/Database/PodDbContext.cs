@@ -31,7 +31,7 @@ namespace BE.src.Domains.Database
             public DbSet<Favourite> Favourites { get; set; } = null!;
             public DbSet<UserAreaManagement> UserAreaManagements { get; set; } = null!;
             public DbSet<Location> Locations { get; set; } = null!;
-            public DbSet<SerivceDetail> SerivceDetails { get; set; } = null!;
+            public DbSet<ServiceDetail> ServiceDetails { get; set; } = null!;
             public DbSet<Transaction> Transactions { get; set; } = null!;
             public DbSet<Utility> Utilities { get; set; } = null!;
 
@@ -148,7 +148,7 @@ namespace BE.src.Domains.Database
                         entity.Property(bi => bi.ServiceDetailId)
                         .IsRequired(false);
 
-                        entity.HasOne(bi => bi.SerivceDetail)
+                        entity.HasOne(bi => bi.ServiceDetail)
                         .WithMany(s => s.BookingItems)
                         .HasForeignKey(bi => bi.ServiceDetailId);
 
@@ -472,7 +472,7 @@ namespace BE.src.Domains.Database
                         .HasForeignKey(r => r.AreaId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
-                  builder.Entity<SerivceDetail>(entity =>
+                  builder.Entity<ServiceDetail>(entity =>
                   {
                         entity.HasKey(s => s.Id);
 
@@ -487,7 +487,7 @@ namespace BE.src.Domains.Database
                         .IsRequired();
 
                         entity.HasOne(s => s.AmenityService)
-                        .WithMany(s => s.SerivceDetails)
+                        .WithMany(s => s.ServiceDetails)
                         .HasForeignKey(s => s.AmenitySerivceId)
                         .OnDelete(DeleteBehavior.Cascade);
                   }

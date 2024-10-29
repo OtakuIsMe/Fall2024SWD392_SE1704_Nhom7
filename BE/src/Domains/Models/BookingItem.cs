@@ -15,7 +15,7 @@ namespace BE.src.Domains.Models
         public Guid AmenityServiceId { get; set; }
         public AmenityService AmenityService { get; set; } = null!;
         public Guid? ServiceDetailId { get; set; }
-        public SerivceDetail? SerivceDetail { get; set; } = null!;
+        public ServiceDetail? ServiceDetail { get; set; } = null!;
         public ICollection<RefundItem> RefundItems { get; set; } = null!;
         public DeviceChecking DeviceChecking { get; set; } = null!;
     }
