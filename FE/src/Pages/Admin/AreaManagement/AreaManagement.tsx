@@ -95,7 +95,7 @@ const AreaManagement: React.FC = () => {
         {areaList ? 
           <TableTpl columns={columns} rows={areaList} editButton={true} deleteButton={true}/>
           :
-          <TableTpl columns={columns} rows={data}/>
+          <p style={{textAlign: "center"}}>There are no Room</p>
         }
       </div>
     </div>
