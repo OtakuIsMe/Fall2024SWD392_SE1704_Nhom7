@@ -165,8 +165,10 @@ namespace BE.src.Repositories
 
         public async Task<List<BookingCheckAvailableDTO>> GetBookingCheckAvailableList(Guid bookingId)
         {
-            var bookingAlreadyAvailable = await _context.Bookings
-                .Where(b => b.Id == bookingId && b.Status == StatusBookingEnum.Wait)
+            var bookingAlreadyInProgress = await _context.Bookings
+                .Where(b => b.Id == bookingId &&
+                        b.Status == StatusBookingEnum.Wait || 
+                        b.Status == StatusBookingEnum.Completed)
                 .Select(b => new BookingCheckAvailableDTO
                 {
                     BookingId = b.Id,
@@ -179,15 +181,15 @@ namespace BE.src.Repositories
                     RoomId = b.RoomId,
                     CreateAt = b.CreateAt
                 })
+                .Take(1)
+                .OrderBy(b => b.CreateAt)
                 .FirstOrDefaultAsync();
 
-            if (bookingAlreadyAvailable == null)
+            if (bookingAlreadyInProgress == null)
                 return new List<BookingCheckAvailableDTO>();
 
-            var bookingCheckAvailableList = await _context.Bookings
-                            .Where(b => b.Status == StatusBookingEnum.Wait &&
-                                        b.DateBooking.Day == bookingAlreadyAvailable.DateBooking.Day &&
-                                        b.CreateAt > bookingAlreadyAvailable.CreateAt)
+            var bookingCheckAvailableList = _context.Bookings
+                            .Where(b => b.Status == StatusBookingEnum.Wait)
                             .Select(b => new BookingCheckAvailableDTO
                             {
                                 BookingId = b.Id,
@@ -197,15 +199,19 @@ namespace BE.src.Repositories
                                 Status = b.Status,
                                 IsPay = b.IsPay,
                                 UserId = b.UserId,
-                                RoomId = b.RoomId
+                                RoomId = b.RoomId,
+                                CreateAt = b.CreateAt,
+                                UpdateAt = b.UpdateAt   
                             })
-                            .ToListAsync();
+                            .AsEnumerable()
+                            .Where(b => bookingAlreadyInProgress.DateBooking.Day == b.DateBooking.Day)
+                            .ToList();
 
             bool isAvailable = bookingCheckAvailableList
-                .Any(b => bookingAlreadyAvailable.DateBooking >= b.DateBooking.Add(b.TimeBooking) &&
-                          bookingAlreadyAvailable.DateBooking.Add(bookingAlreadyAvailable.TimeBooking) <= b.DateBooking);
+                .Any(b => bookingAlreadyInProgress.DateBooking >= b.DateBooking.Add(b.TimeBooking) &&
+                          bookingAlreadyInProgress.DateBooking.Add(bookingAlreadyInProgress.TimeBooking) <= b.DateBooking);
 
-            return !isAvailable ? bookingCheckAvailableList : new List<BookingCheckAvailableDTO>();
+            return !isAvailable ? bookingCheckAvailableList.ToList() : new List<BookingCheckAvailableDTO>();
         }
 
         public async Task<bool> ProcessRefund(Guid bookingId)
