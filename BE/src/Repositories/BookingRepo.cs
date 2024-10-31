@@ -204,7 +204,8 @@ namespace BE.src.Repositories
                                 UpdateAt = b.UpdateAt   
                             })
                             .AsEnumerable()
-                            .Where(b => bookingAlreadyInProgress.DateBooking.Day == b.DateBooking.Day)
+                            .Where(b => bookingAlreadyInProgress.DateBooking.Date == b.DateBooking.Date &&
+                                    bookingAlreadyInProgress.DateBooking.Add(bookingAlreadyInProgress.TimeBooking) < b.DateBooking.Add(b.TimeBooking))
                             .ToList();
 
             bool isAvailable = bookingCheckAvailableList
