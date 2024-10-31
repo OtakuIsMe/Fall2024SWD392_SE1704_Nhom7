@@ -181,8 +181,6 @@ namespace BE.src.Repositories
                     RoomId = b.RoomId,
                     CreateAt = b.CreateAt
                 })
-                .Take(1)
-                .OrderBy(b => b.CreateAt)
                 .FirstOrDefaultAsync();
 
             if (bookingAlreadyInProgress == null)
