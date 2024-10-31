@@ -20,6 +20,7 @@ namespace BE.src.Services
         Task<IActionResult> GetBookingCheckAvailableList(Guid bookingId);
         Task<IActionResult> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate);
         Task<IActionResult> GetBookingRequestsInProgressForStaff();
+        Task<IActionResult> ListBookingUserUpcoming(Guid User);
     }
 
     public class BookingServ : IBookingServ
@@ -318,6 +319,19 @@ namespace BE.src.Services
                     throw new Exception("Can not find booking requests");
                 }
                 return SuccessResp.Ok(bookingRequests);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> ListBookingUserUpcoming(Guid UserId)
+        {
+            try
+            {
+                var listBooking = await _bookingRepo.ListBookingUserUpComing(UserId);
+                return SuccessResp.Ok(listBooking);
             }
             catch (System.Exception ex)
             {
