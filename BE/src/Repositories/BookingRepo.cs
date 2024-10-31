@@ -169,7 +169,7 @@ namespace BE.src.Repositories
             var bookingAlreadyInProgress = await _context.Bookings
                 .Where(b => b.Id == bookingId &&
                         b.Status == StatusBookingEnum.Wait || 
-                        b.Status == StatusBookingEnum.Completed)
+                        b.Status == StatusBookingEnum.Accepted)
                 .Select(b => new BookingCheckAvailableDTO
                 {
                     BookingId = b.Id,
