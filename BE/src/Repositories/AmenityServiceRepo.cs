@@ -11,7 +11,7 @@ namespace BE.src.Repositories
         Task<bool> CreateService(AmenityService service);
         Task<bool> CreateServiceImage(Image image);
         Task<int> CountServiceRemain(Guid serviceId);
-        Task<bool> CreateServiceDetail(SerivceDetail serivceDetail);
+        Task<bool> CreateServiceDetail(ServiceDetail serviceDetail);
         Task<bool> UpdateService(AmenityService service);
         Task<bool> DeleteService(Guid amenityServiceId);
         Task<bool> UpdateServiceImage(Image image);
@@ -57,14 +57,14 @@ namespace BE.src.Repositories
 
         public async Task<int> CountServiceRemain(Guid serviceId)
         {
-            return await _context.SerivceDetails
+            return await _context.ServiceDetails
                         .Where(s => s.AmenitySerivceId == serviceId && s.IsInUse == false)
                         .CountAsync();
         }
 
-        public async Task<bool> CreateServiceDetail(SerivceDetail serivceDetail)
+        public async Task<bool> CreateServiceDetail(ServiceDetail serviceDetail)
         {
-            _context.SerivceDetails.Add(serivceDetail);
+            _context.ServiceDetails.Add(serviceDetail);
             return await _context.SaveChangesAsync() > 0;
         }
 

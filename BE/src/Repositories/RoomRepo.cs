@@ -241,7 +241,7 @@ namespace BE.src.Repositories
         public async Task<List<RoomAnalysticDTO>> TrendingRoom(TypeRoomEnum roomType)
         {
             return await _context.Rooms.Where(r => r.TypeRoom == roomType)
-                                       .Include(r => r.Bookings.Where(b => b.Status == StatusBookingEnum.Completed))
+                                       .Include(r => r.Bookings.Where(b => b.Status == StatusBookingEnum.Done))
                                        .Select(r => new RoomAnalysticDTO
                                        {
                                            Room = r,

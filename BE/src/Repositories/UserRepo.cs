@@ -26,6 +26,7 @@ namespace BE.src.Repositories
         Task<bool> CreateNotification(Notification notification);
         Task<List<Notification>> ViewNotification(Guid userId);
         Task<bool> AddFeedback(RatingFeedback ratingFeedback);
+        Task<bool> CreateMembershipUser(MembershipUser membershipUser);
     }
     public class UserRepo : IUserRepo
     {
@@ -129,6 +130,10 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-
+        public async Task<bool> CreateMembershipUser(MembershipUser membershipUser)
+        {
+            _context.MembershipUsers.Add(membershipUser);
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }

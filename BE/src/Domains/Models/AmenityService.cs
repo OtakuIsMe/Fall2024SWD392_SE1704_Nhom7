@@ -11,6 +11,6 @@ namespace BE.src.Domains.Models
 
                 public ICollection<BookingItem> BookingItems { get; set; } = null!;
                 public Image Image { get; set; } = null!;
-                public ICollection<SerivceDetail> SerivceDetails { get; set; } = null!;
+                public ICollection<ServiceDetail> ServiceDetails { get; set; } = null!;
         }
 }

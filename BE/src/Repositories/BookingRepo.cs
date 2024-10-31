@@ -27,6 +27,7 @@ namespace BE.src.Repositories
         Task<Booking?> CheckBookReqUser(Guid roomId, Guid userId, DateTime DateBooking, TimeSpan TimeBooking);
         Task<List<Booking>> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate);
         Task<List<Booking>> GetBookingRequestsInProgressForStaff();
+        Task<List<Booking>> ListBookingUserUpComing(Guid userId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -80,7 +81,7 @@ namespace BE.src.Repositories
 
             if (booking == null) return false;
 
-            booking.Status = StatusBookingEnum.Completed;
+            booking.Status = StatusBookingEnum.Accepted;
             booking.CreateAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -344,7 +345,7 @@ namespace BE.src.Repositories
                             .ThenInclude(bi => bi.AmenityService)
                         .Include(b => b.Room)
                             .ThenInclude(r => r.Images)
-                        .Where(b => b.Status == StatusBookingEnum.Completed)
+                        .Where(b => b.Status == StatusBookingEnum.Accepted)
                         .Select(b => new Booking
                         {
                             Id = b.Id,
@@ -396,6 +397,15 @@ namespace BE.src.Repositories
                         .ToListAsync();
 
             return bookingRequests.OrderByDescending(b => b.DateBooking.Add(b.TimeBooking)).ToList();
+        }
+        public async Task<List<Booking>> ListBookingUserUpComing(Guid userId)
+        {
+            return await _context.Bookings.Where(b => b.UserId == userId
+                                                && b.Status == StatusBookingEnum.Accepted)
+                                                .Include(b => b.Room)
+                                                    .ThenInclude(r => r.Images)
+                                                .ToListAsync();
+
         }
     }
 }

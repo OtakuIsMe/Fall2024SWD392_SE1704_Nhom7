@@ -70,14 +70,14 @@ namespace BE.src.Services
         {
             try
             {
-                SerivceDetail serivceDetail = new()
+                ServiceDetail serviceDetail = new()
                 {
                     Name = data.Name,
                     IsNormal = true,
                     IsInUse = false,
                     AmenitySerivceId = data.AmenityServiceId
                 };
-                bool isCreated = await _amenityServiceRepo.CreateServiceDetail(serivceDetail);
+                bool isCreated = await _amenityServiceRepo.CreateServiceDetail(serviceDetail);
                 if (!isCreated)
                 {
                     return ErrorResp.BadRequest("Cant create service detail");
