@@ -22,12 +22,21 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, img, name , type, price, childr
         <div id='item_card'>
             <div className="img_container">
                 {type === 0 ?
-                    <img src={Food} alt="" />
+                    img ? 
+                        <img src={img} alt={name} />
+                        :
+                        <img src={Food} alt="Food" />
                 :
                 type === 1 ?
-                    <img src={Drink} alt="" />
+                    img ? 
+                        <img src={img} alt={name} />
+                        :
+                        <img src={Drink} alt="Drink" />
                 :
-                    <img src={Device} alt="" />
+                    img ? 
+                        <img src={img} alt={name} />
+                        :
+                        <img src={Device} alt="Device" />
                 }
             </div>
             <div className="item_card_info">

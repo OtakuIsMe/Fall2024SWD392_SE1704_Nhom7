@@ -9,6 +9,7 @@ import ComputerIcon from '@mui/icons-material/Computer';
 import RoomIcon from '@mui/icons-material/Room';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { AuthenContext } from '../../../Components/AuthenContext'
 import './AdminLayout.css'
@@ -22,6 +23,7 @@ const AdminLayout:React.FC = () => {
   const { user, logout } = context;
 
   const navItems = [
+    {name: 'Check-in', href: '/dashboard', icon: <CalendarMonthRoundedIcon/>},
     {name: 'Dashboard', href: '/dashboard', icon: <AssessmentIcon/>},
     {name: 'Users', href: '/users', icon: <SupervisedUserCircleIcon/>}, //check in cho khach hang
     {name: 'Services', href: '/services', icon: <RoomServiceIcon/>},

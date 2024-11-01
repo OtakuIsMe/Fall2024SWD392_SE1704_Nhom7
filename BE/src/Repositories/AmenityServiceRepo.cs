@@ -35,6 +35,7 @@ namespace BE.src.Repositories
         {
             return await _context.AmenityServices
                                 .Include(a => a.Image)
+                                .OrderBy(a => a.CreateAt)
                                 .ToListAsync();
         }
 

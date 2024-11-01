@@ -34,9 +34,8 @@ interface Data {
     accessButton?: boolean;
     unAccessButton?: boolean;
     cancelButton?: boolean;
-    function1?: (value: any) => Promise<any>;
-    function2?: (value: any) => Promise<any>;
-    function3?: () => Promise<any>;
+    openPopup1?: (row: any) => void;
+    openPopup2?: (id: string, name: string) => void;
 }
 
 interface Rows {
@@ -52,9 +51,8 @@ interface Rows {
     status: string;
     isPay: string;
     services?: subRows[];
-    function1?: (value: any) => Promise<any>;
-    function2?: (value: any) => Promise<any>;
-    function3?: () => Promise<any>;
+    openPopup1?: (row: any) => void;
+    openPopup2?: (id: string, name: string) => void;
 }
 
 interface subRows {
@@ -81,9 +79,8 @@ const TableTpl:React.FC<Data> = (
         accessButton, 
         unAccessButton, 
         cancelButton, 
-        function1, 
-        function2, 
-        function3
+        openPopup1, 
+        openPopup2,
     }) => {
     
     const [page, setPage] = useState(0);
@@ -108,27 +105,34 @@ const TableTpl:React.FC<Data> = (
         setPage(0);
     };
 
-    const Row:React.FC<Rows> = ({ index, id, room, user, email, total, bookedDate, start, end, status, isPay, services, function1, function2,function3}) =>{
+    function handleFunction1(row: object) {
+        if(openPopup1){
+            openPopup1(row)
+        }
+    }
+
+    function handleFunction2(id: string, name: string) {
+        if(openPopup2){
+            openPopup2(id, name)
+        }
+    }
+
+    const Row:React.FC<Rows> = ({ index, id, room, user, email, total, bookedDate, start, end, status, isPay, services, openPopup1, openPopup2}) =>{
         const [open, setOpen] = React.useState(false);
         const row = { index, room, user, email, total, bookedDate, start, end, status, isPay };
 
         function handleFunction1() {
-            if(function1){
-                function1(id);
+            if(openPopup1){
+                openPopup1(row)
             }
         }
 
-        function handleFunction2() {
-            if(function2){
-                function2(id);
+        function handleFunction2(id: string, name: string) {
+            if(openPopup2){
+                openPopup2(id, name)
             }
         }
         
-        function handleFunction3() {
-            if(function3){
-                function3();
-            }
-        }
         return(
             <React.Fragment>
                 <TableRow hover role="checkbox" tabIndex={-1} >
@@ -159,13 +163,7 @@ const TableTpl:React.FC<Data> = (
                             <TableCell align='center'>
                                 <div 
                                     className={`tblButton btn${index+1}`} 
-                                    onClick={() => {
-                                        if(button.label === 'Edit'){
-                                            handleFunction3()
-                                        }else{
-                                            (index + 1) % 2 === 0 ? handleFunction2() : handleFunction1()
-                                        }
-                                    }}>{button.icon}</div>
+                                    onClick={() => { (index + 1) % 2 === 0 ? handleFunction2(id, '') : handleFunction1()}}>{button.icon}</div>
                             </TableCell>
                         ) : null
                     )}
@@ -264,9 +262,8 @@ const TableTpl:React.FC<Data> = (
                                         status={row.status}
                                         isPay={row.isPay}
                                         services={row.services} 
-                                        function1={function1}
-                                        function2={function2}
-                                        function3={function3}
+                                        openPopup1={openPopup1}
+                                        openPopup2={openPopup2}
                                         />
                                 );
                         })
@@ -274,22 +271,25 @@ const TableTpl:React.FC<Data> = (
                         rows
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row: any) => {
+                                const rId = row.id;
+                                const rName = row.name;
                                 return (
                                 <TableRow hover role="checkbox" tabIndex={-1}>
                                     {columns.map((column) => {
-                                    const value = row[column.id];
-                                    return (
-                                        <TableCell key={column.id} align={column.align}>
-                                        {column.format && typeof value === 'number'
-                                            ? column.format(value)
-                                            : value}
-                                        </TableCell>
-                                    );
-                                    })}
+                                        const value = row[column.id];
+                                        return (
+                                            <TableCell key={column.id} align={column.align}>
+                                            {column.format && typeof value === 'number'
+                                                ? column.format(value)
+                                                : value}
+                                            </TableCell>
+                                        );
+                                        })
+                                    }
                                     {actionButtons.map((button, index) =>
                                         button.condition ? (
                                             <TableCell align='center'>
-                                                <div className={`tblButton btn${index+1}`} >{button.icon}</div>
+                                                <div className={`tblButton btn${index+1}`} onClick={() => {(index + 1) % 2 === 0 ? handleFunction2(rId, rName) : handleFunction1(row)}} >{button.icon}</div>
                                             </TableCell>
                                         ) : null
                                     )}

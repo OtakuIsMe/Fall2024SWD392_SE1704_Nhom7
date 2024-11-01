@@ -1,27 +1,38 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import './ServiceModal.css'
 import { ApiGateway } from "../../../../Api/ApiGateway";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
 import { TextField } from "@mui/material";
 
 interface PopupType {
+  type: string;
   closeModal: () => void;
+  editService?: (id: string, name: string, price: number, image: File) => Promise<any>;
+  deleteService?: () => Promise<any>;
+  service?: any;
 }
 
 interface FormData {
+  id: string;
   name: string;
   type: number;
   price: number;
   image: File | null;
 }
 
-const Modal:React.FC<PopupType> = ({ closeModal }) => {
+const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteService, service }) => {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
+  const [ isNameFilled, setIsNameFilled ] = useState(true)
+  const [ isTypeSelected, setIsTypeSelected ] = useState(true)
+  const [ isPriceFilled, setIsPriceFilled ] = useState(true)
+  const [ isImageSelected, setImageSelected ] = useState(true)
   const [formData, setFormData] = useState<FormData>({
+    id: '',
     name: '',
-    type: 0, 
+    type: -1, 
     price: 0,
     image: null,
   });
@@ -42,8 +53,8 @@ const Modal:React.FC<PopupType> = ({ closeModal }) => {
     });
   };
 
-  const handleChangeImage = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const file = event.target.files?.[0];
+  const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
     if (file) {
       setFormData({
         ...formData,
@@ -56,6 +67,32 @@ const Modal:React.FC<PopupType> = ({ closeModal }) => {
     e.preventDefault();
 
     try {
+      let error = 0;
+
+      if (formData.image === null) {
+        setImageSelected(false)
+        error++;
+      }
+
+      if (formData.name === '') {
+        setIsNameFilled(false);
+        error++;
+      }
+
+      if (formData.type === -1) {
+        setIsTypeSelected(false);
+        error++;
+      }
+
+      if (formData.price < 5000) {
+        setIsPriceFilled(false);
+        error++;
+      }
+
+      if (error > 0) {
+        return;
+      }
+
       const formServiceData = {
         name: formData.name,
         type: formData.type,
@@ -82,90 +119,274 @@ const Modal:React.FC<PopupType> = ({ closeModal }) => {
     }
   };
 
-  return (
-    <div id="service_modal" style={{display: "static"}}>
-      <form className="modal" onSubmit={addService}>
-        <div className="popup-header">
-          <h1>Add Service</h1>
-        </div>
-        <div className="modal-content">
-          <div className="content">
-            <div className="column1">
-              <div className="img-container">
-                {formData.image ?
-                  <div className="image-selected">
-                    <label htmlFor="input-file1" className="image-label">
-                      <img src={URL.createObjectURL(formData.image)} />
-                      <input
-                        id="input-file1"
-                        name="selectedFile1"
-                        type="file"
-                        style={{ display: "none" }}
-                        ref={fileInputRef}
-                        accept=".png, .jpg"
-                        onChange={handleChangeImage}
-                      />
-                      <button
-                        id="upload-image"
-                        type="button"
-                        onClick={() => {handleClick();}}
-                        style={{ display: "none" }}
-                      />
-                    </label>
-                  </div>
-                  :
-                  <div className="image-placeholder">
-                    <label htmlFor="input-file1" className="image-label">
-                      <div>
-                        <AddPhotoAlternateIcon sx={{fontSize: '32px'}}/>
+  const handleDelete = (): void => {
+    if (deleteService) {
+      deleteService()
+      closeModal()
+    }
+  }
+
+  const handleEdit = (id: string, name: string, price: number, image: File): void => {
+    if (editService) {
+      editService(id, name, price, image)
+      closeModal()
+    }
+  }
+
+  useEffect(() => {
+    if (service) {
+      setFormData({
+        id: service.id,
+        name: service.name,
+        type: service.type,
+        price: service.price,
+        image: service.image
+      })
+    }
+    console.log(service)
+  },[])
+
+  switch (type) {
+    case 'add':
+      return (
+        <div id="service_modal" style={{display: "static"}}>
+          <form className="modal" onSubmit={addService}>
+            <div className="popup-header">
+              <h1>Add Service</h1>
+            </div>
+            <div className="modal-content">
+              <div className="content">
+                <div className="column1">
+                  <div className="img-container">
+                    {formData.image ?
+                      <div className="image-selected">
+                        <label htmlFor="input-file1" className="image-label">
+                          <img src={URL.createObjectURL(formData.image)} />
+                          <input
+                            id="input-file1"
+                            name="selectedFile1"
+                            type="file"
+                            style={{ display: "none" }}
+                            ref={fileInputRef}
+                            accept=".png, .jpg"
+                            onChange={handleChangeImage}
+                          />
+                          <button
+                            id="upload-image"
+                            type="button"
+                            onClick={() => {handleClick();}}
+                            style={{ display: "none" }}
+                          />
+                        </label>
                       </div>
-                      <input
-                        id="input-file1"
-                        name="selectedFile1"
-                        type="file"
-                        style={{ display: "none" }}
-                        ref={fileInputRef}
-                        accept=".png, .jpg"
-                        onChange={handleChangeImage}
-                      />
-                      <button
-                        id="upload-image"
-                        type="button"
-                        onClick={() => {handleClick();}}
-                        style={{ display: "none" }}
-                      />
-                    </label>
+                      :
+                      <div className="image-placeholder">
+                        <label htmlFor="input-file1" className="image-label">
+                          <div>
+                            <AddPhotoAlternateIcon sx={{fontSize: '32px'}}/>
+                          </div>
+                          <input
+                            id="input-file1"
+                            name="selectedFile1"
+                            type="file"
+                            style={{ display: "none" }}
+                            ref={fileInputRef}
+                            accept=".png, .jpg"
+                            onChange={handleChangeImage}
+                          />
+                          <button
+                            id="upload-image"
+                            type="button"
+                            onClick={() => {handleClick();}}
+                            style={{ display: "none" }}
+                          />
+                        </label>
+                      </div>
+                    }
                   </div>
-                }
+                </div>
+                <div className="column2">
+                  <label>
+                    <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
+                      <p>Name</p>
+                      { !isNameFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Name is required</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <TextField name="name" variant="outlined" size="small" fullWidth onChange={handleChange}/>
+                  </label>
+                  <label>
+                    <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
+                      <p>Type</p>
+                      { !isTypeSelected ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Type is required</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <select name="type" value={formData.type} onChange={handleTypeChange}>
+                      <option value={-1}></option>
+                      <option value={0}>Food</option>
+                      <option value={1}>Drink</option>
+                      <option value={2}>Device</option>
+                    </select>
+                  </label>
+                  <label>
+                    <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
+                      <p>Price</p>
+                      { !isPriceFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Price should be greater than 5000VND</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <TextField name="price" variant="outlined" size="small" fullWidth onChange={handleChange}/>
+                  </label>
+                </div>
               </div>
             </div>
-            <div className="column2">
-              <label>
-                <p>Name</p>
-                <TextField name="name" variant="outlined" size="small" fullWidth onChange={handleChange}/>
-              </label>
-              <label>
-                <p>Type</p>
-                <select name="type" value={formData.type} onChange={handleTypeChange}>
-                  <option value={0}>Food</option>
-                  <option value={1}>Drink</option>
-                  <option value={2}>Device</option>
-                </select>
-              </label>
-              <label>
-                <p>Price</p>
-                <TextField name="price" variant="outlined" size="small" fullWidth onChange={handleChange}/>
-              </label>
+            <div className="modal-btns">
+              { !isImageSelected ?
+                <p style={{margin: 0, color: "red", marginLeft: "5px"}}>*Image is required</p> : <> </>
+              }
+              <div className="modal-cancel btn" onClick={closeModal}>Cancel</div>
+              <button type="submit" className="modal-confirm btn">Confirm</button>
+            </div>
+          </form>
+        </div>
+      );
+    case 'edit':
+      return (
+        <div id="service_modal" style={{display: "static"}}>
+          <form className="modal" onSubmit={addService}>
+            <div className="popup-header">
+              <h1>Edit {service ? service.name : 'Service'}</h1>
+            </div>
+            <div className="modal-content">
+              <div className="content">
+                <div className="column1">
+                  <div className="img-container">
+                    {/* {formData.image ?
+                      <div className="image-selected">
+                        <label htmlFor="input-file1" className="image-label">
+                          <img src={URL.createObjectURL(formData.image)} />
+                          <input
+                            id="input-file1"
+                            name="selectedFile1"
+                            type="file"
+                            style={{ display: "none" }}
+                            ref={fileInputRef}
+                            accept=".png, .jpg"
+                            onChange={handleChangeImage}
+                          />
+                          <button
+                            id="upload-image"
+                            type="button"
+                            onClick={() => {handleClick();}}
+                            style={{ display: "none" }}
+                          />
+                        </label>
+                      </div>
+                      :
+                      <div className="image-placeholder">
+                        <label htmlFor="input-file1" className="image-label">
+                          <div>
+                            <AddPhotoAlternateIcon sx={{fontSize: '32px'}}/>
+                          </div>
+                          <input
+                            id="input-file1"
+                            name="selectedFile1"
+                            type="file"
+                            style={{ display: "none" }}
+                            ref={fileInputRef}
+                            accept=".png, .jpg"
+                            onChange={handleChangeImage}
+                          />
+                          <button
+                            id="upload-image"
+                            type="button"
+                            onClick={() => {handleClick();}}
+                            style={{ display: "none" }}
+                          />
+                        </label>
+                      </div>
+                    } */}
+                  </div>
+                </div>
+                <div className="column2">
+                  <label>
+                    <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
+                      <p>Name</p>
+                      { !isNameFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Name is required</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <TextField name="name" variant="outlined" size="small" fullWidth onChange={handleChange} placeholder={service.name}/>
+                  </label>
+                  <label>
+                    <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
+                      <p>Type</p>
+                      { !isTypeSelected ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Type is required</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <select name="type" value={service.type} onChange={handleTypeChange} disabled>
+                      {service.type === 0 ? 
+                        <option value={0}>Food</option> 
+                        :
+                        service.type === 1 ? 
+                          <option value={1}>Drink</option>
+                          : 
+                          <option value={2}>Device</option>
+                      }
+                    </select>
+                  </label>
+                  <label>
+                    <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
+                      <p>Price</p>
+                      { !isPriceFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Price should be greater than 5000VND</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <TextField name="price" variant="outlined" size="small" fullWidth onChange={handleChange} placeholder={service.price}/>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="modal-btns">
+              { !isImageSelected ?
+                <p style={{margin: 0, color: "red", marginLeft: "5px"}}>*Image is required</p> : <> </>
+              }
+              <div className="modal-cancel btn" onClick={closeModal}>Cancel</div>
+              <button type="submit" className="modal-confirm btn">Confirm</button>
+            </div>
+          </form>
+        </div>
+      );
+    case 'delete':
+      return (
+        <div>
+          <div id="service_delete_modal" style={{display: "static"}}>
+            <div className="delete-confirm">
+              <ErrorRoundedIcon sx={{color: "#C90000", fontSize: "64px"}}/>
+              <p>Are you sure to delete <b>{service.name}</b>?</p>
+              <div className="btn-group">
+                <div className="cancel" onClick={closeModal}>No</div>
+                <div className="confirm" onClick={handleDelete}>Yes</div>
+              </div>
             </div>
           </div>
         </div>
-        <div className="modal-btns">
-          <div className="modal-cancel btn" onClick={closeModal}>Cancel</div>
-          <button type="submit" className="modal-confirm btn">Confirm</button>
-        </div>
-      </form>
-    </div>
-  );
+      );
+  }
 };
 
 export default Modal;
