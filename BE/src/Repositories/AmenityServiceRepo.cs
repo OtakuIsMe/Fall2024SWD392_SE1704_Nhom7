@@ -13,9 +13,9 @@ namespace BE.src.Repositories
         Task<int> CountServiceRemain(Guid serviceId);
         Task<bool> CreateServiceDetail(ServiceDetail serviceDetail);
         Task<bool> UpdateService(AmenityService service);
-        Task<bool> DeleteService(Guid amenityServiceId);
+        Task<bool> DeleteService(AmenityService service);
         Task<bool> UpdateServiceImage(Image image);
-        Task<bool> DeleteServiceImage(Guid amenityServiceId);
+        Task<bool> DeleteServiceImage(Image image);
         Task<Image?> GetImageByServiceId(Guid amenityServiceId);
         Task<DeviceChecking?> GetDeviceChecking(Guid BookingItemsId);
         Task<bool> AddDeviceChecking(DeviceChecking deviceChecking);
@@ -75,13 +75,8 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> DeleteService(Guid amenityServiceId)
+        public async Task<bool> DeleteService(AmenityService service)
         {
-            var service = await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityServiceId);
-            if (service == null)
-            {
-                return false;
-            }
             _context.AmenityServices.Remove(service);
             return await _context.SaveChangesAsync() > 0;
         }
@@ -92,13 +87,8 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> DeleteServiceImage(Guid amenityServiceId)
+        public async Task<bool> DeleteServiceImage(Image image)
         {
-            var image = await _context.Images.FirstOrDefaultAsync(i => i.AmenityServiceId == amenityServiceId);
-            if (image == null)
-            {
-                return false;
-            }
             _context.Images.Remove(image);
             return await _context.SaveChangesAsync() > 0;
         }

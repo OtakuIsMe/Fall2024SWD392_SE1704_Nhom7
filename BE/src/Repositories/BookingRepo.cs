@@ -238,6 +238,19 @@ namespace BE.src.Repositories
 
             if (user == null) return false;
 
+            var bookingItems = await _context.BookingItems.Where(bi => bi.BookingId == bookingId).ToListAsync();
+
+            var amenityServices = await _context.AmenityServices.Where(a => bookingItems.Any(b => b.AmenityServiceId == a.Id)).ToListAsync();
+
+            foreach (var amenityService in amenityServices)
+            {
+                var amenityServiceItem = await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityService.Id);
+
+                if (amenityServiceItem == null) continue;
+
+                user.Wallet += amenityServiceItem.Price;
+            }
+
             user.Wallet += refundAmount;
 
             _context.Users.Update(user);
