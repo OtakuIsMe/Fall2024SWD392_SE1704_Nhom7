@@ -566,8 +566,6 @@ namespace BE.src.Domains.Database
                               v => (int)v,
                               v => (UserStatusEnum)v
                         );
-                        entity.Property(u => u.IsDeleted)
-                        .IsRequired();
 
                         entity.HasOne(u => u.Role)
                         .WithMany(r => r.Users)
