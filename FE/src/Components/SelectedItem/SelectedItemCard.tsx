@@ -10,6 +10,7 @@ interface SelectedItem {
 }
 interface ServiceData {
     index: number;
+    image: string;
     type: number;
     name: string;
     price: number;
@@ -24,12 +25,21 @@ const SelectedItemCard:React.FC<SelectedItem> = ({service, amount}) => {
         <div id='slt-item'>
             <div className="image"> 
                 {service.type === 0 ?
-                    <img src={Food} alt="" />
+                    service.image ? 
+                        <img src={service.image} alt={service.name} />
+                        :
+                        <img src={Food} alt="Food" />
                 :
                 service.type === 1 ?
-                    <img src={Drink} alt="" />
+                    service.image ?
+                        <img src={service.image} alt={service.name} />
+                        :
+                        <img src={Drink} alt="Drink" />
                 :
-                    <img src={Device} alt="" />
+                    service.image ?
+                        <img src={service.image} alt={service.name} />
+                        :
+                        <img src={Device} alt="Device" />
                 }
             </div>
             <div className="info">

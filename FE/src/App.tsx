@@ -15,7 +15,7 @@ import RequestManagement from "./Pages/Admin/RequestManagement/RequestManagement
 import RoomManagement from "./Pages/Admin/RoomManagement/RoomManagement.tsx";
 import FRManagement from "./Pages/Admin/F&RManagement/F&RManagement.tsx";
 import MembershipManagement from "./Pages/Admin/MembershipManagement/MembershipManagement.tsx";
-import TransactionHistory from "./Pages/Customer/TransactionHistory/TransactionHistory.tsx";
+import TransactionHistory from "./Pages/Customer/ProfilePage/TransactionHistory/TransactionHistory.tsx";
 import { Login } from "./Pages/Login/Login.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
 
