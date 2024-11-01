@@ -467,6 +467,9 @@ namespace BE.src.Domains.Database
                         .IsRequired()
                         .HasMaxLength(1000);
 
+                        entity.Property(r => r.IsDeleted)
+                        .IsRequired();
+
                         entity.HasOne(r => r.Area)
                         .WithMany(a => a.Rooms)
                         .HasForeignKey(r => r.AreaId)
@@ -563,6 +566,8 @@ namespace BE.src.Domains.Database
                               v => (int)v,
                               v => (UserStatusEnum)v
                         );
+                        entity.Property(u => u.IsDeleted)
+                        .IsRequired();
 
                         entity.HasOne(u => u.Role)
                         .WithMany(r => r.Users)

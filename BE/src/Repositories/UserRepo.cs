@@ -27,6 +27,7 @@ namespace BE.src.Repositories
         Task<List<Notification>> ViewNotification(Guid userId);
         Task<bool> AddFeedback(RatingFeedback ratingFeedback);
         Task<bool> CreateMembershipUser(MembershipUser membershipUser);
+        Task<bool> DeleteUser(Guid userId);
     }
     public class UserRepo : IUserRepo
     {
@@ -133,6 +134,17 @@ namespace BE.src.Repositories
         public async Task<bool> CreateMembershipUser(MembershipUser membershipUser)
         {
             _context.MembershipUsers.Add(membershipUser);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteUser(Guid userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return false;
+            }
+            user.Status = UserStatusEnum.IsDelete;
             return await _context.SaveChangesAsync() > 0;
         }
     }

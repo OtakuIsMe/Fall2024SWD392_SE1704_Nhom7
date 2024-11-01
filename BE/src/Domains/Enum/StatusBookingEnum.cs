@@ -3,9 +3,8 @@
     public enum StatusBookingEnum
     {
         Wait = 0,
-        InProgress = 1,
-        Accepted = 2,
-        Done = 3,
-        Canceled = 4
+        Accepted = 1,
+        Done = 2,
+        Canceled = 3
     }
 }
