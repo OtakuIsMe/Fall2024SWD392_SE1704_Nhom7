@@ -138,6 +138,7 @@ const ServiceManagement: React.FC = () => {
         rowData.push(createData(row.amenityService.id, row.amenityService.image.url , index+1 , getService(row.amenityService.type), row.amenityService.name, row.amenityService.price))
       })
       setServiceList(rowData)
+      console.log("list updated")
       console.log(response)
     } catch (err) {
       console.error('Error get servicelist :', err);
@@ -149,16 +150,22 @@ const ServiceManagement: React.FC = () => {
       console.log(service.id);
       const response = await ApiGateway.DeleteService(service.id);
       setService({})
-      return response
+      await fetchServices()
+      console.log("Service is deleted: ", response) 
     } catch (error) {
       console.error('Error delete service :', error);
     }
   }
 
-  const updatedService = async (id: string, image: File, name: string, price: number): Promise<void> => {
+  const updatedService = async (id: string, name: string, price: number, image: File): Promise<void> => {
     try {
+      console.log(id)
+      console.log(name)
+      console.log(price)
+      console.log(image)
       const response = await ApiGateway.UpdateService(id, name, price, image)
       setService({})
+      await fetchServices()
       console.log('Service updated successfully:', response)
     } catch (error) {
       console.error("Error updating service: ", error);
@@ -179,7 +186,7 @@ const ServiceManagement: React.FC = () => {
         } 
       </div>
       {isModalAddOpen && <Modal type='add' closeModal={closeModalAdd} />}
-      {isModalEditOpen && <Modal type='edit' service={service} closeModal={closeModalEdit} />}
+      {isModalEditOpen && <Modal type='edit' service={service} closeModal={closeModalEdit} editService={updatedService} />}
       {isModalDeleteOpen && <Modal type='delete' service={service} closeModal={closeModalDelete} deleteService={deleteSevice}/>}
     </div>
   )

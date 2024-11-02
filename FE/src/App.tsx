@@ -44,16 +44,39 @@ const App: React.FC = () => {
           {/* <Route path="/favorites" element={<FavoriteList />} /> */}
           <Route path="/register" element={<Register />} />
 
-          <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '42feaeb5-fc53-4163-98b5-d28cfceafa7c', '5a4226d9-e58a-42c4-a786-dba8369b234b']} />}>
+          <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3']} />}>
             <Route path="/" element={<AdminLayout />}>
-              <Route path="/dashboard" element={<DashBoard/>}/>
-              <Route path="/users" element={<UserManagement/>}/>
-              <Route path="/services" element={<ServiceManagement/>}/>
-              <Route path="/requests" element={<RequestManagement/>}/>
-              <Route path="/rooms" element={<RoomManagement/>}/>
-              <Route path="/feedbacks&reports" element={<FRManagement/>}/>
-              <Route path="/areas" element={<AreaManagement/>}/>
-              <Route path="/membership" element={<MembershipManagement/>}/>
+              <Route path="/dashboard" element={<DashBoard />} />
+              <Route path="/users" element={<UserManagement />} />
+              <Route path="/services" element={<ServiceManagement />} />
+              <Route path="/requests" element={<RequestManagement />} />
+              <Route path="/rooms" element={<RoomManagement />} />
+              <Route path="/feedbacks&reports" element={<FRManagement />} />
+              <Route path="/areas" element={<AreaManagement />} />
+              <Route path="/membership" element={<MembershipManagement />} />
+            </Route>
+          </Route>
+
+          {/* Manager's Accessible Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '42feaeb5-fc53-4163-98b5-d28cfceafa7c']} />}>
+            <Route path="/" element={<AdminLayout />}>
+              <Route path="/dashboard" element={<DashBoard />} />
+              <Route path="/users" element={<UserManagement />} />
+              <Route path="/services" element={<ServiceManagement />} />
+              <Route path="/requests" element={<RequestManagement />} />
+              <Route path="/rooms" element={<RoomManagement />} />
+              <Route path="/feedbacks&reports" element={<FRManagement />} />
+              <Route path="/membership" element={<MembershipManagement />} />
+              {/* Excluding "/areas" for Managers */}
+            </Route>
+          </Route>
+
+          {/* Staff's Accessible Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '5a4226d9-e58a-42c4-a786-dba8369b234b']} />}>
+            <Route path="/" element={<AdminLayout />}>
+              <Route path="/users" element={<UserManagement />} />
+              <Route path="/services" element={<ServiceManagement />} />
+              {/* Staff only has access to "/users" and "/services" */}
             </Route>
           </Route>
         </Routes>

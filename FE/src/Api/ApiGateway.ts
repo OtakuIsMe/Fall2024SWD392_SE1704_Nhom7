@@ -246,22 +246,28 @@ export class ApiGateway {
         }
     }
 
-    public static async DeleteService<T>(id: string): Promise<any> {
+    public static async DeleteService<T>(id: string): Promise<T> {
         try {
             const response = await this.axiosInstance.delete<T>(`amenityservice/DeleteService/${id}`)
             return response.data;
         } catch (error) {
             console.error("Error Deleting Service: ", error)
+            throw error
         }
     }
 
-    public static async UpdateService<T>(id: string, name: string, price: number, image: File) : Promise<any>{
+    public static async UpdateService<T>(id: string, name: string, price: number, image: File) : Promise<T>{
         try {
             const formData = new FormData();
             formData.append("Name", name);
             formData.append("Price", price.toString());
             formData.append("Image", image);
-            const response = await axios.put<T>(`/amenityservice/UpdateService/${id}`, formData, {
+            console.log(formData);
+            console.log(id);
+            console.log(name);
+            console.log(price);
+            console.log(image);
+            const response = await axios.put<T>(`http://localhost:5101/amenityservice/UpdateService/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -269,6 +275,7 @@ export class ApiGateway {
             return response.data;
         } catch (error) {
             console.error("Error Updating Service: ", error)
+            throw error
         }
     }
 }

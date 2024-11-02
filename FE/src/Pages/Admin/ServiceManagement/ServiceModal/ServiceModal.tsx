@@ -29,7 +29,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
   const [ isTypeSelected, setIsTypeSelected ] = useState(true)
   const [ isPriceFilled, setIsPriceFilled ] = useState(true)
   const [ isImageSelected, setImageSelected ] = useState(true)
-  const [formData, setFormData] = useState<FormData>({
+  const [ formData, setFormData ] = useState<FormData>({
     id: '',
     name: '',
     type: -1, 
@@ -100,6 +100,8 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
         image: formData.image as File,
       };
 
+      console.log("FormServiceData: ", formServiceData);
+
       const response = await ApiGateway.CreateService(
         formServiceData.name,
         formServiceData.type,
@@ -126,11 +128,25 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
     }
   }
 
-  const handleEdit = (id: string, name: string, price: number, image: File): void => {
+  const handleEdit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+
     if (editService) {
-      editService(id, name, price, image)
+      console.log(formData)
+      console.log("It did run")
       closeModal()
     }
+  }
+
+  async function urlToFile(url: string, filename: string, mimeType: string): Promise<File> {
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+        throw new Error(`Failed to fetch image from URL: ${url}`);
+    }
+    
+    const blob = await response.blob();
+    return new File([blob], filename, { type: mimeType });
   }
 
   useEffect(() => {
@@ -143,7 +159,6 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
         image: service.image
       })
     }
-    console.log(service)
   },[])
 
   switch (type) {
@@ -260,7 +275,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
     case 'edit':
       return (
         <div id="service_modal" style={{display: "static"}}>
-          <form className="modal" onSubmit={addService}>
+          <form className="modal" onSubmit={handleEdit}>
             <div className="popup-header">
               <h1>Edit {service ? service.name : 'Service'}</h1>
             </div>
@@ -268,10 +283,12 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
               <div className="content">
                 <div className="column1">
                   <div className="img-container">
-                    {/* {formData.image ?
+                    {formData.image ?
                       <div className="image-selected">
                         <label htmlFor="input-file1" className="image-label">
-                          <img src={URL.createObjectURL(formData.image)} />
+                          <img src={formData.image instanceof File
+                            ? URL.createObjectURL(formData.image)
+                            : formData.image} />
                           <input
                             id="input-file1"
                             name="selectedFile1"
@@ -292,9 +309,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
                       :
                       <div className="image-placeholder">
                         <label htmlFor="input-file1" className="image-label">
-                          <div>
-                            <AddPhotoAlternateIcon sx={{fontSize: '32px'}}/>
-                          </div>
+                          <img src={service.image}/>
                           <input
                             id="input-file1"
                             name="selectedFile1"
@@ -312,7 +327,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
                           />
                         </label>
                       </div>
-                    } */}
+                    }
                   </div>
                 </div>
                 <div className="column2">
