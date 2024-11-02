@@ -88,5 +88,11 @@ namespace BE.src.Controllers
         {
             return await _userServ.DeleteUser(userId);
         }
+
+        [HttpGet("Total")]
+        public async Task<IActionResult> GetUserCount()
+        {
+            return await _userServ.CountUser();
+        }
     }
 }

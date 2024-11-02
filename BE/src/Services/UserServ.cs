@@ -22,6 +22,7 @@ namespace BE.src.Services
         Task<IActionResult> ViewNotification(Guid userId);
         Task<IActionResult> AddFeedback(Guid userId, Guid roomId, AddFeedBackDTO data);
         Task<IActionResult> DeleteUser(Guid userId);
+        Task<IActionResult> CountUser();
     }
     public class UserServ : IUserServ
     {
@@ -296,6 +297,19 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Cant not delete user");
                 }
                 return SuccessResp.Ok("Delete User Success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CountUser()
+        {
+            try
+            {
+                int userCount = await _userRepo.CountAllUser();
+                return SuccessResp.Ok(userCount);
             }
             catch (System.Exception ex)
             {

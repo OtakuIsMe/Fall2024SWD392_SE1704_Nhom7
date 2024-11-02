@@ -57,6 +57,11 @@ namespace BE.src.Controllers
             return await _transactionServ.PaymentMembershipSuccess(MembershipId, UserId);
         }
 
+        [HttpGet("Total-Income")]
+        public async Task<IActionResult> GetTotalIncome()
+        {
+            return await _transactionServ.TotalIncome();
+        }
         // [HttpGet("Statistic-")]
     }
 }

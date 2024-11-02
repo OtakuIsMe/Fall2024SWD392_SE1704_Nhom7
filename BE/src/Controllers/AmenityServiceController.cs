@@ -40,7 +40,7 @@ namespace BE.src.Controllers
             return await _amenityServiceServ.UpdateService(id, service);
         }
 
-        [HttpDelete("DeleteService/{amenityServiceId}")]
+        [HttpPut("DeleteService/{amenityServiceId}")]
         public async Task<IActionResult> DeleteService(Guid amenityServiceId)
         {
             return await _amenityServiceServ.DeleteService(amenityServiceId);

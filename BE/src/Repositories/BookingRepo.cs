@@ -30,6 +30,8 @@ namespace BE.src.Repositories
         Task<List<Booking>> ListBookingUserUpComing(Guid userId);
         Task<bool> CancleAllBookingByUser(Guid userId);
         Task<List<Booking>> GetBookingsWaitAccepted(Guid roomId);
+        Task<List<Booking>> GetListBookingByAmenityService(Guid amenityServiceId);
+        Task<bool> UpdateBookingItem(BookingItem bookingItem);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -436,9 +438,29 @@ namespace BE.src.Repositories
 
         public async Task<List<Booking>> GetBookingsWaitAccepted(Guid roomId)
         {
-            return await _context.Bookings.Where(b => b.RoomId == roomId && (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.Accepted))
-                                            .Include(b => b.PaymentRefunds.FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment))
+            return await _context.Bookings.Where(b => b.RoomId == roomId
+                                            && (b.Status == StatusBookingEnum.Wait
+                                            || b.Status == StatusBookingEnum.Accepted))
+                                            .Include(b => b.PaymentRefunds
+                                                                .FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment))
                                             .ToListAsync();
+        }
+
+        public async Task<List<Booking>> GetListBookingByAmenityService(Guid amenityServiceId)
+        {
+            return await _context.Bookings.Include(b => b.BookingItems
+                                            .Where(bi => bi.AmenityServiceId == amenityServiceId))
+                                            .Include(b => b.PaymentRefunds
+                                                                .FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment))
+                                            .Where(b => b.BookingItems.Any(bi => bi.AmenityServiceId == amenityServiceId)
+                                            && (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.Accepted))
+                                            .ToListAsync();
+        }
+
+        public async Task<bool> UpdateBookingItem(BookingItem bookingItem)
+        {
+            _context.BookingItems.Update(bookingItem);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }
