@@ -35,14 +35,13 @@ const AdminLayout: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // Retrieve the initial selected index from localStorage or default to 0
-  const initialSelected = parseInt(localStorage.getItem('selectedIndex') || '0', 10);
+  const initialSelected = parseInt(sessionStorage.getItem('selectedIndex') || '0', 10);
   const [isSelected, setIsSelected] = useState<number>(initialSelected);
 
   const handleNavigation = (index: number, href: string, isAccessible: boolean) => {
     if (isAccessible) {
       setIsSelected(index);
-      localStorage.setItem('selectedIndex', index.toString());
+      sessionStorage.setItem('selectedIndex', index.toString());
       navigate(href);
     }
   };
