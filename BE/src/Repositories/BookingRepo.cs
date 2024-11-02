@@ -27,6 +27,7 @@ namespace BE.src.Repositories
         Task<Booking?> CheckBookReqUser(Guid roomId, Guid userId, DateTime DateBooking, TimeSpan TimeBooking);
         Task<List<Booking>> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate);
         Task<List<Booking>> GetBookingRequestsInProgressForStaff();
+        Task<List<Booking>> ListBookingUserUpComing(Guid userId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -80,7 +81,7 @@ namespace BE.src.Repositories
 
             if (booking == null) return false;
 
-            booking.Status = StatusBookingEnum.Completed;
+            booking.Status = StatusBookingEnum.Accepted;
             booking.CreateAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -165,8 +166,10 @@ namespace BE.src.Repositories
 
         public async Task<List<BookingCheckAvailableDTO>> GetBookingCheckAvailableList(Guid bookingId)
         {
-            var bookingAlreadyAvailable = await _context.Bookings
-                .Where(b => b.Id == bookingId && b.Status == StatusBookingEnum.Wait)
+            var bookingAlreadyInProgress = await _context.Bookings
+                .Where(b => b.Id == bookingId &&
+                        b.Status == StatusBookingEnum.Wait || 
+                        b.Status == StatusBookingEnum.Accepted)
                 .Select(b => new BookingCheckAvailableDTO
                 {
                     BookingId = b.Id,
@@ -181,13 +184,11 @@ namespace BE.src.Repositories
                 })
                 .FirstOrDefaultAsync();
 
-            if (bookingAlreadyAvailable == null)
+            if (bookingAlreadyInProgress == null)
                 return new List<BookingCheckAvailableDTO>();
 
-            var bookingCheckAvailableList = await _context.Bookings
-                            .Where(b => b.Status == StatusBookingEnum.Wait &&
-                                        b.DateBooking.Day == bookingAlreadyAvailable.DateBooking.Day &&
-                                        b.CreateAt > bookingAlreadyAvailable.CreateAt)
+            var bookingCheckAvailableList = _context.Bookings
+                            .Where(b => b.Status == StatusBookingEnum.Wait)
                             .Select(b => new BookingCheckAvailableDTO
                             {
                                 BookingId = b.Id,
@@ -197,15 +198,20 @@ namespace BE.src.Repositories
                                 Status = b.Status,
                                 IsPay = b.IsPay,
                                 UserId = b.UserId,
-                                RoomId = b.RoomId
+                                RoomId = b.RoomId,
+                                CreateAt = b.CreateAt,
+                                UpdateAt = b.UpdateAt   
                             })
-                            .ToListAsync();
+                            .AsEnumerable()
+                            .Where(b => bookingAlreadyInProgress.DateBooking.Date == b.DateBooking.Date &&
+                                    bookingAlreadyInProgress.DateBooking.Add(bookingAlreadyInProgress.TimeBooking) < b.DateBooking.Add(b.TimeBooking))
+                            .ToList();
 
             bool isAvailable = bookingCheckAvailableList
-                .Any(b => bookingAlreadyAvailable.DateBooking >= b.DateBooking.Add(b.TimeBooking) &&
-                          bookingAlreadyAvailable.DateBooking.Add(bookingAlreadyAvailable.TimeBooking) <= b.DateBooking);
+                .Any(b => bookingAlreadyInProgress.DateBooking >= b.DateBooking.Add(b.TimeBooking) &&
+                          bookingAlreadyInProgress.DateBooking.Add(bookingAlreadyInProgress.TimeBooking) <= b.DateBooking);
 
-            return !isAvailable ? bookingCheckAvailableList : new List<BookingCheckAvailableDTO>();
+            return !isAvailable ? bookingCheckAvailableList.ToList() : new List<BookingCheckAvailableDTO>();
         }
 
         public async Task<bool> ProcessRefund(Guid bookingId)
@@ -229,6 +235,19 @@ namespace BE.src.Repositories
             var user = await _context.Users.FindAsync(booking.UserId);
 
             if (user == null) return false;
+
+            var bookingItems = await _context.BookingItems.Where(bi => bi.BookingId == bookingId).ToListAsync();
+
+            var amenityServices = await _context.AmenityServices.Where(a => bookingItems.Any(b => b.AmenityServiceId == a.Id)).ToListAsync();
+
+            foreach (var amenityService in amenityServices)
+            {
+                var amenityServiceItem = await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityService.Id);
+
+                if (amenityServiceItem == null) continue;
+
+                user.Wallet += amenityServiceItem.Price;
+            }
 
             user.Wallet += refundAmount;
 
@@ -339,7 +358,7 @@ namespace BE.src.Repositories
                             .ThenInclude(bi => bi.AmenityService)
                         .Include(b => b.Room)
                             .ThenInclude(r => r.Images)
-                        .Where(b => b.Status == StatusBookingEnum.Completed)
+                        .Where(b => b.Status == StatusBookingEnum.Accepted)
                         .Select(b => new Booking
                         {
                             Id = b.Id,
@@ -391,6 +410,15 @@ namespace BE.src.Repositories
                         .ToListAsync();
 
             return bookingRequests.OrderByDescending(b => b.DateBooking.Add(b.TimeBooking)).ToList();
+        }
+        public async Task<List<Booking>> ListBookingUserUpComing(Guid userId)
+        {
+            return await _context.Bookings.Where(b => b.UserId == userId
+                                                && b.Status == StatusBookingEnum.Accepted)
+                                                .Include(b => b.Room)
+                                                    .ThenInclude(r => r.Images)
+                                                .ToListAsync();
+
         }
     }
 }

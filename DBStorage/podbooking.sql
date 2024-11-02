@@ -146,7 +146,7 @@ CREATE TABLE `bookingitems` (
   KEY `IX_BookingItems_ServiceDetailId` (`ServiceDetailId`),
   CONSTRAINT `FK_BookingItems_AmenityServices_AmenityServiceId` FOREIGN KEY (`AmenityServiceId`) REFERENCES `amenityservices` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `FK_BookingItems_Bookings_BookingId` FOREIGN KEY (`BookingId`) REFERENCES `bookings` (`Id`) ON DELETE CASCADE,
-  CONSTRAINT `FK_BookingItems_SerivceDetails_ServiceDetailId` FOREIGN KEY (`ServiceDetailId`) REFERENCES `serivcedetails` (`Id`)
+  CONSTRAINT `FK_BookingItems_ServiceDetails_ServiceDetailId` FOREIGN KEY (`ServiceDetailId`) REFERENCES `servicedetails` (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -627,13 +627,13 @@ INSERT INTO `roomutility` VALUES ('41ba7082-47f8-4292-a7f7-854ad324bf34','097bc3
 UNLOCK TABLES;
 
 --
--- Table structure for table `serivcedetails`
+-- Table structure for table `servicedetails`
 --
 
-DROP TABLE IF EXISTS `serivcedetails`;
+DROP TABLE IF EXISTS `servicedetails`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `serivcedetails` (
+CREATE TABLE `servicedetails` (
   `Id` char(36) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
   `Name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `IsNormal` tinyint(1) NOT NULL,
@@ -642,18 +642,18 @@ CREATE TABLE `serivcedetails` (
   `CreateAt` datetime(6) DEFAULT NULL,
   `UpdateAt` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  KEY `IX_SerivceDetails_AmenitySerivceId` (`AmenitySerivceId`),
-  CONSTRAINT `FK_SerivceDetails_AmenityServices_AmenitySerivceId` FOREIGN KEY (`AmenitySerivceId`) REFERENCES `amenityservices` (`Id`) ON DELETE CASCADE
+  KEY `IX_ServiceDetails_AmenitySerivceId` (`AmenitySerivceId`),
+  CONSTRAINT `FK_ServiceDetails_AmenityServices_AmenitySerivceId` FOREIGN KEY (`AmenitySerivceId`) REFERENCES `amenityservices` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `serivcedetails`
+-- Dumping data for table `servicedetails`
 --
 
-LOCK TABLES `serivcedetails` WRITE;
-/*!40000 ALTER TABLE `serivcedetails` DISABLE KEYS */;
-/*!40000 ALTER TABLE `serivcedetails` ENABLE KEYS */;
+LOCK TABLES `servicedetails` WRITE;
+/*!40000 ALTER TABLE `servicedetails` DISABLE KEYS */;
+/*!40000 ALTER TABLE `servicedetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

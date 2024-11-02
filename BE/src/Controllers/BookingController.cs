@@ -69,5 +69,10 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.GetBookingRequestsInProgressForStaff();
         }
+        [HttpPost("List_Booking_user_upcoming")]
+        public async Task<IActionResult> ListBookingUserUpcoming([FromBody] Guid UserId)
+        {
+            return await _bookingServ.ListBookingUserUpcoming(UserId);
+        }
     }
 }

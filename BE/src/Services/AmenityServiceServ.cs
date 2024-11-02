@@ -37,6 +37,10 @@ namespace BE.src.Services
                     Type = data.Type,
                     Price = data.Price
                 };
+                if (data.Image == null)
+                {
+                    return ErrorResp.BadRequest("Image is required");
+                }
                 string? url = await Utils.UploadImgToFirebase(data.Image, data.Name, "services");
                 if (url == null)
                 {
@@ -70,14 +74,14 @@ namespace BE.src.Services
         {
             try
             {
-                SerivceDetail serivceDetail = new()
+                ServiceDetail serviceDetail = new()
                 {
                     Name = data.Name,
                     IsNormal = true,
                     IsInUse = false,
                     AmenitySerivceId = data.AmenityServiceId
                 };
-                bool isCreated = await _amenityServiceRepo.CreateServiceDetail(serivceDetail);
+                bool isCreated = await _amenityServiceRepo.CreateServiceDetail(serviceDetail);
                 if (!isCreated)
                 {
                     return ErrorResp.BadRequest("Cant create service detail");
@@ -175,17 +179,32 @@ namespace BE.src.Services
         {
             try
             {
-                bool isDeleted = await _amenityServiceRepo.DeleteService(amenityServiceId);
-                if (!isDeleted)
-                {
-                    return ErrorResp.BadRequest("Fail to delete service");
-                }
 
-                bool isDeletedImage = await _amenityServiceRepo.DeleteServiceImage(amenityServiceId);
+                var image = await _amenityServiceRepo.GetImageByServiceId(amenityServiceId);
+
+                if (image == null)
+                {
+                    return ErrorResp.BadRequest("Fail to get image service");
+                }
+                
+                bool isDeletedImage = await _amenityServiceRepo.DeleteServiceImage(image);
                 if (!isDeletedImage)
                 {
                     return ErrorResp.BadRequest("Fail to delete image service");
                 }
+
+                var amenitiesService = await _amenityServiceRepo.GetAmenityServiceById(amenityServiceId);
+
+                if (amenitiesService == null) 
+                {
+                    return ErrorResp.BadRequest("Fail to get service");
+                }
+
+                bool isDeleted = await _amenityServiceRepo.DeleteService(amenitiesService);
+                if (!isDeleted)
+                {
+                    return ErrorResp.BadRequest("Fail to delete service");
+                }     
 
                 return SuccessResp.Ok("Delete service success");
             }

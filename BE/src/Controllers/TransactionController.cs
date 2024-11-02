@@ -45,6 +45,18 @@ namespace BE.src.Controllers
             return await _transactionServ.StatisticMonthInYear(year);
         }
 
+        [HttpPost("Buy-Membership-PayPal")]
+        public async Task<IActionResult> BuyMembership([FromBody] BuyMembershipRqDTO data)
+        {
+            return await _transactionServ.BuyMembership(data);
+        }
+
+        [HttpGet("Payment-Membership-Success")]
+        public async Task<IActionResult> PaymentMembershipSuccess([FromQuery] Guid MembershipId, [FromQuery] Guid UserId)
+        {
+            return await _transactionServ.PaymentMembershipSuccess(MembershipId, UserId);
+        }
+
         // [HttpGet("Statistic-")]
     }
 }
