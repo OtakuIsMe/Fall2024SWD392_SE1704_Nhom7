@@ -12,6 +12,7 @@ namespace BE.src.Domains.Models
         public int PointBonus { get; set; }
         public PaymentTypeEnum? PaymentType { get; set; }
         public bool Status { get; set; }
+        public bool? IsRefundReturnRoom { get; set; }
 
         public Guid BookingId { get; set; }
         public Booking Booking { get; set; } = null!;

@@ -11,7 +11,9 @@ namespace BE.src.Repositories
         Task<bool> CreateTransaction(Transaction transaction);
         Task<List<Transaction>> TransactionInYear(int year);
         Task<Membership?> GetMembership(Guid id);
-
+        Task<PaymentRefund?> FindPaymentRefundByBooking(Guid bookingId);
+        Task<bool> CreateRefundItem(RefundItem refundItem);
+        Task<bool> UpdatePaymentRefund(PaymentRefund paymentRefund);
     }
 
     public class TrasactionRepo : ITransactionRepo
@@ -29,10 +31,21 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> CreateRefundItem(RefundItem refundItem)
+        {
+            _context.RefundItems.Add(refundItem);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
         public async Task<bool> CreateTransaction(Transaction transaction)
         {
             _context.Transactions.Add(transaction);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<PaymentRefund?> FindPaymentRefundByBooking(Guid bookingId)
+        {
+            return await _context.PaymentRefunds.FirstOrDefaultAsync(p => p.BookingId == bookingId);
         }
 
         public async Task<Membership?> GetMembership(Guid id)
@@ -58,5 +71,16 @@ namespace BE.src.Repositories
         {
             return await _context.Transactions.Where(t => t.CreateAt.HasValue && t.CreateAt.Value.Year == year).ToListAsync();
         }
+
+        public async Task<bool> UpdatePaymentRefund(PaymentRefund paymentRefund)
+        {
+            _context.PaymentRefunds.Update(paymentRefund);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        // public async Task<bool> TotalIncome(){
+        //     return await _context.Transactions.Include(t=> t.PaymentRefund)
+        //                                     .Where(t=>t.DepositWithdrawId == null).ToList()_
+        // }
     }
 }

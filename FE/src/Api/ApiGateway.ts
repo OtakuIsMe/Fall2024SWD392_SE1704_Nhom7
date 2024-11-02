@@ -256,7 +256,7 @@ export class ApiGateway {
         }
     }
 
-    public static async UpdateService<T>(id: string, name: string, price: number, image: File) : Promise<T>{
+    public static async UpdateService<T>(id: string, name: string, price: number, image: File): Promise<T> {
         try {
             const formData = new FormData();
             formData.append("Name", name);
@@ -276,6 +276,15 @@ export class ApiGateway {
         } catch (error) {
             console.error("Error Updating Service: ", error)
             throw error
+        }
+    }
+    
+    public static async TotalUser<T>(): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/user/Total`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
         }
     }
 }

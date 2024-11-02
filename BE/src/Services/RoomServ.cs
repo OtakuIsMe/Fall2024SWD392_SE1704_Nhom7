@@ -27,18 +27,23 @@ namespace BE.src.Services
         Task<IActionResult> UnOrFavouriteRoom(Guid roomId, Guid userId);
         Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data);
         Task<IActionResult> TrendingRoom();
+        Task<IActionResult> DeleteRoom(Guid RoomId);
     }
     public class RoomServ : IRoomServ
     {
         private readonly IRoomRepo _roomRepo;
         private readonly IAreaRepo _areaRepo;
         private readonly IBookingRepo _bookingRepo;
+        private readonly ITransactionRepo _transactionRepo;
+        private readonly IUserRepo _userRepo;
 
-        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo, IBookingRepo bookingRepo)
+        public RoomServ(IRoomRepo roomRepo, IAreaRepo areaRepo, IBookingRepo bookingRepo, ITransactionRepo transactionRepo, IUserRepo userRepo)
         {
             _roomRepo = roomRepo;
             _areaRepo = areaRepo;
             _bookingRepo = bookingRepo;
+            _transactionRepo = transactionRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<IActionResult> GetRoomBySearchInput(string inputInfo)
@@ -297,5 +302,71 @@ namespace BE.src.Services
             }
         }
 
+        public async Task<IActionResult> DeleteRoom(Guid roomId)
+        {
+            try
+            {
+                List<Booking> bookingsWaitAccepted = await _bookingRepo.GetBookingsWaitAccepted(roomId);
+                foreach (var booking in bookingsWaitAccepted)
+                {
+                    //Check Cod
+                    if (booking.PaymentRefunds.FirstOrDefault()?.PaymentType != PaymentTypeEnum.COD)
+                    {
+                        //Refund for user
+                        PaymentRefund newPaymentRefund = new()
+                        {
+                            Type = PaymentRefundEnum.Refund,
+                            Total = booking.Total,
+                            PointBonus = 0,
+                            Status = true,
+                            BookingId = booking.Id
+                        };
+
+                        var isCreateRefund = await _transactionRepo.CreatePaymentRefund(newPaymentRefund);
+                        //Add Transaction
+                        Transaction transaction = new()
+                        {
+                            TransactionType = TypeTransactionEnum.Refund,
+                            Total = booking.Total,
+                            PaymentRefundId = newPaymentRefund.Id,
+                            UserId = booking.UserId
+                        };
+                        var isCreateTransaction = await _transactionRepo.CreateTransaction(transaction);
+                        //Add Money for customer
+                        var user = await _userRepo.GetUserById(booking.UserId);
+                        if (user == null)
+                        {
+                            return ErrorResp.NotFound("Cant find user");
+                        }
+                        user.Wallet += booking.Total;
+                        var isUpdateUser = await _userRepo.UpdateUser(user);
+                    }
+                    //Send Notification
+                    Notification notification = new()
+                    {
+                        Title = "Refunds due as this room is no longer available",
+                        Description = $"Booking application on {booking.DateBooking}, has been canceled and an amount of {booking.Total} added to your wallet",
+                        UserId = booking.UserId
+                    };
+                    var isCreateNotification = await _userRepo.CreateNotification(notification);
+                    //Change Booking Status
+                    booking.Status = StatusBookingEnum.Canceled;
+                    var isUpdateBooking = await _bookingRepo.UpdateBooking(booking);
+                }
+                //Change Room Status
+                var room = await _roomRepo.GetRoomById(roomId);
+                if (room == null)
+                {
+                    return ErrorResp.BadRequest("Cant find Room");
+                }
+                room.Status = StatusRoomEnum.Disable;
+                var isUpdateRoom = await _roomRepo.UpdateRoom(room);
+                return SuccessResp.Ok("Delete Room Successfull");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -31,6 +31,7 @@ namespace BE.src.Repositories
         Task<bool> AddFavouriteRoom(Favourite favourite);
         Task<bool> DeleteFavouriteRoom(Favourite favourite);
         Task<List<RoomAnalysticDTO>> TrendingRoom(TypeRoomEnum roomType);
+        Task<bool> UpdateRoom(Room room);
     }
     public class RoomRepo : IRoomRepo
     {
@@ -249,6 +250,12 @@ namespace BE.src.Repositories
                                            TotalRevenue = r.Bookings.Sum(b => b.Total)
                                        })
                                        .ToListAsync();
+        }
+
+        public async Task<bool> UpdateRoom(Room room)
+        {
+            _context.Rooms.Update(room);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

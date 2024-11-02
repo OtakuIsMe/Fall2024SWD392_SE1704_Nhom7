@@ -20,6 +20,7 @@ namespace BE.src.Services
         Task<IActionResult> StatisticMonthInYear(int year);
         Task<IActionResult> BuyMembership(BuyMembershipRqDTO data);
         Task<IActionResult> PaymentMembershipSuccess(Guid MembershipId, Guid UserId);
+        Task<IActionResult> TotalIncome();
     }
 
     public class TrasactionServ : ITransactionServ
@@ -341,6 +342,11 @@ namespace BE.src.Services
             {
                 return ErrorResp.BadRequest(ex.Message);
             }
+        }
+
+        public Task<IActionResult> TotalIncome()
+        {
+            throw new NotImplementedException();
         }
     }
 }

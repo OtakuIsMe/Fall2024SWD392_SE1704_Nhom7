@@ -28,6 +28,10 @@ namespace BE.src.Repositories
         Task<List<Booking>> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate);
         Task<List<Booking>> GetBookingRequestsInProgressForStaff();
         Task<List<Booking>> ListBookingUserUpComing(Guid userId);
+        Task<bool> CancleAllBookingByUser(Guid userId);
+        Task<List<Booking>> GetBookingsWaitAccepted(Guid roomId);
+        Task<List<Booking>> GetListBookingByAmenityService(Guid amenityServiceId);
+        Task<bool> UpdateBookingItem(BookingItem bookingItem);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -168,7 +172,7 @@ namespace BE.src.Repositories
         {
             var bookingAlreadyInProgress = await _context.Bookings
                 .Where(b => b.Id == bookingId &&
-                        b.Status == StatusBookingEnum.Wait || 
+                        b.Status == StatusBookingEnum.Wait ||
                         b.Status == StatusBookingEnum.Accepted)
                 .Select(b => new BookingCheckAvailableDTO
                 {
@@ -200,7 +204,7 @@ namespace BE.src.Repositories
                                 UserId = b.UserId,
                                 RoomId = b.RoomId,
                                 CreateAt = b.CreateAt,
-                                UpdateAt = b.UpdateAt   
+                                UpdateAt = b.UpdateAt
                             })
                             .AsEnumerable()
                             .Where(b => bookingAlreadyInProgress.DateBooking.Date == b.DateBooking.Date &&
@@ -322,13 +326,13 @@ namespace BE.src.Repositories
         public async Task<Booking?> GetBookingWaitOrInProgressById(Guid id)
         {
             return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id &&
-                                    (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.InProgress));
+                                    (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.Accepted));
         }
 
         public async Task<Booking?> CheckBookedRoom(Guid roomId, DateTime DateBooking, TimeSpan TimeBooking)
         {
             return _context.Bookings.AsEnumerable().FirstOrDefault(b => b.RoomId == roomId
-                                    && b.Status == StatusBookingEnum.InProgress
+                                    && b.Status == StatusBookingEnum.Accepted
                                     && (!(b.DateBooking.Add(b.TimeBooking) < DateBooking
                                     || DateBooking.Add(TimeBooking) < b.DateBooking)));
         }
@@ -345,7 +349,7 @@ namespace BE.src.Repositories
         public async Task<List<Booking>> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate)
         {
             return await _context.Bookings.Where(b =>
-                        b.Status == StatusBookingEnum.InProgress &&
+                        b.Status == StatusBookingEnum.Accepted &&
                         b.DateBooking >= startDate &&
                         b.DateBooking <= endDate).ToListAsync();
         }
@@ -419,6 +423,44 @@ namespace BE.src.Repositories
                                                     .ThenInclude(r => r.Images)
                                                 .ToListAsync();
 
+        }
+
+        public async Task<bool> CancleAllBookingByUser(Guid userId)
+        {
+            List<Booking> bookings = await _context.Bookings.Where(b => b.UserId == userId && (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.Accepted)).ToListAsync();
+            foreach (var booking in bookings)
+            {
+                booking.Status = StatusBookingEnum.Canceled;
+            }
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<Booking>> GetBookingsWaitAccepted(Guid roomId)
+        {
+            return await _context.Bookings.Where(b => b.RoomId == roomId
+                                            && (b.Status == StatusBookingEnum.Wait
+                                            || b.Status == StatusBookingEnum.Accepted))
+                                            .Include(b => b.PaymentRefunds
+                                                                .FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment))
+                                            .ToListAsync();
+        }
+
+        public async Task<List<Booking>> GetListBookingByAmenityService(Guid amenityServiceId)
+        {
+            return await _context.Bookings.Include(b => b.BookingItems
+                                            .Where(bi => bi.AmenityServiceId == amenityServiceId))
+                                            .Include(b => b.PaymentRefunds
+                                                                .FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment))
+                                            .Where(b => b.BookingItems.Any(bi => bi.AmenityServiceId == amenityServiceId)
+                                            && (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.Accepted))
+                                            .ToListAsync();
+        }
+
+        public async Task<bool> UpdateBookingItem(BookingItem bookingItem)
+        {
+            _context.BookingItems.Update(bookingItem);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }
