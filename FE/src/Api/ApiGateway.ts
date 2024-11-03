@@ -262,11 +262,6 @@ export class ApiGateway {
             formData.append("Name", name);
             formData.append("Price", price.toString());
             formData.append("Image", image);
-            console.log(formData);
-            console.log(id);
-            console.log(name);
-            console.log(price);
-            console.log(image);
             const response = await axios.put<T>(`http://localhost:5101/amenityservice/UpdateService/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -279,12 +274,44 @@ export class ApiGateway {
         }
     }
     
-    public static async TotalUser<T>(): Promise<any> {
+    public static async TotalUser<T>(): Promise<T> {
         try {
             const response = await this.axiosInstance.get<T>(`/user/Total`)
             return response.data;
         } catch (error) {
             console.error("Error Total: ", error)
+            throw error
+        }
+    }
+
+    public static async CreateRoom<T>(areaId: string, type: number, name: string, price: number, description: string, images: File[]): Promise<T> {
+        try {
+            const utilityIds = [
+                '9e87c47c-e91e-4adc-947d-9d5f17723523',
+                '54cdf248-846c-4d8e-98e1-7d0a48a1982e',
+                '4c756c56-6145-4137-9b62-7ec9276db800',
+                '09dbc964-4755-414b-9e73-3229cd97f8ec',
+                'acb81410-f3b5-4a55-863f-9ea01aca0619'
+            ]
+            const formData = new FormData()
+            formData.append("AreaId", areaId)
+            formData.append("RoomType", type.toString())
+            formData.append("Name", name)
+            formData.append("Price", price.toString())
+            formData.append("Description", description)
+            utilityIds.forEach((id) => formData.append("UtilitiesId", id));
+
+            images.forEach((image, index) => formData.append(`Images[${index}]`, image));
+
+            const response = await axios.post(`http://localhost:5101/room/Create`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return response.data
+        } catch (error) {
+            console.error("Error creating room:", error);
+            throw error;
         }
     }
 }

@@ -12,35 +12,31 @@ const ServiceManagement: React.FC = () => {
   const [ isModalAddOpen, setIsModalAddOpen ] = useState(false);
   const [ isModalEditOpen, setIsModalEditOpen ] = useState(false);
   const [ isModalDeleteOpen, setIsModalDeleteOpen ] = useState(false);
-  const [ serviceId, setServiceId ] = useState('');
-  const [ serviceImage, setServiceImage ] = useState('');
-  const [ serviceName, setServiceName ] = useState('');
-  const [ servicePrice, setServicePrice ] = useState(0);
 
   const [ service, setService ] = useState<any>();
 
   interface Data {
     id: string;
     image: string;
-    index: number;
     type: string;
     name: string;
+    status: string;
     price: number;
   }
 
   function createData(
     id: string,
     image: string,
-    index: number,
     type: string,
     name: string,
+    status: string,
     price: number,
   ): Data {
-    return { id, image, index, type, name, price };
+    return { id, image, type, name, status, price };
   }
 
   interface Column {
-    id: 'index' | 'image' | 'type' | 'name' | 'price' ;
+    id: 'image' | 'type' | 'name' | 'status' | 'price' ;
     label: string;
     minWidth?: number;
     align?: 'right' | 'center';
@@ -48,10 +44,6 @@ const ServiceManagement: React.FC = () => {
   }
 
   const columns: Column[] = [
-    { 
-      id: 'index', 
-      label: 'No',
-    },
     {
       id: 'image',
       label: 'Image',
@@ -65,9 +57,14 @@ const ServiceManagement: React.FC = () => {
       id: 'type', 
       label: 'Type',
     },
+    { 
+      id: 'status', 
+      label: 'Status',
+      align: 'center',
+    },
     {
       id: 'price',
-      label: 'Price',
+      label: 'Price\u00a0(VND)',
       align: 'right',
       format: (value: number) => value.toLocaleString('en-US'),
     },
@@ -134,8 +131,8 @@ const ServiceManagement: React.FC = () => {
     try {
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetServices()
-      response.forEach((row: any, index: number) => {
-        rowData.push(createData(row.amenityService.id, row.amenityService.image.url , index+1 , getService(row.amenityService.type), row.amenityService.name, row.amenityService.price))
+      response.forEach((row: any) => {
+        rowData.push(createData(row.amenityService.id, row.amenityService.image.url , getService(row.amenityService.type), row.amenityService.name, (row.amenityService.status === 0 ? "Available" : "Unavailable"), row.amenityService.price))
       })
       setServiceList(rowData)
       console.log("list updated")
@@ -147,7 +144,6 @@ const ServiceManagement: React.FC = () => {
 
   const deleteSevice = async (): Promise<void> => {
     try {
-      console.log(service.id);
       const response = await ApiGateway.DeleteService(service.id);
       setService({})
       await fetchServices()
@@ -159,10 +155,6 @@ const ServiceManagement: React.FC = () => {
 
   const updatedService = async (id: string, name: string, price: number, image: File): Promise<void> => {
     try {
-      console.log(id)
-      console.log(name)
-      console.log(price)
-      console.log(image)
       const response = await ApiGateway.UpdateService(id, name, price, image)
       setService({})
       await fetchServices()

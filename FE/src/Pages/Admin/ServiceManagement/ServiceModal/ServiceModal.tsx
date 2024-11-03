@@ -128,11 +128,29 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
     }
   }
 
-  const handleEdit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
+    let error = 0;
+
+    if (formData.price < 5000) {
+      setIsPriceFilled(false);
+      error++;
+    }
+
+    if (error > 0) {
+      return;
+    }
+
+    const formServiceData = {
+      id: formData.id,
+      name: formData.name,
+      price: formData.price,
+      image: formData.image instanceof File ? formData.image : null,
+    }
+
     if (editService) {
-      console.log(formData)
+      console.log(formServiceData)
       console.log("It did run")
       closeModal()
     }

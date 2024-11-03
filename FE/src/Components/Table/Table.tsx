@@ -220,6 +220,7 @@ const TableTpl:React.FC<Data> = (
                 <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
+                        <TableCell align='center'>No</TableCell>
                         { haveSubrows &&
                             <TableCell />
                         }
@@ -270,18 +271,25 @@ const TableTpl:React.FC<Data> = (
                         :
                         rows
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row: any) => {
+                            .map((row: any, index: number) => {
                                 const rId = row.id;
                                 const rName = row.name;
                                 return (
                                 <TableRow hover role="checkbox" tabIndex={-1}>
+                                    <TableCell align='center'>
+                                        {index+1}
+                                    </TableCell>
                                     {columns.map((column) => {
                                         const value = row[column.id];
                                         return (
                                             <TableCell key={column.id} align={column.align}>
-                                            {column.format && typeof value === 'number'
-                                                ? column.format(value)
-                                                : value}
+                                            {column.id === "image" ?
+                                                <img src={value} height={100}/>
+                                                :
+                                                column.format && typeof value === 'number'
+                                                    ? column.format(value)
+                                                    : value
+                                            }
                                             </TableCell>
                                         );
                                         })

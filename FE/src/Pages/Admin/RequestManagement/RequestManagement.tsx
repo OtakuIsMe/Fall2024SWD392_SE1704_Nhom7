@@ -7,11 +7,9 @@ import dayjs, { duration } from 'dayjs';
 dayjs.extend(duration);
 
 const RequestManagement: React.FC = () => {
-  const data: any[] = [];
   const [requestList, setRequestList] = useState<any>([]);
 
   interface Data {
-    index: string;
     id: string;
     room: string;
     user: string;
@@ -26,7 +24,6 @@ const RequestManagement: React.FC = () => {
   }
 
   function createData(
-    index: string,
     id: string,
     room: string,
     user: string,
@@ -39,7 +36,7 @@ const RequestManagement: React.FC = () => {
     isPay: string,
     services?: subRows[],
   ): Data {
-    return { index, id, room, user, email, total, bookedDate, start, end, status, isPay, services };
+    return { id, room, user, email, total, bookedDate, start, end, status, isPay, services };
   }
 
   interface subRows {
@@ -67,7 +64,7 @@ const RequestManagement: React.FC = () => {
   }
 
   interface Column {
-    id: 'index' | 'room' | 'user' | 'email' | 'total' | 'bookedDate' | 'start' | 'end' | 'status' | 'isPay' | 'approve' | 'decline';
+    id: 'room' | 'user' | 'email' | 'total' | 'bookedDate' | 'start' | 'end' | 'status' | 'isPay' | 'approve' | 'decline';
     label: string;
     minWidth?: number;
     align?: 'right' | 'center';
@@ -75,7 +72,6 @@ const RequestManagement: React.FC = () => {
   }
 
   const columns: Column[] = [
-    { id: 'index', label: 'No', minWidth: 30, align: 'center' },
     { id: 'room', label: 'Room', minWidth: 100 },
     { id: 'user', label: 'User', minWidth: 130 },
     { id: 'email', label: 'Email', minWidth: 130 },
@@ -116,7 +112,6 @@ const RequestManagement: React.FC = () => {
         console.log('Row Data:', row); // Log each row
         rowData.push(
           createData(
-            (index+1).toString(), 
             row.id,
             row.room.name, 
             row.user.name, 
