@@ -46,7 +46,7 @@
 #check-in .pop-up .pop-up-side-panel {
     position: absolute;
     height: calc(100vh - 20px);
-    width: 700px;
+    width: 800px;
     right: 10px;
     top: 10px;
     background-color: white;
@@ -83,6 +83,7 @@
 #check-in .pop-up .pop-up-side-panel .bookings .head-table {
     display: flex;
     padding: 15px 0;
+    padding-right: 10px;
 }
 
 #check-in .pop-up .pop-up-side-panel .bookings .head-table div {
@@ -105,7 +106,13 @@
 }
 
 #check-in .pop-up .pop-up-side-panel .bookings .period {
-    flex: 2.3
+    flex: 2.5
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .payment {
+    flex: 2.2;
+    display: flex;
+    justify-content: center;
 }
 
 #check-in .pop-up .pop-up-side-panel .bookings .checkin {
@@ -114,15 +121,11 @@
     justify-content: center;
 }
 
-#check-in .pop-up .pop-up-side-panel .bookings .action {
-    flex: 2;
-    display: flex;
-    justify-content: flex-end;
-}
 
 #check-in .pop-up .pop-up-side-panel .bookings .booking {
     display: flex;
     padding: 10px 0;
+    padding-right: 10px;
 }
 
 #check-in .pop-up .pop-up-side-panel .bookings .booking.even {
@@ -130,7 +133,7 @@
     border-radius: 8px;
 }
 
-#check-in .pop-up .pop-up-side-panel .bookings .booking div {
+#check-in .pop-up .pop-up-side-panel .bookings .booking>div {
     display: flex;
     align-items: center;
 }
@@ -139,4 +142,49 @@
     width: 30px;
     height: 30px;
     border-radius: 999px;
+    margin-right: 20px;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .Status {
+    padding: 5px 10px;
+    border: 1px solid #f7e9ca;
+    background-color: #fffdf5;
+    color: #e48126;
+    font-size: 11px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .Status.True {
+    border: 1px solid #dcf4e6;
+    background-color: #f2fff7;
+    color: #17ae54;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .checkin {
+    position: relative;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .checkin-dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 80px;
+    padding: 8px 0;
+    background-color: white;
+    z-index: 3;
+    border-radius: 8px;
+    border: 1px solid rgb(230, 230, 230);
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .checkin-dropdown .chosen-field {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 0;
+    cursor: pointer;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .checkin-dropdown .chosen-field.chosen {
+    background-color: rgb(243, 243, 243);
 }

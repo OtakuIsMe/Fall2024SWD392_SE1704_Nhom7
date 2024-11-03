@@ -38,10 +38,12 @@ namespace BE.src.Services
 
             return new OkObjectResult(membership);
         }
-        public async Task<IActionResult> CreateMembership(MembershipCreateDTO data){
+        public async Task<IActionResult> CreateMembership(MembershipCreateDTO data)
+        {
             try
             {
-                Membership membership = new (){
+                Membership membership = new()
+                {
                     Name = data.Name,
                     Discount = data.Discount,
                     TimeLeft = data.DayLeft,
@@ -49,7 +51,8 @@ namespace BE.src.Services
                     Rank = data.Rank
                 };
                 bool isCreated = await _membershipRepo.CreateMembership(membership);
-                if(!isCreated){
+                if (!isCreated)
+                {
                     return ErrorResp.BadRequest("Fail to create membership");
                 }
                 return SuccessResp.Created("Created membership");
