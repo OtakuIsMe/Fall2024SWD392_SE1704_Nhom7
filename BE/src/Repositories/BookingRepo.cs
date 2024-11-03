@@ -32,6 +32,7 @@ namespace BE.src.Repositories
         Task<List<Booking>> GetBookingsWaitAccepted(Guid roomId);
         Task<List<Booking>> GetListBookingByAmenityService(Guid amenityServiceId);
         Task<bool> UpdateBookingItem(BookingItem bookingItem);
+        Task<int> TotalBooking();
     }
     public class BookingRepo : IBookingRepo
     {
@@ -461,6 +462,11 @@ namespace BE.src.Repositories
         {
             _context.BookingItems.Update(bookingItem);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<int> TotalBooking()
+        {
+            return await _context.Bookings.Where(b => b.Status == StatusBookingEnum.Done).CountAsync();
         }
     }
 }

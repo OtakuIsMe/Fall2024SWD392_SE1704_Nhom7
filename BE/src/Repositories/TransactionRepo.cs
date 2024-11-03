@@ -14,6 +14,7 @@ namespace BE.src.Repositories
         Task<PaymentRefund?> FindPaymentRefundByBooking(Guid bookingId);
         Task<bool> CreateRefundItem(RefundItem refundItem);
         Task<bool> UpdatePaymentRefund(PaymentRefund paymentRefund);
+        Task<float> TotalIncome();
     }
 
     public class TrasactionRepo : ITransactionRepo
@@ -69,7 +70,9 @@ namespace BE.src.Repositories
 
         public async Task<List<Transaction>> TransactionInYear(int year)
         {
-            return await _context.Transactions.Where(t => t.CreateAt.HasValue && t.CreateAt.Value.Year == year).ToListAsync();
+            return await _context.Transactions.Where(t => t.CreateAt.HasValue
+                                            && t.CreateAt.Value.Year == year
+                                            && t.DepositWithdraw == null).ToListAsync();
         }
 
         public async Task<bool> UpdatePaymentRefund(PaymentRefund paymentRefund)
@@ -78,9 +81,13 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        // public async Task<bool> TotalIncome(){
-        //     return await _context.Transactions.Include(t=> t.PaymentRefund)
-        //                                     .Where(t=>t.DepositWithdrawId == null).ToList()_
-        // }
+        public async Task<float> TotalIncome()
+        {
+            return await _context.Transactions
+                                 .Include(t => t.PaymentRefund)
+                                 .Where(t => t.DepositWithdrawId == null
+                                             && (t.PaymentRefund == null || t.PaymentRefund.Type != Domains.Enum.PaymentRefundEnum.Refund))
+                                 .SumAsync(t => t.Total);
+        }
     }
 }

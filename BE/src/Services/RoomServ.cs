@@ -282,6 +282,7 @@ namespace BE.src.Services
                     };
                     returnValues.Add(returnValue);
                 }
+                returnValues = returnValues.OrderByDescending(o => o.BookingsCount).ToList();
                 return SuccessResp.Ok(returnValues);
             }
             catch (System.Exception ex)

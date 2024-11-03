@@ -74,5 +74,11 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.ListBookingUserUpcoming(UserId);
         }
+
+        [HttpGet("TotalBooking")]
+        public async Task<IActionResult> TotalBooking()
+        {
+            return await _bookingServ.TotalBooking();
+        }
     }
 }

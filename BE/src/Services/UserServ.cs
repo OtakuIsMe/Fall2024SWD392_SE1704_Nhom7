@@ -7,6 +7,7 @@ using BE.src.Domains.DTOs.User;
 using System.IdentityModel.Tokens.Jwt;
 using BE.src.Shared.Constant;
 using BE.src.Domains.Enum;
+using FirebaseAdmin.Auth;
 
 namespace BE.src.Services
 {
@@ -23,6 +24,7 @@ namespace BE.src.Services
         Task<IActionResult> AddFeedback(Guid userId, Guid roomId, AddFeedBackDTO data);
         Task<IActionResult> DeleteUser(Guid userId);
         Task<IActionResult> CountUser();
+        Task<IActionResult> GetAllUser();
     }
     public class UserServ : IUserServ
     {
@@ -310,6 +312,19 @@ namespace BE.src.Services
             {
                 int userCount = await _userRepo.CountAllUser();
                 return SuccessResp.Ok(userCount);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetAllUser()
+        {
+            try
+            {
+                List<User> users = await _userRepo.GetAllUser();
+                return SuccessResp.Ok(users);
             }
             catch (System.Exception ex)
             {

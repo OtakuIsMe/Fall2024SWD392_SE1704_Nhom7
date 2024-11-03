@@ -279,4 +279,36 @@ export class ApiGateway {
             console.error("Error Total: ", error)
         }
     }
+    public static async TotalIncome<T>(): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/transaction/Total-Income`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async TotalBooking<T>(): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/booking/TotalBooking`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async Statistic<T>(year: number): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/transaction/Statistic-Month/${year}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async Trending<T>(): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/room/Trending`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
 }
