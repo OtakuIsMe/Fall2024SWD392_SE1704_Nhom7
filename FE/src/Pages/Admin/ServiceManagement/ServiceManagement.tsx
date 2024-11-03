@@ -172,7 +172,7 @@ const ServiceManagement: React.FC = () => {
       </div>
       <div className='content'>
         {serviceList ? 
-          <TableTpl columns={columns} rows={serviceList} editButton={true} deleteButton={true} openPopup2={openModalDelete} openPopup1={openModalEdit}/>
+          <TableTpl columns={columns} rows={serviceList} editButton={true} deleteButton={true} openPopup1={openModalEdit} openPopup2={openModalDelete}/>
           :
           <p style={{textAlign: "center"}}>There are no service in here</p>
         } 

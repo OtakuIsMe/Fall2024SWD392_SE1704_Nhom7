@@ -12,7 +12,10 @@ const RoomManagement: React.FC = () => {
   const [ isModalEditOpen, setIsModalEditOpen ] = useState(false);
   const [ isModalDeleteOpen, setIsModalDeleteOpen ] = useState(false);
 
+  const [ room, setRoom ] = useState<any>();
+
   interface Data {
+    id: string;
     image?: string;
     type: string;
     name: string;
@@ -21,6 +24,7 @@ const RoomManagement: React.FC = () => {
     status: string;
   }
   function createData(
+    id: string,
     image: string,
     type: string,
     name: string,
@@ -28,7 +32,7 @@ const RoomManagement: React.FC = () => {
     description: string,
     status: string,
   ): Data {
-    return { image, type, name, price, description, status };
+    return { id, image, type, name, price, description, status };
   }
 
   interface Column {
@@ -79,13 +83,22 @@ const RoomManagement: React.FC = () => {
 
   const openModalAdd = () => {
     setIsModalAddOpen(true)
-    console.log('open')
   };
 
   const closeModalAdd = () => {
     getRoomList()
     setIsModalAddOpen(false)
-    console.log('close')
+  };
+
+  const openModalEdit = (row: any) => {
+    getRoomInfo(row.id)
+    setIsModalEditOpen(true)
+    console.log('open')
+  };
+
+  const closeModalEdit = () => {
+    getRoomList()
+    setIsModalEditOpen(false)
   };
 
   const getRoomList = async (): Promise<void> => {
@@ -95,6 +108,7 @@ const RoomManagement: React.FC = () => {
       response.forEach((row: any) => {
         rowData.push(
           createData(
+            row.id,
             row.images?.[0]?.url || '',
             (row.typeRoom === 0 ? "Single": 
               row.typeRoom === 1 ? "Double": 
@@ -105,14 +119,20 @@ const RoomManagement: React.FC = () => {
             row.description, 
             (row.status === 0 ? "Available" : "Unavailable")))
       })
-      // rowData.sort((a, b) => {
-      //   if (a.type < b.type) return -1;
-      //   if (a.type > b.type) return 1;
-      //   return 0;
-      // });
       setRoomList(rowData)
     } catch(err){
       console.error('Error get room list :', err);
+    }
+  }
+  
+  const getRoomInfo = async (id: string) : Promise<void> => {
+    try {
+      const response = await ApiGateway.GetRoomDetail(id)
+      setRoom(response)
+      console.log(response)
+    } catch (error) {
+      console.error("Error getting Room Info: ", error)
+      throw error
     }
   }
 
@@ -124,14 +144,14 @@ const RoomManagement: React.FC = () => {
       </div>
       <div className='content'>
         {roomList ? 
-          <TableTpl columns={columns} rows={roomList} editButton={true} deleteButton={true}/>
+          <TableTpl columns={columns} rows={roomList} editButton={true} deleteButton={true} openPopup1={openModalEdit}/>
           :
           <p style={{textAlign: "center"}}>There are no Room</p>
         } 
       </div>
       {isModalAddOpen && <Modal type='add' closeModal={closeModalAdd} />}
-      {/* {isModalEditOpen && <Modal type='edit' service={service} closeModal={closeModalEdit} editService={updatedService} />}
-      {isModalDeleteOpen && <Modal type='delete' service={service} closeModal={closeModalDelete} deleteService={deleteSevice}/>} */}
+      {isModalEditOpen && <Modal type='edit' room={room} closeModal={closeModalEdit} />}
+      {/* {isModalDeleteOpen && <Modal type='delete' service={service} closeModal={closeModalDelete} deleteService={deleteSevice}/>} */}
     </div>
   )
 }

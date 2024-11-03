@@ -284,7 +284,7 @@ export class ApiGateway {
         }
     }
 
-    public static async CreateRoom<T>(areaId: string, type: number, name: string, price: number, description: string, images: File[]): Promise<T> {
+    public static async CreateRoom<T>(areaId: string, type: number, name: string, price: string, description: string, images: File[]): Promise<T> {
         try {
             const utilityIds = [
                 '9e87c47c-e91e-4adc-947d-9d5f17723523',
@@ -297,12 +297,14 @@ export class ApiGateway {
             formData.append("AreaId", areaId)
             formData.append("RoomType", type.toString())
             formData.append("Name", name)
-            formData.append("Price", price.toString())
+            formData.append("Price", price)
             formData.append("Description", description)
-            utilityIds.forEach((id) => formData.append("UtilitiesId", id));
+            utilityIds.forEach((id) => formData.append(`UtilitiesId`, id));
 
-            images.forEach((image, index) => formData.append(`Images[${index}]`, image));
-
+            images.forEach((image) => formData.append(`Images`, image));
+            for (const [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
             const response = await axios.post(`http://localhost:5101/room/Create`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
