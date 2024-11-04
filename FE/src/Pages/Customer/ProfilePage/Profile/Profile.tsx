@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthenContext } from '../../../../Components/AuthenContext';
 import { TextField, Button, Avatar } from '@mui/material';
-import { Home, Favorite, Receipt, Book, ArrowBack } from '@mui/icons-material';
+
 import { NavLink } from 'react-router-dom';  // Use NavLink for page transitions
 import './Profile.css';
 import { ApiGateway } from '../../../../Api/ApiGateway';
+import Sidebar from '../../../../Components/Sidebar/Sidebar';
 
 
 const Profile = () => {
@@ -111,54 +112,18 @@ const Profile = () => {
   };
 
   return (
-    <div className="profile-container">
-      <nav className="sidebar">
-        <ul>
-          <li>
-            <NavLink to="/" className="sidebar-link">
-              <ArrowBack /> Back to Homepage
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/profile" className="sidebar-link" activeClassName="active">
-              <Home /> User info
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/favorites" className="sidebar-link" activeClassName="active">
-              <Favorite /> Favorites
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/transaction-history" className="sidebar-link" activeClassName="active">
-              <Receipt /> Transaction History
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/pending-bookings" className="sidebar-link" activeClassName="active">
-              <Book /> Pending Bookings
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-
+    <div className="profile-page-container">
+    <Sidebar />
+    <div className="profile-content">
       <form onSubmit={handleSubmit} className="profile-form">
         <div className="profile-header">
-          <Avatar alt="User Avatar" src={userData.imageUrl} sx={{ width: 120, height: 120 }} className="avatar" />
-          {isEditing && (
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ marginTop: '10px' }}
-            />
-          )}
-          <div className="user-info">
-            <h2>{userData.name}</h2>
+          <Avatar alt="User Avatar" src={userData.imageUrl} className="profile-avatar" />
+          <div className="profile-info">
+            <h2>{userData.name || 'Tên người dùng'}</h2>
             <p>Số dư ví: {userData.wallet} VND</p>
           </div>
         </div>
-
+  
         <div className="profile-input-grid">
           <TextField
             margin="dense"
@@ -209,25 +174,27 @@ const Profile = () => {
             variant="outlined"
           />
         </div>
-
+  
         <div className="profile-btns">
-          <Button 
-            type="button" 
-            onClick={() => setIsEditing(!isEditing)} 
+          <Button
+            type="button"
+            onClick={() => setIsEditing(!isEditing)}
             color="primary"
             variant="contained"
-            className="edit-btn"
+            className="profile-edit-btn"
           >
             {isEditing ? 'Hủy' : 'Chỉnh sửa'}
           </Button>
           {isEditing && (
-            <Button type="submit" color="primary" variant="contained" className="save-btn">
+            <Button type="submit" color="primary" variant="contained" className="profile-save-btn">
               Lưu thay đổi
             </Button>
           )}
         </div>
       </form>
     </div>
+  </div>
+  
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AuthenContext } from '../../../../Components/AuthenContext';
 import { NavLink } from 'react-router-dom';
 import { Home, Favorite, Receipt, Book, ArrowBack, Favorite as FilledHeart } from '@mui/icons-material';
+import Sidebar from '../../../../Components/Sidebar/Sidebar';
 import './FavoriteList.css';
 import { ApiGateway } from '../../../../Api/ApiGateway';
 
@@ -16,7 +17,6 @@ const FavoriteList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Hàm lấy danh sách phòng yêu thích, sử dụng useCallback để tránh tạo lại hàm không cần thiết
   const fetchFavoriteRooms = useCallback(async () => {
     if (user && user.id) {
       try {
@@ -30,9 +30,8 @@ const FavoriteList = () => {
         setLoading(false);
       }
     }
-  }, [user?.id]); // Phụ thuộc vào user.id
+  }, [user?.id]);
 
-  // Hàm xóa phòng khỏi danh sách yêu thích
   const unfavoriteRoom = useCallback(async (roomId) => {
     if (user && user.id) {
       try {
@@ -48,7 +47,7 @@ const FavoriteList = () => {
     if (user && user.id) {
       fetchFavoriteRooms();
     }
-  }, [user?.id, fetchFavoriteRooms]); // Chỉ gọi lại khi user.id thay đổi hoặc fetchFavoriteRooms thay đổi
+  }, [user?.id, fetchFavoriteRooms]);
 
   const handleToggleFavorite = async (roomId: any) => {
     await unfavoriteRoom(roomId);
@@ -58,40 +57,12 @@ const FavoriteList = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="profile-container">
-      <div className="sidebar">
-      <ul>
-          <li>
-            <NavLink to="/" className="sidebar-link">
-              <ArrowBack /> Back to Homepage
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/profile" className="sidebar-link" activeClassName="active">
-              <Home /> User info
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/favorites" className="sidebar-link" activeClassName="active">
-              <Favorite /> Favorites
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/transaction-history" className="sidebar-link" activeClassName="active">
-              <Receipt /> Transaction History
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/pending-bookings" className="sidebar-link" activeClassName="active">
-              <Book /> Pending Bookings
-            </NavLink>
-          </li>
-        </ul>
-      </div>
-      <div className="favorite-list">
-        <h2>Your Favorite Rooms</h2>
+    <div className="favorite-page-container">
+      <Sidebar />
+      <div className="favorite-content">
+        <h2 className="favorite-title">Your Favorite Rooms</h2>
         {favoriteRooms.length === 0 ? (
-          <p>You have no favorite rooms.</p>
+          <p className="no-favorites">You have no favorite rooms.</p>
         ) : (
           <ul className="room-list">
             {favoriteRooms.map(room => (

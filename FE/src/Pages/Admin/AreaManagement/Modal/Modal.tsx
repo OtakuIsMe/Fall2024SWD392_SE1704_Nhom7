@@ -2,21 +2,20 @@ import React, { ReactNode, useState } from "react";
 import './Modal.css'
 
 interface PopupType {
-  popupType: string;
+  // popupType: string;
   // open: boolean;
-  // onClose: () => void;
-  children: ReactNode;
+  onClose: () => void;
+  // children: ReactNode;
 }
-const Modal:React.FC<PopupType> = ({popupType, children}) => {
+const Modal:React.FC<PopupType> = ({onClose}) => {
   return (
     <div id="my_modal" style={{display: "static"}}>
       <div className="modal">
         <div className="popup-header">
-          <h1>{popupType?  popupType : 'Modal'}</h1>
+          <h1>Add Area</h1>
         </div>
         <div className="modal-content">
           <div className="content">
-            {children}
           </div>
         </div>
         <div className="modal-btns">
