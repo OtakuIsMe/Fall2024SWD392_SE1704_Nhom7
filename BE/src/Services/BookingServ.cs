@@ -301,22 +301,37 @@ namespace BE.src.Services
             }
         }
 
+        // var groupedBookings = bookings
+        // .GroupBy(b => new DateTime(b.booking.DateBooking.Year, b.booking.DateBooking.Month, b.booking.DateBooking.Day, b.booking.DateBooking.Hour, 0, 0))
+        // .Select(group => new BookingScheduleRp
+        // {
+        //     Amount = group.Count(),
+        //     StartBooking = group.Key,
+        //     Bookings = group.ToList()
+        // })
+        // .ToList();
+
         public async Task<IActionResult> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate)
         {
             try
             {
                 var bookings = await _bookingRepo.GetScheduleBookingForStaff(startDate, endDate);
-                var groupedBookings = bookings
-                .GroupBy(b => new DateTime(b.DateBooking.Year, b.DateBooking.Month, b.DateBooking.Day, b.DateBooking.Hour, 0, 0))
-                .Select(group => new BookingScheduleRp
+                List<BookingScheduleDTO> returnBookings = new();
+                foreach (var booking in bookings)
                 {
-                    Amount = group.Count(),
-                    StartBooking = group.Key,
-                    bookings = group.ToList()
-                })
-                .ToList();
+                    var user = await _userRepo.GetUserById(booking.UserId);
+                    var room = await _roomRepo.GetRoomById(booking.RoomId);
 
-                return SuccessResp.Ok(groupedBookings);
+                    var returnBooking = new BookingScheduleDTO()
+                    {
+                        booking = booking,
+                        user = user,
+                        room = room
+                    };
+                    returnBookings.Add(returnBooking);
+                }
+
+                return SuccessResp.Ok(bookings);
             }
             catch (System.Exception ex)
             {

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models.Base;
+using Newtonsoft.Json;
 
 namespace BE.src.Domains.Models
 {

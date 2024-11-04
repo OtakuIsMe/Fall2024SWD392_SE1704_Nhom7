@@ -1,6 +1,7 @@
 using BE.src.Domains.Enum;
 using System.ComponentModel.DataAnnotations;
 using BE.src.Domains.Models.Base;
+using Newtonsoft.Json;
 
 namespace BE.src.Domains.Models
 {
@@ -24,6 +25,7 @@ namespace BE.src.Domains.Models
                 public ICollection<Favourite> Favourites { get; set; } = null!;
                 public ICollection<UserAreaManagement> UserAreaManagements { get; set; } = null!;
                 public ICollection<RatingFeedback> RatingFeedbacks { get; set; } = null!;
+                [JsonIgnore]
                 public ICollection<Booking> Bookings { get; set; } = null!;
                 public ICollection<DepositWithdraw> DepositWithdraws { get; set; } = null!;
                 public ICollection<DeviceChecking> DeviceCheckings { get; set; } = null!;
