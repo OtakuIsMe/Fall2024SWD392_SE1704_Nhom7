@@ -5,6 +5,7 @@ using BE.src.Repositories;
 using BE.src.Shared.Type;
 using BE.src.Util;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace BE.src.Services
@@ -22,10 +23,16 @@ namespace BE.src.Services
     public class AmenityServiceServ : IAmenityServiceServ
     {
         private readonly IAmenityServiceRepo _amenityServiceRepo;
+        private readonly IBookingRepo _bookingRepo;
+        private readonly ITransactionRepo _transactionRepo;
+        private readonly IUserRepo _userRepo;
 
-        public AmenityServiceServ(IAmenityServiceRepo amenityServiceRepo)
+        public AmenityServiceServ(IAmenityServiceRepo amenityServiceRepo, IBookingRepo bookingRepo, ITransactionRepo transactionRepo, IUserRepo userRepo)
         {
             _amenityServiceRepo = amenityServiceRepo;
+            _bookingRepo = bookingRepo;
+            _transactionRepo = transactionRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<IActionResult> CreateService(CreateServiceDTO data)
@@ -36,7 +43,8 @@ namespace BE.src.Services
                 {
                     Name = data.Name,
                     Type = data.Type,
-                    Price = data.Price
+                    Price = data.Price,
+                    Status = StatusServiceEnum.Available
                 };
                 if (data.Image == null)
                 {
@@ -202,34 +210,63 @@ namespace BE.src.Services
         {
             try
             {
-
-                var image = await _amenityServiceRepo.GetImageByServiceId(amenityServiceId);
-
-                if (image == null)
+                //identify booking have this service
+                List<Booking> GetListBookingByAmenityService = await _bookingRepo.GetListBookingByAmenityService(amenityServiceId);
+                foreach (var booking in GetListBookingByAmenityService)
                 {
-                    return ErrorResp.BadRequest("Fail to get image service");
+                    var bookingItem = booking.BookingItems.FirstOrDefault();
+                    if (booking.PaymentRefunds.FirstOrDefault()?.PaymentType != PaymentTypeEnum.COD)
+                    {
+                        // refund
+                        PaymentRefund? paymentRefund = await _transactionRepo.FindPaymentRefundByBooking(booking.Id);
+                        if (paymentRefund == null)
+                        {
+                            PaymentRefund newPaymentRefund = new()
+                            {
+                                Type = PaymentRefundEnum.Refund,
+                                Total = bookingItem.Total,
+                                PointBonus = 0,
+                                Status = true,
+                                IsRefundReturnRoom = false
+                            };
+                            var isCreatePayment = await _transactionRepo.CreatePaymentRefund(newPaymentRefund);
+                            paymentRefund = newPaymentRefund;
+                        }
+                        else
+                        {
+                            paymentRefund.Total += bookingItem.Total;
+                            var isUpdatedPayment = await _transactionRepo.UpdatePaymentRefund(paymentRefund);
+                        }
+                        RefundItem newRefundItem = new()
+                        {
+                            AmountItems = bookingItem.AmountItems,
+                            Total = bookingItem.Total,
+                            PaymentRefundId = paymentRefund.Id,
+                            BookingItemId = bookingItem.Id
+                        };
+                        var isCreatedRefundItem = await _transactionRepo.CreateRefundItem(newRefundItem);
+                        //plus amount for wallet
+                        var user = await _userRepo.GetUserById(booking.UserId);
+                        user.Wallet += bookingItem.Total;
+                        var isUpdatedUser = await _userRepo.UpdateUser(user);
+                    }
+                    // change status bookingservice
+                    bookingItem.Status = StatusBookingItemEnum.Cancle;
+                    var isUpdateBookingItem = await _bookingRepo.UpdateBookingItem(bookingItem);
+                    // send notification
+                    Notification notification = new()
+                    {
+                        Title = "Refunds due as this service is no longer available",
+                        Description = $"Booking application on {booking.DateBooking}, has been canceled and an amount of {bookingItem.Total} added to your wallet",
+                        UserId = booking.UserId
+                    };
+                    var isCreateNotification = await _userRepo.CreateNotification(notification);
                 }
-                
-                bool isDeletedImage = await _amenityServiceRepo.DeleteServiceImage(image);
-                if (!isDeletedImage)
-                {
-                    return ErrorResp.BadRequest("Fail to delete image service");
-                }
-
-                var amenitiesService = await _amenityServiceRepo.GetAmenityServiceById(amenityServiceId);
-
-                if (amenitiesService == null) 
-                {
-                    return ErrorResp.BadRequest("Fail to get service");
-                }
-
-                bool isDeleted = await _amenityServiceRepo.DeleteService(amenitiesService);
-                if (!isDeleted)
-                {
-                    return ErrorResp.BadRequest("Fail to delete service");
-                }     
-
-                return SuccessResp.Ok("Delete service success");
+                //change service status
+                var serviceAmenity = await _amenityServiceRepo.GetAmenityServiceById(amenityServiceId);
+                serviceAmenity.Status = StatusServiceEnum.Disable;
+                var isUpdatedService = await _amenityServiceRepo.UpdateService(serviceAmenity);
+                return SuccessResp.Ok("Delete Service Success");
             }
             catch (System.Exception ex)
             {

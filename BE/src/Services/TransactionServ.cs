@@ -20,6 +20,7 @@ namespace BE.src.Services
         Task<IActionResult> StatisticMonthInYear(int year);
         Task<IActionResult> BuyMembership(BuyMembershipRqDTO data);
         Task<IActionResult> PaymentMembershipSuccess(Guid MembershipId, Guid UserId);
+        Task<IActionResult> TotalIncome();
     }
 
     public class TrasactionServ : ITransactionServ
@@ -216,53 +217,64 @@ namespace BE.src.Services
                 List<StatisticMonth> returnValue = new(){
                     new StatisticMonth(){
                         Month = 1,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 2,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 3,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 4,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 5,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 6,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 7,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 8,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 9,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 10,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 11,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 12,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
-
                 };
                 foreach (var transaction in transactions)
                 {
@@ -270,7 +282,14 @@ namespace BE.src.Services
                     {
                         if (transaction.CreateAt.HasValue && statisticMonth.Month == transaction.CreateAt.Value.Month)
                         {
-                            statisticMonth.Amount += transaction.Total;
+                            if (transaction.PaymentRefund != null && transaction.PaymentRefund.Type == PaymentRefundEnum.Refund)
+                            {
+                                statisticMonth.Refund += transaction.Total;
+                            }
+                            else
+                            {
+                                statisticMonth.Amount += transaction.Total;
+                            }
                         }
                     }
                 }
@@ -336,6 +355,19 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Cant create transaction");
                 }
                 return SuccessResp.Redirect("http://localhost:5173/");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> TotalIncome()
+        {
+            try
+            {
+                float total = await _transactionRepo.TotalIncome();
+                return SuccessResp.Ok(total);
             }
             catch (System.Exception ex)
             {

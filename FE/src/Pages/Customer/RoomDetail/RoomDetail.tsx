@@ -164,6 +164,7 @@ const RoomDetail = () => {
   interface ServiceData {
     index: number;
     id: string;
+    image: string;
     type: number;
     name: string;
     price: number;
@@ -171,11 +172,12 @@ const RoomDetail = () => {
   function createData(
     index: number,
     id: string,
+    image: string,
     type: number,
     name: string,
     price: number,
   ): ServiceData {
-    return { index, id, type, name, price };
+    return { index, id, image, type, name, price };
   }
 
   const { roomHashing } = useParams();
@@ -243,18 +245,19 @@ const RoomDetail = () => {
       const rowData3: ServiceData[] = [];
 
       response.forEach((row: any, index: number) => {
-        const serviceData = createData(index, row.id, row.type, row.name, row.price);
-        if (row.type === 0) {
+        const serviceData = createData(index, row.amenityService.id, row.amenityService.image.url, row.amenityService.type, row.amenityService.name, row.amenityService.price);
+        if (row.amenityService.type === 0) {
           rowData1.push(serviceData);
-        } else if (row.type === 1) {
+        } else if (row.amenityService.type === 1) {
           rowData2.push(serviceData);
-        } else if (row.type === 2) {
+        } else if (row.amenityService.type === 2) {
           rowData3.push(serviceData);
         }
       });
       setServiceListType1(rowData1);
       setServiceListType2(rowData2);
       setServiceListType3(rowData3);
+      console.log(rowData1)
     } catch (err) {
       console.error('Error getting service list:', err);
     }
@@ -419,17 +422,17 @@ const RoomDetail = () => {
       <div className="room-detail">
         <div className="room-images">
           <div className="main-image">
-            <img src={roomInfo?.images?.[3] || room1} alt="" />
+            <img src={roomInfo?.images?.[3]?.url || room1} alt="" />
           </div>
           <div className="others-image">
             <div className="child-image">
-              <img src={roomInfo?.images?.[2] || room2} alt="" />
+              <img src={roomInfo?.images?.[2]?.url || room2} alt="" />
             </div>
             <div className="child-image">
-              <img src={roomInfo?.images?.[1] || room3} alt="" />
+              <img src={roomInfo?.images?.[1]?.url || room3} alt="" />
             </div>
             <div className="child-image">
-              <img src={roomInfo?.images?.[0] || room4} alt="" />
+              <img src={roomInfo?.images?.[0]?.url || room4} alt="" />
             </div>
           </div>
         </div>
@@ -644,7 +647,7 @@ const RoomDetail = () => {
               <div className="services">
                 {typeNumberServiceSelected === '0' ?
                   serviceListType1.map((service) =>
-                    <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
+                    <ItemCard id={service.index.toString()} img={service.image} name={service.name} price={service.price} type={service.type}>
                       <div className='quatity'>
                         <div className="minus" onClick={() => handleRemoveItem(service)}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z" /></svg>
@@ -659,7 +662,7 @@ const RoomDetail = () => {
                   :
                   typeNumberServiceSelected === '1' ?
                     serviceListType2.map((service) =>
-                      <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
+                      <ItemCard id={service.index.toString()} img={service.image} name={service.name} price={service.price} type={service.type}>
                         <div className='quatity'>
                           <div className="minus" onClick={() => handleRemoveItem(service)}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z" /></svg>
@@ -673,7 +676,7 @@ const RoomDetail = () => {
                     )
                     :
                     serviceListType3.map((service) =>
-                      <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
+                      <ItemCard id={service.index.toString()} img={service.image} name={service.name} price={service.price} type={service.type}>
                         <div className='quatity'>
                           <div className="minus" onClick={() => handleRemoveItem(service)}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z" /></svg>

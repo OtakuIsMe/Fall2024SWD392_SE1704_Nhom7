@@ -71,7 +71,6 @@
     background-color: white;
     border: 1px solid #dee1e5;
     border-radius: 15px;
-    height: 400px;
     margin: 0 10px;
     box-sizing: border-box;
 }
@@ -92,12 +91,87 @@
     cursor: pointer;
 }
 
-#dashboard .contend-container .new-booking {
+#dashboard .contend-container .trending {
     flex: 1;
     background-color: white;
     border: 1px solid #dee1e5;
     border-radius: 15px;
-    height: 400px;
+    height: 569px;
     margin: 0 10px;
     box-sizing: border-box;
+    padding: 25px;
+}
+
+#dashboard .bar-chart {
+    padding: 20px;
+}
+
+#dashboard .contend-container .trending .title p {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+#dashboard .contend-container .trending .trend-card {
+    display: flex;
+    padding: 15px 0;
+
+}
+
+#dashboard .contend-container .trending .trend-card .img-container {
+    height: 60px;
+    width: 60px;
+}
+
+#dashboard .contend-container .trending .trend-card .img-container img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 10px;
+    border: 1px solid rgb(170, 170, 170);
+}
+
+#dashboard .contend-container .trending .types p {
+    margin: 0;
+    font-weight: 500;
+}
+
+#dashboard .contend-container .trending .trend-card .card-detail {
+    display: flex;
+    flex: 1;
+    padding-left: 20px;
+}
+
+#dashboard .contend-container .trending .trend-card .card-detail .name {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#dashboard .contend-container .trending .trend-card .card-detail .amount {
+    color: rgb(121, 121, 121);
+}
+
+#dashboard .contend-container .trending .trend-card .card-detail .count-booking {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#dashboard .contend-container .trending .trend-card .card-detail .count-booking .count {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    margin-right: 7px;
+}
+
+#dashboard .contend-container .trending .trend-card .card-detail .count-booking .count svg {
+    font-size: 15px;
+}
+
+#dashboard .contend-container .trending .trend-card .card-detail .count-booking .booking {
+    font-size: 12px;
+    margin-top: 5px;
 }

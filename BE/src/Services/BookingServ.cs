@@ -1,3 +1,4 @@
+using BE.src.Domains.DTOs.AmenityService;
 using BE.src.Domains.DTOs.Booking;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
@@ -5,7 +6,8 @@ using BE.src.Repositories;
 using BE.src.Shared.Type;
 using BE.src.Util;
 using Microsoft.AspNetCore.Mvc;
-using Mysqlx;
+using PayPal.Api;
+using MyNotification = BE.src.Domains.Models.Notification;
 
 namespace BE.src.Services
 {
@@ -21,6 +23,8 @@ namespace BE.src.Services
         Task<IActionResult> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate);
         Task<IActionResult> GetBookingRequestsInProgressForStaff();
         Task<IActionResult> ListBookingUserUpcoming(Guid User);
+        Task<IActionResult> TotalBooking();
+        Task<IActionResult> CancleServiceByCustomer(List<CancleServiceDTO> data, Guid BookingId);
     }
 
     public class BookingServ : IBookingServ
@@ -63,7 +67,8 @@ namespace BE.src.Services
                     Status = StatusBookingEnum.Wait,
                     UserId = data.UserId,
                     RoomId = data.RoomId,
-                    IsPay = false
+                    IsPay = false,
+                    IsCheckIn = false
                 };
 
                 Room? room = await _roomRepo.GetRoomById(data.RoomId);
@@ -230,7 +235,7 @@ namespace BE.src.Services
                 }
                 if (booking.IsPay == true && (booking.PaymentRefunds.FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment).PaymentType == PaymentTypeEnum.Paypal || booking.PaymentRefunds.FirstOrDefault().PaymentType == PaymentTypeEnum.Wallet))
                 {
-
+                    Console.WriteLine("cc1");
                     var user = await _userRepo.GetUserById(booking.UserId);
                     if (user == null)
                     {
@@ -259,7 +264,7 @@ namespace BE.src.Services
                     {
                         return ErrorResp.BadRequest("Create at is null");
                     }
-                    Notification notification = new()
+                    MyNotification notification = new()
                     {
                         Title = "Refund after canceling booking",
                         Description = "Refund of " + paymentRefund.Total + " VND to you on " + Utils.ConvertDateTimeTime(paymentRefund.CreateAt.Value),
@@ -271,7 +276,7 @@ namespace BE.src.Services
                         return ErrorResp.BadRequest("Cant Create Notification");
                     }
                 }
-                return SuccessResp.Ok("Cancle Service success");
+                return SuccessResp.Ok("Cancle Booking success");
             }
             catch (System.Exception ex)
             {
@@ -301,7 +306,17 @@ namespace BE.src.Services
             try
             {
                 var bookings = await _bookingRepo.GetScheduleBookingForStaff(startDate, endDate);
-                return SuccessResp.Ok(bookings);
+                var groupedBookings = bookings
+                .GroupBy(b => new DateTime(b.DateBooking.Year, b.DateBooking.Month, b.DateBooking.Day, b.DateBooking.Hour, 0, 0))
+                .Select(group => new BookingScheduleRp
+                {
+                    Amount = group.Count(),
+                    StartBooking = group.Key,
+                    bookings = group.ToList()
+                })
+                .ToList();
+
+                return SuccessResp.Ok(groupedBookings);
             }
             catch (System.Exception ex)
             {
@@ -332,6 +347,89 @@ namespace BE.src.Services
             {
                 var listBooking = await _bookingRepo.ListBookingUserUpComing(UserId);
                 return SuccessResp.Ok(listBooking);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> TotalBooking()
+        {
+            try
+            {
+                int countBooking = await _bookingRepo.TotalBooking();
+                return SuccessResp.Ok(countBooking);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CancleServiceByCustomer(List<CancleServiceDTO> data, Guid bookingId)
+        {
+            try
+            {
+                var booking = await _bookingRepo.GetBookingById(bookingId);
+                if (booking == null)
+                {
+                    return ErrorResp.BadRequest("cant find booking");
+                }
+                PaymentRefund refund = new()
+                {
+                    Type = PaymentRefundEnum.Refund,
+                    Total = 0,
+                    PointBonus = 0,
+                    Status = true,
+                    IsRefundReturnRoom = false
+                };
+                var isCreateRefund = await _transactionRepo.CreatePaymentRefund(refund);
+                foreach (var cancleServiceDTO in data)
+                {
+                    //Check and change status CancleSerivce
+                    var bookingItem = await _bookingRepo.GetBookingItemById(cancleServiceDTO.BookingItemId);
+                    if (bookingItem == null)
+                    {
+                        return ErrorResp.BadRequest("cant find bookingItem");
+                    }
+                    if (bookingItem.AmountItems == cancleServiceDTO.Amount)
+                    {
+                        bookingItem.Status = StatusBookingItemEnum.Cancle;
+                    }
+                    bookingItem.AmountItems -= cancleServiceDTO.Amount;
+                    RefundItem newRefundItem = new()
+                    {
+                        AmountItems = cancleServiceDTO.Amount,
+                        Total = bookingItem.AmenityService.Price * cancleServiceDTO.Amount,
+                        PaymentRefundId = refund.Id,
+                        BookingItemId = cancleServiceDTO.BookingItemId
+                    };
+                    var IsCreatedTransaction = await _transactionRepo.CreateRefundItem(newRefundItem);
+                    bookingItem.Total -= newRefundItem.Total;
+                    var isUpdatedBookingItem = await _bookingRepo.UpdateBookingItem(bookingItem);
+                    //Decrease in Booking
+                    booking.Total -= newRefundItem.Total;
+                    refund.Total += newRefundItem.Total;
+                }
+                var isUpdatedBooking = await _bookingRepo.UpdateBooking(booking);
+                var isUpdateRefund = await _transactionRepo.UpdatePaymentRefund(refund);
+                var user = await _userRepo.GetUserById(booking.UserId);
+                if (user == null)
+                {
+                    return ErrorResp.BadRequest("cant find user");
+                }
+                user.Wallet += refund.Total * 0.85f;
+                var isUpdateUser = await _userRepo.UpdateUser(user);
+                MyNotification notification = new()
+                {
+                    Title = "Refund for your Cancle Service",
+                    Description = $"Your wallet have been increase {refund.Total * 0.85f} in your waller",
+                    UserId = user.Id
+                };
+                var isCreatedNotification = await _userRepo.CreateNotification(notification);
+                //Notification
+                return SuccessResp.Ok("Cancle service success");
             }
             catch (System.Exception ex)
             {

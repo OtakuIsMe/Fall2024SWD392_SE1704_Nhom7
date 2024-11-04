@@ -245,4 +245,70 @@ export class ApiGateway {
             throw error
         }
     }
+
+    public static async DeleteService<T>(id: string): Promise<any> {
+        try {
+            const response = await this.axiosInstance.delete<T>(`amenityservice/DeleteService/${id}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Deleting Service: ", error)
+        }
+    }
+
+    public static async UpdateService<T>(id: string, name: string, price: number, image: File): Promise<any> {
+        try {
+            const formData = new FormData();
+            formData.append("Name", name);
+            formData.append("Price", price.toString());
+            formData.append("Image", image);
+            const response = await axios.put<T>(`/amenityservice/UpdateService/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            return response.data;
+        } catch (error) {
+            console.error("Error Updating Service: ", error)
+        }
+    }
+    public static async TotalUser<T>(): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/user/Total`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async TotalIncome<T>(): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/transaction/Total-Income`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async TotalBooking<T>(): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/booking/TotalBooking`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async Statistic<T>(year: number): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/transaction/Statistic-Month/${year}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async Trending<T>(): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/room/Trending`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
 }

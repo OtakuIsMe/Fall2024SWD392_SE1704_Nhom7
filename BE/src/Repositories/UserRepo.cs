@@ -27,6 +27,8 @@ namespace BE.src.Repositories
         Task<List<Notification>> ViewNotification(Guid userId);
         Task<bool> AddFeedback(RatingFeedback ratingFeedback);
         Task<bool> CreateMembershipUser(MembershipUser membershipUser);
+        Task<bool> DeleteUser(Guid userId);
+        Task<List<User>> GetAllUser();
         Task<bool> UpdateRoleUser(User user);
     }
     public class UserRepo : IUserRepo
@@ -39,7 +41,9 @@ namespace BE.src.Repositories
 
         public async Task<User?> GetUserByLogin(LoginRqDTO data)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => (u.Email == data.Email || u.Username == data.Email) && u.Password == Utils.HashObject<string>(data.Password));
+            return await _context.Users.FirstOrDefaultAsync(u => (u.Email == data.Email || u.Username == data.Email)
+                                                        && u.Password == Utils.HashObject<string>(data.Password)
+                                                        && u.Status == UserStatusEnum.Nornaml);
         }
 
         public async Task<User?> GetUserById(Guid userId)
@@ -135,6 +139,24 @@ namespace BE.src.Repositories
         {
             _context.MembershipUsers.Add(membershipUser);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteUser(Guid userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return false;
+            }
+            user.Status = UserStatusEnum.IsDelete;
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<User>> GetAllUser()
+        {
+            return await _context.Users.Include(u => u.Image)
+                                        .Include(u => u.Role)
+                                        .ToListAsync();
         }
 
         public async Task<bool> UpdateRoleUser(User user)

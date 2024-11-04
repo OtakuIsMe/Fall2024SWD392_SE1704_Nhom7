@@ -61,9 +61,11 @@ namespace BE.src.Domains.Database
                   builder.Entity<AmenityService>(entity =>
                   {
                         entity.HasKey(a => a.Id);
+
                         entity.Property(a => a.Name)
                         .IsRequired()
                         .HasMaxLength(100);
+
                         entity.Property(a => a.Type)
                         .IsRequired()
                         .HasMaxLength(10)
@@ -71,8 +73,17 @@ namespace BE.src.Domains.Database
                             v => v.ToString(),
                             v => v.ToEnum<AmenityServiceTypeEnum>()
                             );
+
                         entity.Property(a => a.Price)
                         .IsRequired();
+
+                        entity.Property(a => a.Status)
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasConversion(
+                            v => v.ToString(),
+                            v => v.ToEnum<StatusServiceEnum>()
+                            );
                   });
 
                   builder.Entity<Area>(entity =>
@@ -112,6 +123,9 @@ namespace BE.src.Domains.Database
                         .IsRequired();
 
                         entity.Property(b => b.Total)
+                        .IsRequired();
+
+                        entity.Property(b => b.IsCheckIn)
                         .IsRequired();
 
                         entity.HasOne(b => b.User)
@@ -370,8 +384,12 @@ namespace BE.src.Domains.Database
                               v => v.ToString(),
                               v => string.IsNullOrEmpty(v) ? default : v.ToEnum<PaymentTypeEnum>()
                         );
+
                         entity.Property(pr => pr.Status)
                         .IsRequired();
+
+                        entity.Property(pr => pr.IsRefundReturnRoom)
+                        .IsRequired(false);
 
                         entity.HasOne(pr => pr.Booking)
                         .WithMany(b => b.PaymentRefunds)

@@ -84,6 +84,22 @@ namespace BE.src.Controllers
         {
             return await _userServ.AddFeedback(userId, roomId, data);
         }
+        [HttpPut("DeleteUser")]
+        public async Task<IActionResult> DeleteUser([FromQuery] Guid userId)
+        {
+            return await _userServ.DeleteUser(userId);
+        }
+
+        [HttpGet("Total")]
+        public async Task<IActionResult> GetUserCount()
+        {
+            return await _userServ.CountUser();
+        }
+        [HttpGet("GetAllUser")]
+        public async Task<IActionResult> GetAllUser()
+        {
+            return await _userServ.GetAllUser();
+        }
 
         [HttpPost("UpdateRoleUser/{userId:Guid}")]
         public async Task<IActionResult> UpdateRoleUser(Guid userId, [FromForm] RoleEnum roles)

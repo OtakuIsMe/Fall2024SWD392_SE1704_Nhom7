@@ -7,6 +7,7 @@ using BE.src.Domains.DTOs.User;
 using System.IdentityModel.Tokens.Jwt;
 using BE.src.Shared.Constant;
 using BE.src.Domains.Enum;
+using FirebaseAdmin.Auth;
 
 namespace BE.src.Services
 {
@@ -21,15 +22,20 @@ namespace BE.src.Services
         Task<IActionResult> UpdateUserProfile(UpdateProfileDTO data);
         Task<IActionResult> ViewNotification(Guid userId);
         Task<IActionResult> AddFeedback(Guid userId, Guid roomId, AddFeedBackDTO data);
+        Task<IActionResult> DeleteUser(Guid userId);
+        Task<IActionResult> CountUser();
+        Task<IActionResult> GetAllUser();
         Task<IActionResult> UpdateRoleUser(Guid userId, RoleEnum role);
     }
     public class UserServ : IUserServ
     {
         private readonly IUserRepo _userRepo;
+        private readonly IBookingRepo _bookingRepo;
 
-        public UserServ(IUserRepo userRepo)
+        public UserServ(IUserRepo userRepo, IBookingRepo bookingRepo)
         {
             _userRepo = userRepo;
+            _bookingRepo = bookingRepo;
         }
 
         public async Task<IActionResult> LoginByDefault(LoginRqDTO data)
@@ -112,7 +118,8 @@ namespace BE.src.Services
                         Phone = data.Phone,
                         Password = Utils.HashObject<string>(data.Password),
                         Wallet = 0,
-                        Role = userRole
+                        Role = userRole,
+                        Status = UserStatusEnum.Nornaml
                     };
                     var isCreated = await _userRepo.CreateUser(user);
                     if (isCreated)
@@ -275,6 +282,50 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Fail to Add Feedback");
                 }
                 return SuccessResp.Created("Add rating feedback successfull");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> DeleteUser(Guid userId)
+        {
+            try
+            {
+                bool isCancel = await _bookingRepo.CancleAllBookingByUser(userId);
+                bool IsDeleted = await _userRepo.DeleteUser(userId);
+                if (!IsDeleted)
+                {
+                    return ErrorResp.BadRequest("Cant not delete user");
+                }
+                return SuccessResp.Ok("Delete User Success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> CountUser()
+        {
+            try
+            {
+                int userCount = await _userRepo.CountAllUser();
+                return SuccessResp.Ok(userCount);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetAllUser()
+        {
+            try
+            {
+                List<User> users = await _userRepo.GetAllUser();
+                return SuccessResp.Ok(users);
             }
             catch (System.Exception ex)
             {

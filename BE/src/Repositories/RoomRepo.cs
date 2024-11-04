@@ -16,7 +16,7 @@ namespace BE.src.Repositories
         Task<List<Room>> FilterRoomByTypeRoom(TypeRoomEnum typeRoom);
         Task<List<Room>> GetRoomListWithBookingTimes(Guid? areaId, TypeRoomEnum? typeRoom, DateTime? startDate, DateTime? endDate);
         // Return room detail
-        Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId);
+        Task<Room?> GetRoomDetailsById(Guid roomId);
         Task<List<RoomDto>> GetRoomsByAreaId(Guid areaId);
 
         Task<Room?> GetRoomById(Guid roomId);
@@ -89,26 +89,15 @@ namespace BE.src.Repositories
                                         }).ToListAsync();
         }
 
-        public async Task<RoomDetailDto?> GetRoomDetailsById(Guid roomId)
+        public async Task<Room?> GetRoomDetailsById(Guid roomId)
         {
             var room = await _context.Rooms
                         .Include(r => r.Images)
                         .Include(r => r.Area)
+                        .Include(r => r.Utilities)
                         .FirstOrDefaultAsync(r => r.Id == roomId);
 
-            var roomDetail = new RoomDetailDto
-            {
-                RoomId = room.Id,
-                Name = room.Name,
-                Price = room.Price,
-                Status = room.Status.ToString(),
-                Images = room.Images
-                            .OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
-                            .Select(i => i.Url)
-                            .ToList()
-            };
-
-            return roomDetail;
+            return room;
         }
 
         public async Task<List<RoomDto>> GetRoomsByAreaId(Guid areaId)
