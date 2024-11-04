@@ -3,6 +3,7 @@ using BE.src.Domains.DTOs.Booking;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
+using Mysqlx.Crud;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Crypto.Engines;
 using ZstdSharp.Unsafe;
@@ -34,6 +35,7 @@ namespace BE.src.Repositories
         Task<List<Booking>> GetListBookingByAmenityService(Guid amenityServiceId);
         Task<bool> UpdateBookingItem(BookingItem bookingItem);
         Task<int> TotalBooking();
+        Task<BookingItem?> GetBookingItemById(Guid BookingItemId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -440,6 +442,13 @@ namespace BE.src.Repositories
         public async Task<int> TotalBooking()
         {
             return await _context.Bookings.Where(b => b.Status == StatusBookingEnum.Done).CountAsync();
+        }
+
+        public async Task<BookingItem?> GetBookingItemById(Guid BookingItemId)
+        {
+            return await _context.BookingItems
+                                        .Include(bi => bi.AmenityService)
+                                        .FirstOrDefaultAsync(bi => bi.Id == BookingItemId);
         }
     }
 }
