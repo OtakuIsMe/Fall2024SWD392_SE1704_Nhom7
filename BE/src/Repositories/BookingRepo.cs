@@ -329,6 +329,9 @@ namespace BE.src.Repositories
                                             (b.Status == StatusBookingEnum.Accepted || b.Status == StatusBookingEnum.Done) &&
                                             b.DateBooking >= startDate &&
                                             b.DateBooking <= endDate)
+                                        .Include(b => b.Room)
+                                        .Include(b => b.User)
+                                            .ThenInclude(u => u.Image)
                                         .ToListAsync();
             return bookings;
         }

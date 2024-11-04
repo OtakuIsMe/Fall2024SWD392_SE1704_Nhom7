@@ -12,7 +12,6 @@ namespace BE.src.Domains.Models
                 public float Price { get; set; }
                 public StatusRoomEnum Status { get; set; }
                 public string Description { get; set; } = null!;
-                public bool IsDeleted { get; set; }
 
                 public Guid AreaId { get; set; }
                 public Area Area { get; set; } = null!;

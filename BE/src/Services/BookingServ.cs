@@ -316,22 +316,17 @@ namespace BE.src.Services
             try
             {
                 var bookings = await _bookingRepo.GetScheduleBookingForStaff(startDate, endDate);
-                List<BookingScheduleDTO> returnBookings = new();
-                foreach (var booking in bookings)
-                {
-                    var user = await _userRepo.GetUserById(booking.UserId);
-                    var room = await _roomRepo.GetRoomById(booking.RoomId);
 
-                    var returnBooking = new BookingScheduleDTO()
-                    {
-                        booking = booking,
-                        user = user,
-                        room = room
-                    };
-                    returnBookings.Add(returnBooking);
-                }
-
-                return SuccessResp.Ok(bookings);
+                var groupedBookings = bookings
+        .GroupBy(b => new DateTime(b.DateBooking.Year, b.DateBooking.Month, b.DateBooking.Day, b.DateBooking.Hour, 0, 0))
+        .Select(group => new BookingScheduleRp
+        {
+            Amount = group.Count(),
+            StartBooking = group.Key,
+            Bookings = group.ToList()
+        })
+        .ToList();
+                return SuccessResp.Ok(groupedBookings);
             }
             catch (System.Exception ex)
             {
