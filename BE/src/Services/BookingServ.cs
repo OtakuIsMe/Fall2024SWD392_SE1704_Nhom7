@@ -306,7 +306,17 @@ namespace BE.src.Services
             try
             {
                 var bookings = await _bookingRepo.GetScheduleBookingForStaff(startDate, endDate);
-                return SuccessResp.Ok(bookings);
+                var groupedBookings = bookings
+                .GroupBy(b => new DateTime(b.DateBooking.Year, b.DateBooking.Month, b.DateBooking.Day, b.DateBooking.Hour, 0, 0))
+                .Select(group => new BookingScheduleRp
+                {
+                    Amount = group.Count(),
+                    StartBooking = group.Key,
+                    bookings = group.ToList()
+                })
+                .ToList();
+
+                return SuccessResp.Ok(groupedBookings);
             }
             catch (System.Exception ex)
             {

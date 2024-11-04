@@ -325,7 +325,8 @@ namespace BE.src.Repositories
         public async Task<List<Booking>> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate)
         {
             return await _context.Bookings.Where(b =>
-                        b.Status == StatusBookingEnum.Accepted &&
+                        (b.Status == StatusBookingEnum.Accepted ||
+                        b.Status == StatusBookingEnum.Done) &&
                         b.DateBooking >= startDate &&
                         b.DateBooking <= endDate).ToListAsync();
         }
