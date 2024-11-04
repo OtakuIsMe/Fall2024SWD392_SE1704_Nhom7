@@ -36,6 +36,7 @@ namespace BE.src.Repositories
         Task<bool> UpdateBookingItem(BookingItem bookingItem);
         Task<int> TotalBooking();
         Task<BookingItem?> GetBookingItemById(Guid BookingItemId);
+        Task<List<Booking>> ScheduleRoom(Guid roomId, DateTime StartDate, DateTime EndDate);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -60,6 +61,7 @@ namespace BE.src.Repositories
         public async Task<Booking?> GetBookingById(Guid id)
         {
             return await _context.Bookings
+                                    .Include(b => b.PaymentRefunds.Where(p => p.Type == PaymentRefundEnum.Payment))
                                     .Include(b => b.BookingItems)
                                     .FirstOrDefaultAsync(b => b.Id == id);
         }
@@ -332,6 +334,7 @@ namespace BE.src.Repositories
                                         .Include(b => b.Room)
                                         .Include(b => b.User)
                                             .ThenInclude(u => u.Image)
+                                        .Include(b => b.PaymentRefunds.Where(p => p.Type == PaymentRefundEnum.Payment))
                                         .ToListAsync();
             return bookings;
         }
@@ -455,6 +458,15 @@ namespace BE.src.Repositories
             return await _context.BookingItems
                                         .Include(bi => bi.AmenityService)
                                         .FirstOrDefaultAsync(bi => bi.Id == BookingItemId);
+        }
+
+        public async Task<List<Booking>> ScheduleRoom(Guid roomId, DateTime StartDate, DateTime EndDate)
+        {
+            return await _context.Bookings
+                                        .Where(b => b.RoomId == roomId
+                                                && (b.Status == StatusBookingEnum.Accepted || b.Status == StatusBookingEnum.Done)
+                                                && b.DateBooking >= StartDate
+                                                && b.DateBooking < EndDate).ToListAsync();
         }
     }
 }

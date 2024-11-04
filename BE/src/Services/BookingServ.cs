@@ -25,6 +25,7 @@ namespace BE.src.Services
         Task<IActionResult> ListBookingUserUpcoming(Guid User);
         Task<IActionResult> TotalBooking();
         Task<IActionResult> CancleServiceByCustomer(List<CancleServiceDTO> data, Guid BookingId);
+        Task<IActionResult> HandleCheckIn(CheckInRqDTO data);
     }
 
     public class BookingServ : IBookingServ
@@ -440,6 +441,33 @@ namespace BE.src.Services
                 var isCreatedNotification = await _userRepo.CreateNotification(notification);
                 //Notification
                 return SuccessResp.Ok("Cancle service success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> HandleCheckIn(CheckInRqDTO data)
+        {
+            try
+            {
+                var booking = await _bookingRepo.GetBookingById(data.BookingId);
+                if (booking == null)
+                {
+                    return ErrorResp.NotFound("Cant find Booking");
+                }
+                if (booking.PaymentRefunds.FirstOrDefault() == null)
+                {
+                    return ErrorResp.NotFound("Cant find Payment");
+                }
+                if (booking.PaymentRefunds.FirstOrDefault().PaymentType == PaymentTypeEnum.COD)
+                {
+                    booking.IsPay = true;
+                }
+                booking.IsCheckIn = data.IsCheckIn;
+                var isUpdatedBooking = await _bookingRepo.UpdateBooking(booking);
+                return SuccessResp.Ok("Check In Success");
             }
             catch (System.Exception ex)
             {

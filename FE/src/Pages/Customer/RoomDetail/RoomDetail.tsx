@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, useRef } from 'react'
 import { useParams } from 'react-router'
 import { ApiGateway } from '../../../Api/ApiGateway'
 import { AuthenContext } from '../../../Components/AuthenContext'
@@ -20,11 +20,16 @@ import { MdRoomService, MdOutlineFoodBank, MdHomeRepairService } from "react-ico
 import { TbAirConditioning } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { RiDrinks2Fill } from "react-icons/ri";
-import SelectedItemCard from '../../../Components/SelectedItem/SelectedItemCard'
+import SelectedItemCard from '../../../Components/SelectedItem/SelectedItemCard';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 dayjs.extend(duration);
 
 const RoomDetail = () => {
+  const calendarRef = useRef(null);
 
   const context = useContext(AuthenContext);
   if (!context) {
@@ -46,6 +51,8 @@ const RoomDetail = () => {
   const [typeNumberServiceSelected, setTypeNumberServiceSelected] = useState('0');
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopupMsg, setOpenPopupMsg] = useState(false);
+  const [schedule, setSchedule] = useState<any>([]);
+
 
   const [payment, setPayment] = useState<string>('COD')
 
@@ -60,6 +67,82 @@ const RoomDetail = () => {
   const [selectedItemList, setSelectedItemList] = useState<SelectedItem[]>([]);
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [totalService, setTotalService] = useState(0)
+
+  const handleDateChange = () => {
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      const view = calendarApi.view;
+      const start = view.currentStart;
+      const end = view.currentEnd;
+      fetchRoomSchedule(formatDateToYYYYMMDD(start), formatDateToYYYYMMDD(end));
+    } else {
+      console.error("calendarRef is not set.");
+    }
+  };
+
+  function formatPeriod(startDate: string, timeBooking: string): string {
+    const start = new Date(startDate);
+    const [hours, minutes, seconds] = timeBooking.split(':').map(Number);
+
+    const end = new Date(start);
+    end.setHours(start.getHours() + hours, start.getMinutes() + minutes, start.getSeconds() + seconds);
+
+    const options: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const formattedStart = start.toLocaleTimeString([], options);
+    const formattedEnd = end.toLocaleTimeString([], options);
+
+    return `${formattedStart} - ${formattedEnd}`;
+  }
+
+  const fetchRoomSchedule = async (startDate: string, endDate: string) => {
+    const data = await ApiGateway.ScheduleRoom(startDate, endDate, roomHashing);
+    setSchedule(data);
+  }
+
+  function formatDateToYYYYMMDD(date: string): string {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  function CalcEndDate(startDate: string, timeBooking: string): string {
+    const start = new Date(startDate);
+    const [hours, minutes, seconds] = timeBooking.split(':').map(Number);
+
+    // Add hours, minutes, and seconds from timeBooking to start date
+    start.setHours(start.getHours() + hours);
+    start.setMinutes(start.getMinutes() + minutes);
+    start.setSeconds(start.getSeconds() + seconds);
+
+    // Format the result as YYYY-MM-DDTHH:MM:SS
+    const year = start.getFullYear();
+    const month = String(start.getMonth() + 1).padStart(2, '0');
+    const day = String(start.getDate()).padStart(2, '0');
+    const hoursStr = String(start.getHours()).padStart(2, '0');
+    const minutesStr = String(start.getMinutes()).padStart(2, '0');
+    const secondsStr = String(start.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hoursStr}:${minutesStr}:${secondsStr}`;
+  }
+
+  const events = schedule.map((booking: any) => ({
+    title: `${formatPeriod(booking.dateBooking, booking.timeBooking)}`,
+    start: `${booking.dateBooking}`,
+    end: `${CalcEndDate(booking.dateBooking, booking.timeBooking)}`,
+    color: '#d9d2ff',
+  }));
+
+
+  function renderEventContent(eventInfo: any) {
+    return (
+      <div className='event'>
+        <p className='title'>{eventInfo.event.title}</p>
+      </div>
+    );
+  }
 
   const utilities = [
     {
@@ -484,7 +567,23 @@ const RoomDetail = () => {
             {infoSelected === "schedule" && (
               <React.Fragment>
                 <div className="info-schedule">
-
+                  <FullCalendar
+                    ref={calendarRef}
+                    plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
+                    initialView="timeGridWeek"
+                    slotMinTime="07:00:00"
+                    slotMaxTime="18:00:00"
+                    events={events}
+                    headerToolbar={{
+                      start: 'prev,next today',
+                      center: 'title',
+                      end: 'timeGridWeek'
+                    }}
+                    eventDisplay="block"
+                    eventContent={renderEventContent}
+                    allDaySlot={false}
+                    datesSet={handleDateChange}
+                  />
                 </div>
               </React.Fragment>
             )}

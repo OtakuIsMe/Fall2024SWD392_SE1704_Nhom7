@@ -123,8 +123,6 @@ export class ApiGateway {
                 dateBooking: dateBooking
             };
 
-            console.log(bookingData)
-
             const response = await this.axiosInstance.post<T>(`booking/room/`, bookingData);
 
             console.log(response.data);
@@ -306,6 +304,35 @@ export class ApiGateway {
     public static async Trending<T>(): Promise<any> {
         try {
             const response = await this.axiosInstance.get<T>(`/room/Trending`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async ScheduleManager<T>(startDate: string, endDate: string): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/booking/GetScheduleBookingForStaff?startDate=${startDate}&endDate=${endDate}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async CheckIn<T>(bookingId: string, isCheckIn: boolean): Promise<any> {
+        try {
+            const data = {
+                bookingId: bookingId,
+                isCheckIn: isCheckIn
+            }
+            const response = await this.axiosInstance.post<T>(`/booking/HandleCheckIn`, data)
+            return response.data;
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async ScheduleRoom<T>(startDate: string, endDate: string, roomId: any): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/room/RoomSchedule?roomId=${roomId}&StartDate=${startDate}&EndDate=${endDate}`)
             return response.data;
         } catch (error) {
             console.error("Error Total: ", error)

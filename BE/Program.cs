@@ -7,9 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using BE.src.Shared.Constant;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Text.Json.Serialization;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -17,12 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers()
+builder.Services.AddControllers();
+builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
-    {
-        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-    });
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
+
 
 builder.Services.AddCors(options =>
 {
@@ -54,7 +51,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddScoped<IUserServ, UserServ>();
+builder.Services.AddScoped<IUserServ, UserServ>(); builder.Services.AddScoped<IRoomServ, RoomServ>();
 builder.Services.AddScoped<IMembershipServ, MembershipServ>();
 builder.Services.AddScoped<IBookingServ, BookingServ>();
 builder.Services.AddScoped<IAreaServ, AreaServ>();
@@ -65,7 +62,7 @@ builder.Services.AddScoped<ITransactionServ, TrasactionServ>();
 builder.Services.AddScoped<IAnalysticServ, AnalysticServ>();
 builder.Services.AddScoped<IReportServ, ReportServ>();
 
-builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IUserRepo, UserRepo>(); builder.Services.AddScoped<IRoomRepo, RoomRepo>();
 builder.Services.AddScoped<IMembershipRepo, MembershipRepo>();
 builder.Services.AddScoped<IBookingRepo, BookingRepo>();
 builder.Services.AddScoped<IAreaRepo, AreaRepo>();
@@ -89,8 +86,6 @@ app.UseHttpsRedirection();
 
 app.UseCors(MyAllowSpecificOrigins);
 app.UseDeveloperExceptionPage();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseRouting();
 

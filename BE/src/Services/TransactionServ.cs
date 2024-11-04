@@ -169,7 +169,7 @@ namespace BE.src.Services
                 {
                     return ErrorResp.NotFound("Cant find booking");
                 }
-                booking.IsPay = true;
+                booking.IsPay = false;
                 bool isUpdateBooking = await _bookingRepo.UpdateBooking(booking);
                 if (!isUpdateBooking)
                 {
