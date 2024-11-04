@@ -90,6 +90,7 @@ namespace BE.src.Repositories
             var room = await _context.Rooms
                         .Include(r => r.Images)
                         .Include(r => r.Area)
+                        .Include(r => r.Utilities)
                         .FirstOrDefaultAsync(r => r.Id == roomId);
 
             return room;

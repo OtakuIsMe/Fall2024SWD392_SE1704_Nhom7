@@ -11,6 +11,7 @@ namespace BE.src.Domains.Models
                 public float Total { get; set; }
                 public StatusBookingEnum Status { get; set; }
                 public bool IsPay { get; set; }
+                public bool IsCheckIn { get; set; }
 
                 public Guid UserId { get; set; }
                 public User User { get; set; } = null!;

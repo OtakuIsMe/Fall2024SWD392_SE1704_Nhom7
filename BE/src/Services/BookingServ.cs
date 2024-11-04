@@ -64,7 +64,8 @@ namespace BE.src.Services
                     Status = StatusBookingEnum.Wait,
                     UserId = data.UserId,
                     RoomId = data.RoomId,
-                    IsPay = false
+                    IsPay = false,
+                    IsCheckIn = false
                 };
 
                 Room? room = await _roomRepo.GetRoomById(data.RoomId);
@@ -231,7 +232,7 @@ namespace BE.src.Services
                 }
                 if (booking.IsPay == true && (booking.PaymentRefunds.FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment).PaymentType == PaymentTypeEnum.Paypal || booking.PaymentRefunds.FirstOrDefault().PaymentType == PaymentTypeEnum.Wallet))
                 {
-
+                    Console.WriteLine("cc1");
                     var user = await _userRepo.GetUserById(booking.UserId);
                     if (user == null)
                     {
@@ -272,7 +273,7 @@ namespace BE.src.Services
                         return ErrorResp.BadRequest("Cant Create Notification");
                     }
                 }
-                return SuccessResp.Ok("Cancle Service success");
+                return SuccessResp.Ok("Cancle Booking success");
             }
             catch (System.Exception ex)
             {
