@@ -1,4 +1,4 @@
-#my_modal {
+#booking_modal {
     position: absolute;
     width: 100%;
     height: 100vh;
@@ -7,7 +7,7 @@
     transition: all 0s;
 }
 
-#my_modal::before {
+#booking_modal::before {
     content: '';
     position: absolute;
     width: 100%;
@@ -19,10 +19,11 @@
     z-index: 2;
 }
 
-#my_modal > .modal {
+#booking_modal > .modal {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 30%;
+    min-width: 480px;
     min-height: 50vh;
     max-height: 80vh;
     padding: 15px 20px;
@@ -36,17 +37,20 @@
     z-index: 3;
 }
 
-#my_modal > .modal > .popup-header > h1 {
+#booking_modal > .modal > .popup-header > p {
+    font-size: xx-large;
     margin: 0;
 }
 
-#my_modal > .modal > .popup-header {
+#booking_modal > .modal > .popup-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 15px;
 }
 
-#my_modal > .modal > .modal-btns {
+#booking_modal > .modal > .modal-btns {
     position: relative;
     right: 0;
     bottom: 0;
@@ -56,31 +60,81 @@
     gap: 10px;
 }
 
-#my_modal > .modal > .modal-btns > .btn {
+#booking_modal > .modal > .modal-btns > .btn {
     padding: 10px 15px;
     border-radius: 8px;
     cursor: pointer;
 }
 
-#my_modal > .modal > .modal-btns > .modal-confirm {
+#booking_modal > .modal > .modal-btns > .modal-confirm {
     background-color: rgb(93, 190, 163);
     color: white;
 }
 
-#my_modal > .modal > .modal-btns > .modal-confirm:hover {
+#booking_modal > .modal > .modal-btns > .modal-confirm:hover {
     background-color: rgb(72, 147, 126);
 }
 
-#my_modal > .modal > .modal-btns > .modal-cancel:hover {
+#booking_modal > .modal > .modal-btns > .modal-cancel:hover {
     color: rgb(150, 150, 150);
 }
 
-#my_modal > .modal > .modal-content {
+#booking_modal > .modal > .modal-content {
     min-height: calc(50vh - 30px - 44px);
     max-height: calc(80vh - 30px - 44px);
     overflow-y: auto;
 }
 
-#my_modal > .modal > .modal-content > .content {
-    /* height: 1000px */
+#booking_modal > .modal > .modal-content > .content {
+    padding: 10px 25px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#booking_modal > .modal > .modal-content > .content p {
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+#booking_modal > .modal > .modal-content > .content > div {
+    margin-bottom: 20px;
+}
+
+#booking_modal > .modal > .modal-content > .content > .timeline {
+    padding: 15px;
+    border: 1px solid rgb(150, 150, 150);
+    border-radius: 10px;
+    position: relative;
+    margin: 25px 0 15px;
+}
+
+#booking_modal > .modal > .modal-content > .content > .timeline > p:first-child {
+    width: fit-content;
+    position: absolute;
+    background-color: white;
+    top: -12px;
+    left: 5px;
+    font-weight: 600;
+}
+
+#booking_modal > .modal > .modal-content > .content > .timeline > p:last-child {
+    margin: 0;
+    font-size: .9rem;
+}
+
+#booking_modal > .modal > .modal-content > .content > .timeline > .period {
+    font-size: .9rem;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+#booking_modal > .modal > .modal-content > .content > .total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+#booking_modal > .modal > .modal-content > .content > .total p {
+    margin: 0;
 }

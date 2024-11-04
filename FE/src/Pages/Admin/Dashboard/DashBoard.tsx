@@ -16,42 +16,104 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const DashBoard: React.FC = () => {
   const [countUser, setCountUser] = useState(0);
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalBooking, setTotalBooking] = useState(0);
+  const [statistic, setStatistic] = useState(
+    [
+      {
+        month: "",
+        amount: 0,
+        refund: 0
+      }
+
+    ]
+  )
+  const [trending, setTrending] = useState([
+    {
+      type: 0,
+      amount: 0,
+      bookingsCount: 0
+    }
+  ]);
   useEffect(() => {
     fetchUser()
+    fetchTotalIncome()
+    fetchTotalBooking()
+    fetchStatistic(2024)
+    fetchTrending()
   }, [])
 
   async function fetchUser() {
     const data = await ApiGateway.TotalUser()
     setCountUser(data);
   }
+  async function fetchTotalIncome() {
+    const data = await ApiGateway.TotalIncome()
+    setTotalIncome(data);
+  }
+  async function fetchTotalBooking() {
+    const data = await ApiGateway.TotalBooking()
+    setTotalBooking(data);
+  }
+  async function fetchStatistic(year: number) {
+    const data = await ApiGateway.Statistic(year);
+    setStatistic(data);
+  }
+  async function fetchTrending() {
+    const data = await ApiGateway.Trending();
+    setTrending(data);
+  }
+  const priceConvert = (amount: number): string => {
+    return new Intl.NumberFormat('de-DE', { style: 'decimal' }).format(amount);
+  };
   const data = {
-    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], // Nhãn cho trục X
+    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
     datasets: [
       {
         label: "Income",
-        data: [100, 200, 500, 100, 200, 300, 100, 200, 300, 100, 200, 300],
+        data: statistic.map(item => item.amount),
         backgroundColor: '#35bc94',
       },
       {
         label: "expend",
-        data: [100, 200, 300, 100, 200, 300, 100, 200, 300, 100, 200, 300],
+        data: statistic.map(item => item.refund),
         backgroundColor: '#a8abf7',
       }
     ],
   };
-  function TrendCard() {
+  function TrendCard(item: { type: number; amount: number; bookingsCount: number }) {
+    let imageSrc;
+    let namecard;
+    switch (item.type) {
+      case 0:
+        imageSrc = Pod1;
+        namecard = "Single Room";
+        break;
+      case 1:
+        imageSrc = Pod2;
+        namecard = "Duo Room";
+        break;
+      case 2:
+        imageSrc = Pod4;
+        namecard = "Fourth Room";
+        break;
+      case 3:
+        imageSrc = Meeting;
+        namecard = "Meeting Room";
+        break;
+    }
     return (
       <div className='trend-card'>
         <div className="img-container">
-          <img src={Pod1} alt="" />
+          <img src={imageSrc} alt="" />
         </div>
         <div className="card-detail">
           <div className='name-price'>
-            <p className="name">Single Room</p>
-            <p className='amount'><AiOutlineDollarCircle /> <span>20,000</span></p>
+            <p className="name">{namecard}</p>
+            <p className='amount'><AiOutlineDollarCircle /> <span>{item.amount}</span></p>
           </div>
           <div className='count-booking'>
-            <span className='count'><FaPlus /> 20</span>
+            <span className='count'><FaPlus /> {item.bookingsCount}</span>
             <span className='booking'>Bookings</span>
           </div>
         </div>
@@ -70,11 +132,11 @@ const DashBoard: React.FC = () => {
           </div>
           <div className="total-in-come card">
             <p className='title'>Total Income</p>
-            <p className="value">210,000 VND</p>
+            <p className="value">{priceConvert(totalIncome)}</p>
           </div>
           <div className="total-booking card">
             <p className='title'>Total Bookings</p>
-            <p className="value">1</p>
+            <p className="value">{totalBooking}</p>
           </div>
         </div>
         <div className="contend-container">
@@ -92,7 +154,16 @@ const DashBoard: React.FC = () => {
               <p>Trending</p>
             </div>
             <div className="types">
-              <TrendCard />
+              {trending.map((item: { type: number; amount: number; bookingsCount: number }, index: number) => {
+                return (
+                  <TrendCard
+                    key={index}
+                    type={item.type}
+                    amount={item.amount}
+                    bookingsCount={item.bookingsCount}
+                  />
+                )
+              })}
             </div>
           </div>
         </div>

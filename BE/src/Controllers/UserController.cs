@@ -94,5 +94,10 @@ namespace BE.src.Controllers
         {
             return await _userServ.CountUser();
         }
+        [HttpGet("GetAllUser")]
+        public async Task<IActionResult> GetAllUser()
+        {
+            return await _userServ.GetAllUser();
+        }
     }
 }

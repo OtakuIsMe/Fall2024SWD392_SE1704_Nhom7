@@ -3,6 +3,7 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import './RoomModal.css'
 import { TextField } from "@mui/material";
 import { ApiGateway } from "../../../../Api/ApiGateway";
+import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
 
 interface PopupType {
   type: string;
@@ -84,7 +85,7 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
     if(room){
       setImages(room.images)
       setAreaId(room.id)
-      // setRoomType(room.type)
+      setRoomType(room.typeRoom)
       setName(room.name)
       setPrice(room.price)
       setDescription(room.description)
@@ -148,6 +149,13 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
     } catch (error) {
       console.error("Error creating Room: ", error)
       throw error
+    }
+  }
+
+  const handleDelete = (): void => {
+    if (deleteRoom) {
+      deleteRoom()
+      closeModal()
     }
   }
 
@@ -299,13 +307,13 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
             <div className="modal-content">
               <div className="content">
                 <div className="column1">
-                    {images.map((image, index) => (
+                    {images.map((image: any, index) => (
                       <div className="img-container" key={index}>
                           <div className={`image image${index+1}`}>
                               {image ? (
                                 <div className="image-selected">
                                   <label htmlFor={`input-file${index}`} className="image-label">
-                                    <img src={image instanceof File ? URL.createObjectURL(image) : image} alt={`Selected ${index}`}/>
+                                    <img src={image instanceof File ? URL.createObjectURL(image) : image.url} alt={`Selected ${index}`}/>
                                     <input
                                       id={`input-file${index}`}
                                       name={`selectedFile${index}`}
@@ -349,34 +357,20 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
                     <label>
                       <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
                         <p>Area</p>
-                        {!isAreaIdSelected ? 
-                          <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Area is required</p>
-                          :
-                          <></>
-                        }
                       </div>
-                      <select name="type" value={areaId} onChange={handleAreaChange}>
-                        <option value={''}></option>
-                        {areaList?.map((area: any) =>
-                          <option value={area.id}>{area.name}</option>
-                        )}
+                      <select name="type" value={room?.areaId} onChange={handleAreaChange} disabled>
+                        <option value={room?.areaId}>{room?.area?.name}</option>
                       </select>
                     </label>
                     <label>
                       <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
                         <p>Type</p>
-                        {!isRoomTypeSelected ?
-                          <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Type is required</p>
-                          :
-                          <></>
-                        }
                       </div>
                       <select name="type" value={roomType} onChange={handleRoomTypeChange}>
-                        <option value={-1}></option>
-                        <option value={0}>Single</option>
-                        <option value={1}>Double</option>
-                        <option value={2}>Fourth</option>
-                        <option value={3}>Meeting</option>
+                          <option value={0}>Single</option> 
+                          <option value={1}>Double</option>
+                          <option value={2}>Fourth</option>
+                          <option value={3}>Meeting</option>
                       </select>
                     </label>
                   </div>
@@ -384,7 +378,7 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
                     <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
                       <p>Name</p>
                     </div>
-                    <TextField variant="outlined" size="small" fullWidth onChange={handleNameChange} placeholder={room.name}/>
+                    <TextField variant="outlined" size="small" fullWidth onChange={handleNameChange} value={name} placeholder={room?.name}/>
                   </label>
                   <label>
                     <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
@@ -395,13 +389,13 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
                         <></>
                       }
                     </div>
-                    <TextField type="number" onKeyDown={handleKeyDown} name="price" variant="outlined" size="small" fullWidth onChange={handlePriceChange} placeholder={room.price}/>
+                    <TextField type="number" onKeyDown={handleKeyDown} name="price" variant="outlined" size="small" fullWidth onChange={handlePriceChange} value={price} placeholder={room?.price.toString()}/>
                   </label>
                   <label>
                     <div style={{display: "flex", height: "fit-content", alignItems: "center"}}>
                       <p>Description</p>
                     </div>
-                    <TextField variant="outlined" size="small" fullWidth multiline rows={2} onChange={handleDescriptionChange} placeholder={room.description}/>
+                    <TextField variant="outlined" size="small" fullWidth multiline rows={2} onChange={handleDescriptionChange} value={description} placeholder={room?.description}/>
                   </label>
                 </div>
               </div>
@@ -417,6 +411,20 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
         </div>
       );
     case "delete":
+      return (
+        <div>
+          <div id="room_delete_modal" style={{display: "static"}}>
+            <div className="delete-confirm">
+              <ErrorRoundedIcon sx={{color: "#C90000", fontSize: "64px"}}/>
+              <p>Are you sure to delete <b>{room.name}</b>?</p>
+              <div className="btn-group">
+                <div className="cancel" onClick={closeModal}>No</div>
+                <div className="confirm" onClick={handleDelete}>Yes</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
   }
 };
 

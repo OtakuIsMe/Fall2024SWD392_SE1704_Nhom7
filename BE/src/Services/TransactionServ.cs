@@ -217,53 +217,64 @@ namespace BE.src.Services
                 List<StatisticMonth> returnValue = new(){
                     new StatisticMonth(){
                         Month = 1,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 2,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 3,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 4,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 5,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 6,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 7,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 8,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 9,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 10,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 11,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 12,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
-
                 };
                 foreach (var transaction in transactions)
                 {
@@ -271,7 +282,14 @@ namespace BE.src.Services
                     {
                         if (transaction.CreateAt.HasValue && statisticMonth.Month == transaction.CreateAt.Value.Month)
                         {
-                            statisticMonth.Amount += transaction.Total;
+                            if (transaction.PaymentRefund != null && transaction.PaymentRefund.Type == PaymentRefundEnum.Refund)
+                            {
+                                statisticMonth.Refund += transaction.Total;
+                            }
+                            else
+                            {
+                                statisticMonth.Amount += transaction.Total;
+                            }
                         }
                     }
                 }
@@ -344,9 +362,17 @@ namespace BE.src.Services
             }
         }
 
-        public Task<IActionResult> TotalIncome()
+        public async Task<IActionResult> TotalIncome()
         {
-            throw new NotImplementedException();
+            try
+            {
+                float total = await _transactionRepo.TotalIncome();
+                return SuccessResp.Ok(total);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -20,7 +20,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
     if (user) {
       console.log("user exists");
       if (allowedRoles.includes(user.roleId)) {
-        navigate("/dashboard", { replace: true });
+        switch (user.roleId) {
+          case "6489cb2a-f4df-4020-bf31-56f2a19d30c3":
+            navigate("/dashboard", { replace: true });
+            break;
+          case "5a4226d9-e58a-42c4-a786-dba8369b234b":
+            navigate("/check-in", { replace: true });
+            break;
+        }
       }
     } else {
       console.log("roleId doesn't exist");

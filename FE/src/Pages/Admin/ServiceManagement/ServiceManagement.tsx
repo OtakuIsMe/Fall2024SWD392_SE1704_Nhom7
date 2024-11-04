@@ -104,11 +104,11 @@ const ServiceManagement: React.FC = () => {
     console.log('close')
   };
 
-  const openModalDelete = (id: string, name: string) => {
+  const openModalDelete = (row: any) => {
     setService({
       ...service,
-      id: id,
-      name: name,
+      id: row.id,
+      name: row.name,
     })
     setIsModalDeleteOpen(true);
   };

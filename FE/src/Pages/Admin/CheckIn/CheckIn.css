@@ -1,0 +1,190 @@
+#check-in .fc-timegrid-slots {
+    height: 770px;
+}
+
+#check-in .fc-timegrid-slots table {
+    height: 100%;
+}
+
+#check-in .event {
+    padding: 10px 10px;
+    cursor: pointer;
+}
+
+#check-in .event p {
+    font-family: "Lato", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+#check-in .event .title {
+    color: black;
+    margin: 0;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+#check-in .event .time {
+    color: rgb(139, 139, 139);
+    margin: 0;
+}
+
+#check-in .fc-event.fc-event-start {
+    border-radius: 10px;
+}
+
+#check-in .pop-up {
+    position: absolute;
+    height: 100vh;
+    width: 100%;
+    left: 0;
+    top: 0;
+    background-color: rgba(59, 59, 59, 0.418);
+    z-index: 2;
+}
+
+#check-in .pop-up .pop-up-side-panel {
+    position: absolute;
+    height: calc(100vh - 20px);
+    width: 800px;
+    right: 10px;
+    top: 10px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+#check-in .pop-up .pop-up-side-panel .title-popup-out {
+    width: 100%;
+    display: flex;
+    padding: 15px 20px;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgb(214, 214, 214);
+}
+
+#check-in .pop-up .pop-up-side-panel .title-popup-out span {
+    font-size: 20px;
+}
+
+#check-in .pop-up .pop-up-side-panel .title-popup-out svg {
+    font-size: 18px;
+    color: rgb(114, 114, 114);
+    cursor: pointer;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings {
+    padding: 15px 20px;
+    font-family: "Lato", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .head-table {
+    display: flex;
+    padding: 15px 0;
+    padding-right: 10px;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .head-table div {
+    color: rgb(122, 122, 122);
+    font-weight: 500;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .no {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .user {
+    flex: 3
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .room {
+    flex: 2.3
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .period {
+    flex: 2.5
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .payment {
+    flex: 2.2;
+    display: flex;
+    justify-content: center;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .checkin {
+    flex: 1.2;
+    display: flex;
+    justify-content: center;
+}
+
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking {
+    display: flex;
+    padding: 10px 0;
+    padding-right: 10px;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking.even {
+    background-color: #f4f6fa;
+    border-radius: 8px;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking>div {
+    display: flex;
+    align-items: center;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .user img {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    margin-right: 20px;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .Status {
+    padding: 5px 10px;
+    border: 1px solid #f7e9ca;
+    background-color: #fffdf5;
+    color: #e48126;
+    font-size: 11px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .Status.True {
+    border: 1px solid #dcf4e6;
+    background-color: #f2fff7;
+    color: #17ae54;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .checkin {
+    position: relative;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .checkin-dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 80px;
+    padding: 8px 0;
+    background-color: white;
+    z-index: 3;
+    border-radius: 8px;
+    border: 1px solid rgb(230, 230, 230);
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .checkin-dropdown .chosen-field {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 0;
+    cursor: pointer;
+}
+
+#check-in .pop-up .pop-up-side-panel .bookings .booking .checkin-dropdown .chosen-field.chosen {
+    background-color: rgb(243, 243, 243);
+}

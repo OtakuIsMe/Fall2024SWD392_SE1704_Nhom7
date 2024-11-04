@@ -21,6 +21,7 @@ import ProtectedRoute from "./ProtectedRoute.tsx";
 
 import Profile from "./Pages/Customer/ProfilePage/Profile/Profile.tsx";
 import { Register } from "./Pages/Register/Register.tsx";
+import CheckIn from "./Pages/Admin/CheckIn/CheckIn.tsx";
 const App: React.FC = () => {
   const location = useLocation();
 
@@ -35,7 +36,7 @@ const App: React.FC = () => {
       <AuthenProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />}/>
+          <Route path="/login" element={<Login />} />
           <Route path="/roomlist" element={<RoomList />} />
           <Route path="/roomDetail/:roomHashing" element={<RoomDetail />} />
           <Route path="/areadetails/:locationId" element={<AreaDetail />} />
@@ -47,6 +48,7 @@ const App: React.FC = () => {
           <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3']} />}>
             <Route path="/" element={<AdminLayout />}>
               <Route path="/dashboard" element={<DashBoard />} />
+              <Route path="/check-in" element={<CheckIn />} />
               <Route path="/users" element={<UserManagement />} />
               <Route path="/services" element={<ServiceManagement />} />
               <Route path="/requests" element={<RequestManagement />} />
@@ -61,6 +63,7 @@ const App: React.FC = () => {
           <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '42feaeb5-fc53-4163-98b5-d28cfceafa7c']} />}>
             <Route path="/" element={<AdminLayout />}>
               <Route path="/dashboard" element={<DashBoard />} />
+              <Route path="/check-in" element={<CheckIn />} />
               <Route path="/users" element={<UserManagement />} />
               <Route path="/services" element={<ServiceManagement />} />
               <Route path="/requests" element={<RequestManagement />} />
@@ -74,6 +77,7 @@ const App: React.FC = () => {
           {/* Staff's Accessible Routes */}
           <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '5a4226d9-e58a-42c4-a786-dba8369b234b']} />}>
             <Route path="/" element={<AdminLayout />}>
+              <Route path="/check-in" element={<CheckIn />} />
               <Route path="/users" element={<UserManagement />} />
               <Route path="/services" element={<ServiceManagement />} />
               {/* Staff only has access to "/users" and "/services" */}

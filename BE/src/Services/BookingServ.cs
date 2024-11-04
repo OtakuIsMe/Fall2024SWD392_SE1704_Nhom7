@@ -21,6 +21,7 @@ namespace BE.src.Services
         Task<IActionResult> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate);
         Task<IActionResult> GetBookingRequestsInProgressForStaff();
         Task<IActionResult> ListBookingUserUpcoming(Guid User);
+        Task<IActionResult> TotalBooking();
     }
 
     public class BookingServ : IBookingServ
@@ -332,6 +333,19 @@ namespace BE.src.Services
             {
                 var listBooking = await _bookingRepo.ListBookingUserUpComing(UserId);
                 return SuccessResp.Ok(listBooking);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> TotalBooking()
+        {
+            try
+            {
+                int countBooking = await _bookingRepo.TotalBooking();
+                return SuccessResp.Ok(countBooking);
             }
             catch (System.Exception ex)
             {

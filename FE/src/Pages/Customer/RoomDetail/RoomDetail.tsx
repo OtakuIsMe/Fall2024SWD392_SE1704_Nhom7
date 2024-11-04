@@ -129,9 +129,9 @@ const RoomDetail = () => {
     const startT = dayjs(start)
     const endT = dayjs(end)
 
-    const diff = endT.diff(startT); // Calculate the difference in milliseconds
-    const duration = dayjs.duration(diff);  // Create a duration object from the difference
-    // Get the difference in days, hours, and minutes
+    const diff = endT.diff(startT);
+    const duration = dayjs.duration(diff); 
+    
     const hours = Math.floor(duration.asHours());
     return `${hours}`
   }
@@ -422,17 +422,17 @@ const RoomDetail = () => {
       <div className="room-detail">
         <div className="room-images">
           <div className="main-image">
-            <img src={roomInfo?.images?.[3] || room1} alt="" />
+            <img src={roomInfo?.images?.[3]?.url || room1} alt="" />
           </div>
           <div className="others-image">
             <div className="child-image">
-              <img src={roomInfo?.images?.[2] || room2} alt="" />
+              <img src={roomInfo?.images?.[2]?.url || room2} alt="" />
             </div>
             <div className="child-image">
-              <img src={roomInfo?.images?.[1] || room3} alt="" />
+              <img src={roomInfo?.images?.[1]?.url || room3} alt="" />
             </div>
             <div className="child-image">
-              <img src={roomInfo?.images?.[0] || room4} alt="" />
+              <img src={roomInfo?.images?.[0]?.url || room4} alt="" />
             </div>
           </div>
         </div>

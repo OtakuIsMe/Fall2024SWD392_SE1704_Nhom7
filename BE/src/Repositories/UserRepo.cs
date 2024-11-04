@@ -28,6 +28,7 @@ namespace BE.src.Repositories
         Task<bool> AddFeedback(RatingFeedback ratingFeedback);
         Task<bool> CreateMembershipUser(MembershipUser membershipUser);
         Task<bool> DeleteUser(Guid userId);
+        Task<List<User>> GetAllUser();
     }
     public class UserRepo : IUserRepo
     {
@@ -148,6 +149,13 @@ namespace BE.src.Repositories
             }
             user.Status = UserStatusEnum.IsDelete;
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<User>> GetAllUser()
+        {
+            return await _context.Users.Include(u => u.Image)
+                                        .Include(u => u.Role)
+                                        .ToListAsync();
         }
     }
 }

@@ -22,7 +22,7 @@ const AdminLayout: React.FC = () => {
   const { user, logout } = context;
 
   const roleBasedNavItems = [
-    { name: 'Check-in', href: '/dashboard', icon: <CalendarMonthRoundedIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3'] },
+    { name: 'Check-in', href: '/check-in', icon: <CalendarMonthRoundedIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '42feaeb5-fc53-4163-98b5-d28cfceafa7c', '5a4226d9-e58a-42c4-a786-dba8369b234b'] },
     { name: 'Dashboard', href: '/dashboard', icon: <AssessmentIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '42feaeb5-fc53-4163-98b5-d28cfceafa7c'] },
     { name: 'Users', href: '/users', icon: <SupervisedUserCircleIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '42feaeb5-fc53-4163-98b5-d28cfceafa7c', '5a4226d9-e58a-42c4-a786-dba8369b234b'] },
     { name: 'Services', href: '/services', icon: <RoomServiceIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '5a4226d9-e58a-42c4-a786-dba8369b234b'] },
@@ -31,7 +31,7 @@ const AdminLayout: React.FC = () => {
     { name: 'Areas', href: '/areas', icon: <RoomIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3'] },
     { name: 'Feedbacks & Reports', href: '/feedbacks&reports', icon: <InsertCommentIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3'] },
     { name: 'Membership', href: '/membership', icon: <AccountBoxIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3'] },
-  ];
+  ]
 
   const navigate = useNavigate();
 

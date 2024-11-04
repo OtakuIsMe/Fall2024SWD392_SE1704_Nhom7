@@ -121,6 +121,13 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const forbiddenKeys = ["e", "+", "-", "."];
+    if (forbiddenKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  };
+
   const handleDelete = (): void => {
     if (deleteService) {
       deleteService()
@@ -154,17 +161,6 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
       console.log("It did run")
       closeModal()
     }
-  }
-
-  async function urlToFile(url: string, filename: string, mimeType: string): Promise<File> {
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-        throw new Error(`Failed to fetch image from URL: ${url}`);
-    }
-    
-    const blob = await response.blob();
-    return new File([blob], filename, { type: mimeType });
   }
 
   useEffect(() => {
@@ -389,7 +385,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
                         <></>
                       }
                     </div>
-                    <TextField name="price" variant="outlined" size="small" fullWidth onChange={handleChange} placeholder={service.price}/>
+                    <TextField type="number" name="price" variant="outlined" onKeyDown={handleKeyDown} size="small" fullWidth onChange={handleChange} placeholder={service.price}/>
                   </label>
                 </div>
               </div>

@@ -92,13 +92,26 @@ const RoomManagement: React.FC = () => {
 
   const openModalEdit = (row: any) => {
     getRoomInfo(row.id)
-    setIsModalEditOpen(true)
     console.log('open')
   };
 
   const closeModalEdit = () => {
     getRoomList()
     setIsModalEditOpen(false)
+  };
+
+  const openModalDelete = (row: any) => {
+    setRoom({
+      id: row.id, 
+      name: row.name
+    })
+    setIsModalDeleteOpen(true)
+    console.log('open')
+  };
+
+  const closeModalDelete = () => {
+    getRoomList()
+    setIsModalDeleteOpen(false)
   };
 
   const getRoomList = async (): Promise<void> => {
@@ -129,12 +142,34 @@ const RoomManagement: React.FC = () => {
     try {
       const response = await ApiGateway.GetRoomDetail(id)
       setRoom(response)
+      setIsModalEditOpen(true)
       console.log(response)
     } catch (error) {
       console.error("Error getting Room Info: ", error)
       throw error
     }
   }
+
+  const deleteRoom = async () : Promise<void> => {
+    try {
+      const response = await ApiGateway.DeleteRoom(room.id)
+      setRoom({})
+      console.log(response)
+    } catch (error) {
+      console.error("Error deleting Room: ", error)
+      throw error
+    }
+  }
+
+  const updateRoom = async (areaId: string, roomType: string, name: string, price: string, description: string, utilitiesId: string[], images: File[]) : Promise<void>  => {
+    try {
+      const response = await ApiGateway.UpdateRoom(areaId, parseInt(roomType), name, price, description, utilitiesId, images)
+      console.log(response)
+    } catch (error) {
+      console.error("Error updating Room: ", error)
+      throw error
+    }
+  } 
 
   return (
     <div id='room-mng'>
@@ -144,14 +179,14 @@ const RoomManagement: React.FC = () => {
       </div>
       <div className='content'>
         {roomList ? 
-          <TableTpl columns={columns} rows={roomList} editButton={true} deleteButton={true} openPopup1={openModalEdit}/>
+          <TableTpl columns={columns} rows={roomList} editButton={true} deleteButton={true} openPopup1={openModalEdit} openPopup2={openModalDelete}/>
           :
           <p style={{textAlign: "center"}}>There are no Room</p>
         } 
       </div>
       {isModalAddOpen && <Modal type='add' closeModal={closeModalAdd} />}
       {isModalEditOpen && <Modal type='edit' room={room} closeModal={closeModalEdit} />}
-      {/* {isModalDeleteOpen && <Modal type='delete' service={service} closeModal={closeModalDelete} deleteService={deleteSevice}/>} */}
+      {isModalDeleteOpen && <Modal type='delete' room={room} closeModal={closeModalDelete} deleteRoom={deleteRoom}/>}
     </div>
   )
 }

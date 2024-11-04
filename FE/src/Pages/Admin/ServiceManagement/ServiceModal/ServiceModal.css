@@ -218,3 +218,9 @@
 #service_delete_modal > .delete-confirm > .btn-group > .cancel:hover {
     background-color: rgb(200, 200, 200);
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
