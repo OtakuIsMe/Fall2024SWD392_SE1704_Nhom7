@@ -1,3 +1,4 @@
+using BE.src.Domains.DTOs.AmenityService;
 using BE.src.Domains.DTOs.Booking;
 using BE.src.Services;
 using Microsoft.AspNetCore.Http;
@@ -46,7 +47,7 @@ namespace BE.src.Controllers
             return await _bookingServ.GetBookingRequests();
         }
 
-        [HttpGet("CancleBookingByCustomrer/{bookingId:guid}")]
+        [HttpPost("CancleBookingByCustomrer/{bookingId:guid}")]
         public async Task<IActionResult> CancleBookingByCustomer(Guid bookingId)
         {
             return await _bookingServ.CancleBookingByCustomer(bookingId);
@@ -79,6 +80,11 @@ namespace BE.src.Controllers
         public async Task<IActionResult> TotalBooking()
         {
             return await _bookingServ.TotalBooking();
+        }
+        [HttpPost("CancleServiceByCustomer/{bookingId:guid}")]
+        public async Task<IActionResult> CancleServiceByCustomer([FromBody] List<CancleServiceDTO> data, Guid bookingId)
+        {
+            return await _bookingServ.CancleServiceByCustomer(data, bookingId);
         }
     }
 }

@@ -1,6 +1,7 @@
 using BE.src.Domains;
 using BE.src.Domains.Database;
 using BE.src.Domains.DTOs.User;
+using BE.src.Domains.Enum;
 using BE.src.Services;
 using BE.src.Util;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -98,6 +99,12 @@ namespace BE.src.Controllers
         public async Task<IActionResult> GetAllUser()
         {
             return await _userServ.GetAllUser();
+        }
+
+        [HttpPost("UpdateRoleUser/{userId:Guid}")]
+        public async Task<IActionResult> UpdateRoleUser(Guid userId, [FromForm] RoleEnum roles)
+        {
+            return await _userServ.UpdateRoleUser(userId, roles);
         }
     }
 }

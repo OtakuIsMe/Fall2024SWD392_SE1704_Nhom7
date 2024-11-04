@@ -28,6 +28,7 @@ namespace BE.src.Services
         Task<IActionResult> GetScheduleRoom(RoomScheduleRqDTO data);
         Task<IActionResult> TrendingRoom();
         Task<IActionResult> DeleteRoom(Guid RoomId);
+        Task<IActionResult> UpdateRoom(Guid id, UpdateRoomDTO data);
     }
     public class RoomServ : IRoomServ
     {
@@ -307,12 +308,15 @@ namespace BE.src.Services
         {
             try
             {
+                Console.WriteLine("cc");
                 List<Booking> bookingsWaitAccepted = await _bookingRepo.GetBookingsWaitAccepted(roomId);
+                Console.WriteLine("a");
                 foreach (var booking in bookingsWaitAccepted)
                 {
                     //Check Cod
                     if (booking.PaymentRefunds.FirstOrDefault()?.PaymentType != PaymentTypeEnum.COD)
                     {
+                        Console.WriteLine("b");
                         //Refund for user
                         PaymentRefund newPaymentRefund = new()
                         {
@@ -325,6 +329,7 @@ namespace BE.src.Services
 
                         var isCreateRefund = await _transactionRepo.CreatePaymentRefund(newPaymentRefund);
                         //Add Transaction
+                        Console.WriteLine("c");
                         Transaction transaction = new()
                         {
                             TransactionType = TypeTransactionEnum.Refund,
@@ -333,14 +338,17 @@ namespace BE.src.Services
                             UserId = booking.UserId
                         };
                         var isCreateTransaction = await _transactionRepo.CreateTransaction(transaction);
+                        Console.WriteLine("c");
                         //Add Money for customer
                         var user = await _userRepo.GetUserById(booking.UserId);
+                        Console.WriteLine("c");
                         if (user == null)
                         {
                             return ErrorResp.NotFound("Cant find user");
                         }
                         user.Wallet += booking.Total;
                         var isUpdateUser = await _userRepo.UpdateUser(user);
+                        Console.WriteLine("c");
                     }
                     //Send Notification
                     Notification notification = new()
@@ -350,9 +358,11 @@ namespace BE.src.Services
                         UserId = booking.UserId
                     };
                     var isCreateNotification = await _userRepo.CreateNotification(notification);
+                    Console.WriteLine("c");
                     //Change Booking Status
                     booking.Status = StatusBookingEnum.Canceled;
                     var isUpdateBooking = await _bookingRepo.UpdateBooking(booking);
+                    Console.WriteLine("c");
                 }
                 //Change Room Status
                 var room = await _roomRepo.GetRoomById(roomId);
@@ -363,6 +373,86 @@ namespace BE.src.Services
                 room.Status = StatusRoomEnum.Disable;
                 var isUpdateRoom = await _roomRepo.UpdateRoom(room);
                 return SuccessResp.Ok("Delete Room Successfull");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+        public async Task<IActionResult> UpdateRoom(Guid id, UpdateRoomDTO data)
+        {
+            try
+            {
+                var room = await _roomRepo.GetRoomById(id);
+                if (room == null)
+                {
+                    return ErrorResp.NotFound("Not found room");
+                }
+
+                room.TypeRoom = data.RoomType ?? room.TypeRoom;
+                room.Name = data.Name ?? room.Name;
+                room.Price = data.Price ?? room.Price;
+                room.Description = data.Description ?? room.Description;
+
+                var existingImages = await _roomRepo.GetImagesByRoomId(id);
+                if (existingImages == null || existingImages.Count == 0)
+                {
+                    return ErrorResp.NotFound("Not found image");
+                }
+                
+                if(data.Images == null || data.Images.Count == 0)
+                {
+                    room.Images = existingImages;
+
+                    var roomUpdated = await _roomRepo.UpdateSecondImageRoom(existingImages);
+                    if (!roomUpdated)
+                    {
+                        return ErrorResp.BadRequest("Error updating room");
+                    }
+                }
+                else
+                {
+                    int count = 0;
+                    foreach (IFormFile image in data.Images)
+                    {
+                        string? urlFirebase = await Utils.UploadImgToFirebase(image, count.ToString(), 
+                                $"Room/{Utils.ConvertToUnderscore(room.Area?.Name ?? "Unknown")}/{Utils.ConvertToUnderscore(room.Name)}");
+                        if (urlFirebase == null)
+                        {
+                            return ErrorResp.BadRequest("Fail to save image to firebase");
+                        }
+
+                        var imageRoom = await _roomRepo.GetImageByRoomId(id);
+                        if (imageRoom == null)
+                        {
+                            return ErrorResp.NotFound("Not found image");
+                        }
+
+                        var imageObj = new Image
+                        {
+                            Id = imageRoom.Id,
+                            Url = urlFirebase,
+                            UpdateAt = DateTime.Now
+                        };
+
+                        var isImageCreated = await _roomRepo.UpdateImageRoom(imageObj);
+                        if (!isImageCreated)
+                        {
+                            return ErrorResp.BadRequest("Fail to save image to database");
+                        }
+                        count++;
+                    }
+                }
+
+                room.UpdateAt = DateTime.Now;
+
+                var isUpdated = await _roomRepo.UpdateRoom(room);
+                if (!isUpdated)
+                {
+                    return ErrorResp.BadRequest("Error updating room");
+                }
+
+                return SuccessResp.Ok("Update room success");
             }
             catch (System.Exception ex)
             {

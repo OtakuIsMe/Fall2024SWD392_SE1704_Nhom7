@@ -6,6 +6,7 @@ using BE.src.Shared.Type;
 using BE.src.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace BE.src.Services
 {
@@ -137,41 +138,63 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Service not found");
                 }
 
-                serviceToUpdate.Name = service.Name;
-                serviceToUpdate.Price = service.Price;
+                if (service.Name != null)
+                {
+                    serviceToUpdate.Name = service.Name;
+                }
+                else
+                {
+                    serviceToUpdate.Name = serviceToUpdate.Name;
+                }
+
+                if (service.Price != null)
+                {
+                    serviceToUpdate.Price = (float)service.Price;
+                }        
+                else
+                {
+                    serviceToUpdate.Price = serviceToUpdate.Price;
+                }
+
                 serviceToUpdate.UpdateAt = DateTime.Now;
 
-                if (service.Image == null)
+                if (service.Image != null)
                 {
-                    return ErrorResp.BadRequest("Image is required");
+                    if (serviceToUpdate.Image == null)
+                    {
+                        return ErrorResp.BadRequest("Image not found");
+                    }
+                    string? url = await Utils.UploadImgToFirebase(service.Image, serviceToUpdate.Name, "services");
+
+                    if (url == null)
+                    {
+                        return ErrorResp.BadRequest("Fail to get url Image");
+                    }
+
+                    var image = await _amenityServiceRepo.GetImageByServiceId(id);
+                    if (image == null)
+                    {
+                        return ErrorResp.BadRequest("Image not found");
+                    }
+
+                    image.Url = url;
+                    image.UpdateAt = DateTime.Now;
+
+                    bool isUpdatedImage = await _amenityServiceRepo.UpdateServiceImage(image);
+                    if (!isUpdatedImage)
+                    {
+                        return ErrorResp.BadRequest("Fail to update image service");
+                    }
                 }
-
-                string? url = await Utils.UploadImgToFirebase(service.Image, service.Name, "services");
-
-                if (url == null)
+                else
                 {
-                    return ErrorResp.BadRequest("Fail to get url Image");
+                    serviceToUpdate.Image = serviceToUpdate.Image;
                 }
-
-                var image = await _amenityServiceRepo.GetImageByServiceId(id);
-                if (image == null)
-                {
-                    return ErrorResp.BadRequest("Image not found");
-                }
-
-                image.Url = url;
-                image.UpdateAt = DateTime.Now;
 
                 bool isUpdated = await _amenityServiceRepo.UpdateService(serviceToUpdate);
                 if (!isUpdated)
                 {
                     return ErrorResp.BadRequest("Fail to update service");
-                }
-
-                bool isUpdatedImage = await _amenityServiceRepo.UpdateServiceImage(image);
-                if (!isUpdatedImage)
-                {
-                    return ErrorResp.BadRequest("Fail to update image service");
                 }
 
                 return SuccessResp.Ok("Update service success");

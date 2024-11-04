@@ -125,6 +125,9 @@ namespace BE.src.Domains.Database
                         entity.Property(b => b.Total)
                         .IsRequired();
 
+                        entity.Property(b => b.IsCheckIn)
+                        .IsRequired();
+
                         entity.HasOne(b => b.User)
                         .WithMany(u => u.Bookings)
                         .HasForeignKey(b => b.UserId);

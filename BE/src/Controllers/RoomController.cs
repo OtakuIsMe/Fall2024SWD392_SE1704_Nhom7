@@ -93,5 +93,11 @@ namespace BE.src.Controllers
         {
             return await _roomServ.DeleteRoom(RoomId);
         }
+
+        [HttpPut("Update/{roomId}")]
+        public async Task<IActionResult> UpdateRoom(Guid roomId, [FromForm] UpdateRoomDTO data)
+        {
+            return await _roomServ.UpdateRoom(roomId, data);
+        }
     }
 }

@@ -29,6 +29,7 @@ namespace BE.src.Repositories
         Task<bool> CreateMembershipUser(MembershipUser membershipUser);
         Task<bool> DeleteUser(Guid userId);
         Task<List<User>> GetAllUser();
+        Task<bool> UpdateRoleUser(User user);
     }
     public class UserRepo : IUserRepo
     {
@@ -156,6 +157,12 @@ namespace BE.src.Repositories
             return await _context.Users.Include(u => u.Image)
                                         .Include(u => u.Role)
                                         .ToListAsync();
+        }
+
+        public async Task<bool> UpdateRoleUser(User user)
+        {
+            _context.Users.Update(user);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

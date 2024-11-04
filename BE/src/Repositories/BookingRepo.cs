@@ -3,8 +3,10 @@ using BE.src.Domains.DTOs.Booking;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models;
 using Microsoft.EntityFrameworkCore;
+using Mysqlx.Crud;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Crypto.Engines;
+using ZstdSharp.Unsafe;
 
 namespace BE.src.Repositories
 {
@@ -33,6 +35,7 @@ namespace BE.src.Repositories
         Task<List<Booking>> GetListBookingByAmenityService(Guid amenityServiceId);
         Task<bool> UpdateBookingItem(BookingItem bookingItem);
         Task<int> TotalBooking();
+        Task<BookingItem?> GetBookingItemById(Guid BookingItemId);
     }
     public class BookingRepo : IBookingRepo
     {
@@ -56,7 +59,9 @@ namespace BE.src.Repositories
 
         public async Task<Booking?> GetBookingById(Guid id)
         {
-            return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Bookings
+                                    .Include(b => b.BookingItems)
+                                    .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<bool> UpdateBooking(Booking booking)
@@ -96,7 +101,7 @@ namespace BE.src.Repositories
 
         public async Task<bool> DeclineBooking(Guid bookingId)
         {
-            var booking = await _context.Bookings.FindAsync(bookingId);
+            var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
 
             if (booking == null) return false;
 
@@ -221,112 +226,82 @@ namespace BE.src.Repositories
 
         public async Task<bool> ProcessRefund(Guid bookingId)
         {
-            var booking = await _context.Bookings.FindAsync(bookingId);
-
-            if (booking == null) return false;
-
-            if (booking.Status != StatusBookingEnum.Canceled)
+            var booking = await GetBookingById(bookingId);
+            if (booking == null)
             {
                 return false;
             }
-
-            var existingRefund = await _context.PaymentRefunds
-                .FirstOrDefaultAsync(r => r.BookingId == bookingId);
-
-            if (existingRefund != null) return false;
-
-            var refundAmount = CalculateRefundAmount(booking);
-
-            var user = await _context.Users.FindAsync(booking.UserId);
-
-            if (user == null) return false;
-
-            var bookingItems = await _context.BookingItems.Where(bi => bi.BookingId == bookingId).ToListAsync();
-
-            var amenityServices = await _context.AmenityServices.Where(a => bookingItems.Any(b => b.AmenityServiceId == a.Id)).ToListAsync();
-
-            foreach (var amenityService in amenityServices)
+            PaymentRefund newRefund = new()
             {
-                var amenityServiceItem = await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityService.Id);
-
-                if (amenityServiceItem == null) continue;
-
-                user.Wallet += amenityServiceItem.Price;
-            }
-
-            user.Wallet += refundAmount;
-
-            _context.Users.Update(user);
-
-            var refund = new PaymentRefund
-            {
-                Id = Guid.NewGuid(),
-                BookingId = bookingId,
                 Type = PaymentRefundEnum.Refund,
-                Total = refundAmount,
+                Total = booking.Total,
                 PointBonus = 0,
-                CreateAt = DateTime.UtcNow
+                Status = true,
+                IsRefundReturnRoom = true,
+                BookingId = booking.Id
             };
-
-            await _context.PaymentRefunds.AddAsync(refund);
-
-            var transaction = new Transaction
+            _context.PaymentRefunds.Add(newRefund);
+            foreach (var bookingItem in booking.BookingItems)
             {
-                Id = Guid.NewGuid(),
+                RefundItem refundItem = new RefundItem()
+                {
+                    AmountItems = bookingItem.AmountItems,
+                    Total = bookingItem.Total,
+                    PaymentRefundId = newRefund.Id,
+                    BookingItemId = bookingItem.Id
+                };
+                _context.RefundItems.Add(refundItem);
+            }
+            Transaction transaction = new()
+            {
                 TransactionType = TypeTransactionEnum.Refund,
-                PaymentRefundId = refund.Id,
-                UserId = booking.UserId,
-                Total = refundAmount,
-                CreateAt = DateTime.UtcNow
+                Total = booking.Total,
+                PaymentRefundId = newRefund.Id,
+                UserId = booking.UserId
             };
-
-            await _context.Transactions.AddAsync(transaction);
-
+            _context.Transactions.Add(transaction);
+            Notification notification = new()
+            {
+                Title = "Your booking has been reject",
+                Description = "Your booking has been reject",
+                UserId = booking.UserId
+            };
+            _context.Notifications.Add(notification);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == booking.UserId);
+            if (user == null)
+            {
+                return false;
+            }
+            user.Wallet += newRefund.Total;
             await _context.SaveChangesAsync();
-
             return true;
-        }
-
-        private float CalculateRefundAmount(Booking booking)
-        {
-            var room = _context.Rooms.FirstOrDefault(r => r.Id == booking.RoomId);
-            return room?.Price != null ? room.Price : 0;
         }
 
         public async Task<bool> ProcessAcceptBooking(Guid bookingId)
         {
-            var booking = await _context.Bookings.FindAsync(bookingId);
-
-            if (booking == null) return false;
-
-            if (booking.Status != StatusBookingEnum.Canceled)
+            //notification
+            var booking = await GetBookingById(bookingId);
+            if (booking == null)
             {
                 return false;
             }
+            var newNotification = new Notification()
+            {
+                Title = "Your Booking is Accepted",
+                Description = "Your Booking is Accepted",
+                UserId = booking.UserId,
+            };
 
-            var transaction = await _context.Transactions
-                .FirstOrDefaultAsync(t => t.PaymentRefundId != null && t.PaymentRefund.BookingId == bookingId &&
-                                    t.UserId == booking.UserId && t.PaymentRefund.PaymentType == PaymentTypeEnum.Paypal);
-
-            if (transaction == null) return false;
-
-            var totalAmount = CalculateRefundAmount(booking);
-
-            var user = await _context.Users.FindAsync(booking.UserId);
-
-            if (user == null) return false;
-
-            user.Wallet -= totalAmount;
-
-            _context.Users.Update(user);
-
+            _context.Notifications.Add(newNotification);
             await _context.SaveChangesAsync();
 
             return true;
         }
         public async Task<Booking?> GetBookingWaitOrInProgressById(Guid id)
         {
-            return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == id &&
+            return await _context.Bookings
+                                    .Include(b => b.PaymentRefunds)
+                                    .FirstOrDefaultAsync(b => b.Id == id &&
                                     (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.Accepted));
         }
 
@@ -350,7 +325,8 @@ namespace BE.src.Repositories
         public async Task<List<Booking>> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate)
         {
             return await _context.Bookings.Where(b =>
-                        b.Status == StatusBookingEnum.Accepted &&
+                        (b.Status == StatusBookingEnum.Accepted ||
+                        b.Status == StatusBookingEnum.Done) &&
                         b.DateBooking >= startDate &&
                         b.DateBooking <= endDate).ToListAsync();
         }
@@ -443,7 +419,7 @@ namespace BE.src.Repositories
                                             && (b.Status == StatusBookingEnum.Wait
                                             || b.Status == StatusBookingEnum.Accepted))
                                             .Include(b => b.PaymentRefunds
-                                                                .FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment))
+                                                                .Where(p => p.Type == PaymentRefundEnum.Payment))
                                             .ToListAsync();
         }
 
@@ -452,7 +428,7 @@ namespace BE.src.Repositories
             return await _context.Bookings.Include(b => b.BookingItems
                                             .Where(bi => bi.AmenityServiceId == amenityServiceId))
                                             .Include(b => b.PaymentRefunds
-                                                                .FirstOrDefault(p => p.Type == PaymentRefundEnum.Payment))
+                                                                .Where(p => p.Type == PaymentRefundEnum.Payment))
                                             .Where(b => b.BookingItems.Any(bi => bi.AmenityServiceId == amenityServiceId)
                                             && (b.Status == StatusBookingEnum.Wait || b.Status == StatusBookingEnum.Accepted))
                                             .ToListAsync();
@@ -467,6 +443,13 @@ namespace BE.src.Repositories
         public async Task<int> TotalBooking()
         {
             return await _context.Bookings.Where(b => b.Status == StatusBookingEnum.Done).CountAsync();
+        }
+
+        public async Task<BookingItem?> GetBookingItemById(Guid BookingItemId)
+        {
+            return await _context.BookingItems
+                                        .Include(bi => bi.AmenityService)
+                                        .FirstOrDefaultAsync(bi => bi.Id == BookingItemId);
         }
     }
 }
