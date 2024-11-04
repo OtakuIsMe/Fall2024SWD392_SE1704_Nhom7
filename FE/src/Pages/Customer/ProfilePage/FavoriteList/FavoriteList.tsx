@@ -32,7 +32,7 @@ const FavoriteList = () => {
     }
   }, [user?.id]);
 
-  const unfavoriteRoom = useCallback(async (roomId) => {
+  const unfavoriteRoom = useCallback(async (roomId: string) => {
     if (user && user.id) {
       try {
         await ApiGateway.UnfavoriteRoom<any>(user.id, roomId);
