@@ -21,6 +21,7 @@ namespace BE.src.Services
         Task<IActionResult> UpdateUserProfile(UpdateProfileDTO data);
         Task<IActionResult> ViewNotification(Guid userId);
         Task<IActionResult> AddFeedback(Guid userId, Guid roomId, AddFeedBackDTO data);
+        Task<IActionResult> UpdateRoleUser(Guid userId, RoleEnum role);
     }
     public class UserServ : IUserServ
     {
@@ -274,6 +275,37 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Fail to Add Feedback");
                 }
                 return SuccessResp.Created("Add rating feedback successfull");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> UpdateRoleUser(Guid userId, RoleEnum role)
+        {
+            try
+            {
+                User? user = await _userRepo.GetUserById(userId);
+                if (user == null)
+                {
+                    return ErrorResp.NotFound("Not found user");
+                }
+                Role? userRole = await _userRepo.GetRoleByName(role);
+                if (userRole == null)
+                {
+                    return ErrorResp.NotFound("Not found role");
+                }
+                user.Role = userRole;
+                bool isUpdated = await _userRepo.UpdateUser(user);
+                if (isUpdated)
+                {
+                    return SuccessResp.Ok("Update role success");
+                }
+                else
+                {
+                    return ErrorResp.BadRequest("Fail to update role");
+                }
             }
             catch (System.Exception ex)
             {
