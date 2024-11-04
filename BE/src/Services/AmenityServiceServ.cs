@@ -156,7 +156,7 @@ namespace BE.src.Services
                     {
                         return ErrorResp.BadRequest("Image not found");
                     }
-                    string? url = await Utils.UploadImgToFirebase(service.Image, service.Name, "services");
+                    string? url = await Utils.UploadImgToFirebase(service.Image, serviceToUpdate.Name, "services");
 
                     if (url == null)
                     {

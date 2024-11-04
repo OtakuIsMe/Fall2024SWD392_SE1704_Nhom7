@@ -40,7 +40,7 @@ namespace BE.src.Repositories
 
         public async Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId)
         {
-            return await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityServiceId);
+            return await _context.AmenityServices.Include(a => a.Image).FirstOrDefaultAsync(a => a.Id == amenityServiceId);
         }
 
         public async Task<bool> CreateService(AmenityService service)

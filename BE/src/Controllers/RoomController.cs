@@ -86,5 +86,11 @@ namespace BE.src.Controllers
         public async Task<IActionResult> TrendingRoom(){
             return await _roomServ.TrendingRoom();
         }
+
+        [HttpPut("Update/{roomId}")]
+        public async Task<IActionResult> UpdateRoom(Guid roomId, [FromForm] UpdateRoomDTO data)
+        {
+            return await _roomServ.UpdateRoom(roomId, data);
+        }
     }
 }

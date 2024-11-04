@@ -31,6 +31,11 @@ namespace BE.src.Repositories
         Task<bool> AddFavouriteRoom(Favourite favourite);
         Task<bool> DeleteFavouriteRoom(Favourite favourite);
         Task<List<RoomAnalysticDTO>> TrendingRoom(TypeRoomEnum roomType);
+        Task<bool> UpdateRoom(Room room);
+        Task<bool> UpdateImageRoom(Image image);
+        Task<bool> UpdateSecondImageRoom(List<Image> image);
+        Task<List<Image>> GetImagesByRoomId(Guid roomId);
+        Task<Image?> GetImageByRoomId(Guid roomId);
     }
     public class RoomRepo : IRoomRepo
     {
@@ -175,7 +180,10 @@ namespace BE.src.Repositories
 
         public async Task<Room?> GetRoomById(Guid roomId)
         {
-            return await _context.Rooms.FirstOrDefaultAsync(r => r.Id == roomId);
+            return await _context.Rooms
+                            .Include(r => r.Area)
+                            .Include(r => r.Images)
+                            .FirstOrDefaultAsync(r => r.Id == roomId);
         }
         public async Task<List<Room>> GetListFavouriteRoom(Guid userId)
         {
@@ -249,6 +257,46 @@ namespace BE.src.Repositories
                                            TotalRevenue = r.Bookings.Sum(b => b.Total)
                                        })
                                        .ToListAsync();
+        }
+
+        public async Task<bool> UpdateRoom(Room room)
+        {
+            _context.Rooms.Update(room);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateSecondImageRoom(List<Image> image)
+        {
+            _context.Images.UpdateRange(image);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<Image>> GetImagesByRoomId(Guid roomId)
+        {
+            return await _context.Images.Where(i => i.RoomId == roomId).ToListAsync();
+        }
+
+        public async Task<bool> UpdateImageRoom(Image image)
+        {
+            var imageToUpdate = await _context.Images.FirstOrDefaultAsync(i => i.Id == image.Id);
+            if (imageToUpdate == null)
+            {
+                return false;
+            }
+
+            imageToUpdate.Url = image.Url;
+            imageToUpdate.UpdateAt = image.UpdateAt;
+
+            _context.Images.Update(imageToUpdate);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<Image?> GetImageByRoomId(Guid roomId)
+        {
+            return await _context.Images.OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
+                                    .Take(1).FirstOrDefaultAsync(i => i.RoomId == roomId);
         }
     }
 }
