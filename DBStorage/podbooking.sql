@@ -37,7 +37,7 @@ CREATE TABLE `__efmigrationshistory` (
 
 LOCK TABLES `__efmigrationshistory` WRITE;
 /*!40000 ALTER TABLE `__efmigrationshistory` DISABLE KEYS */;
-INSERT INTO `__efmigrationshistory` VALUES ('20241023082709_db','8.0.10');
+INSERT INTO `__efmigrationshistory` VALUES ('20241102184010_Update','8.0.10');
 /*!40000 ALTER TABLE `__efmigrationshistory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -53,6 +53,7 @@ CREATE TABLE `amenityservices` (
   `Name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Price` float NOT NULL,
+  `Status` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `CreateAt` datetime(6) DEFAULT NULL,
   `UpdateAt` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`Id`)
@@ -65,7 +66,7 @@ CREATE TABLE `amenityservices` (
 
 LOCK TABLES `amenityservices` WRITE;
 /*!40000 ALTER TABLE `amenityservices` DISABLE KEYS */;
-INSERT INTO `amenityservices` VALUES ('0fbd5640-5cc2-46cc-81d3-edd8b84839c8','Water','Drink',8000,'2024-10-18 02:35:06.020581','2024-10-18 02:35:06.020582'),('13704365-7df4-459d-a0f2-55532d814003','Pizza','Food',50000,'2024-10-18 02:35:27.695144','2024-10-18 02:35:27.695144'),('16b282f4-d444-4f0e-accb-9bb4badf6cc5','Orange Juice','Drink',20000,'2024-10-18 02:33:59.130781','2024-10-18 02:33:59.130783'),('286c6f55-bca7-4ec0-a946-8a34d5e18a23','Tivi','Amenity',50000,'2024-10-18 02:35:44.433119','2024-10-18 02:35:44.433120'),('480443d7-ff53-4cc3-8eda-716c63857af8','White Board','Amenity',30000,'2024-10-18 02:32:13.472181','2024-10-18 02:32:13.472182'),('5b7637c6-2d63-412f-b53d-dbb85acef765',' Bread','Food',20000,'2024-10-18 02:33:35.717798','2024-10-18 02:33:35.717799'),('7012d81d-e7e3-46cf-85d2-00ff7647f451','Coca','Drink',20000,'2024-10-18 02:34:11.642735','2024-10-18 02:34:11.642737'),('7ddfac91-f2a3-444e-a9da-f2ed186f65bf','Rice','Food',5000,'2024-10-18 02:34:42.776638','2024-10-18 02:34:42.776640');
+INSERT INTO `amenityservices` VALUES ('0fbd5640-5cc2-46cc-81d3-edd8b84839c8','Water','Drink',8000,'Available','2024-10-18 02:35:06.020581','2024-10-18 02:35:06.020582'),('13704365-7df4-459d-a0f2-55532d814003','Pizza','Food',50000,'Available','2024-10-18 02:35:27.695144','2024-10-18 02:35:27.695144'),('16b282f4-d444-4f0e-accb-9bb4badf6cc5','Orange Juice','Drink',20000,'Available','2024-10-18 02:33:59.130781','2024-10-18 02:33:59.130783'),('286c6f55-bca7-4ec0-a946-8a34d5e18a23','Tivi','Amenity',50000,'Available','2024-10-18 02:35:44.433119','2024-10-18 02:35:44.433120'),('480443d7-ff53-4cc3-8eda-716c63857af8','White Board','Amenity',30000,'Available','2024-10-18 02:32:13.472181','2024-10-18 02:32:13.472182'),('5b7637c6-2d63-412f-b53d-dbb85acef765',' Bread','Food',20000,'Available','2024-10-18 02:33:35.717798','2024-10-18 02:33:35.717799'),('7012d81d-e7e3-46cf-85d2-00ff7647f451','Coca','Drink',20000,'Available','2024-10-18 02:34:11.642735','2024-10-18 02:34:11.642737'),('7ddfac91-f2a3-444e-a9da-f2ed186f65bf','Rice','Food',5000,'Available','2024-10-18 02:34:42.776638','2024-10-18 02:34:42.776640');
 /*!40000 ALTER TABLE `amenityservices` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,7 +147,7 @@ CREATE TABLE `bookingitems` (
   KEY `IX_BookingItems_ServiceDetailId` (`ServiceDetailId`),
   CONSTRAINT `FK_BookingItems_AmenityServices_AmenityServiceId` FOREIGN KEY (`AmenityServiceId`) REFERENCES `amenityservices` (`Id`) ON DELETE CASCADE,
   CONSTRAINT `FK_BookingItems_Bookings_BookingId` FOREIGN KEY (`BookingId`) REFERENCES `bookings` (`Id`) ON DELETE CASCADE,
-  CONSTRAINT `FK_BookingItems_SerivceDetails_ServiceDetailId` FOREIGN KEY (`ServiceDetailId`) REFERENCES `serivcedetails` (`Id`)
+  CONSTRAINT `FK_BookingItems_ServiceDetails_ServiceDetailId` FOREIGN KEY (`ServiceDetailId`) REFERENCES `servicedetails` (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -458,6 +459,7 @@ CREATE TABLE `paymentrefunds` (
   `PointBonus` int NOT NULL,
   `PaymentType` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `Status` tinyint(1) NOT NULL,
+  `IsRefundReturnRoom` tinyint(1) DEFAULT NULL,
   `BookingId` char(36) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
   `CreateAt` datetime(6) DEFAULT NULL,
   `UpdateAt` datetime(6) DEFAULT NULL,
@@ -580,6 +582,7 @@ CREATE TABLE `rooms` (
   `Price` float NOT NULL,
   `Status` int NOT NULL,
   `Description` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `IsDeleted` tinyint(1) NOT NULL,
   `AreaId` char(36) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
   `CreateAt` datetime(6) DEFAULT NULL,
   `UpdateAt` datetime(6) DEFAULT NULL,
@@ -595,7 +598,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES ('41ba7082-47f8-4292-a7f7-854ad324bf34','Meeting','Meeting POD 1',210000,0,'The meeting rooms at WorkChill can be reserved online, accommodating up to 10 people in a spacious, verdant setting, complete with all essential equipment provided.','cba5f6b5-0d57-425a-8d6a-cd1d23b86588','2024-10-05 22:05:16.666548','2024-10-05 22:05:16.666548'),('44c2711f-ae5b-472c-94c4-d076a4068080','Double','Double POD 1',80000,0,'The meeting rooms at WorkChill can be reserved online, accommodating up to 2 people in a spacious, verdant setting, complete with all essential equipment provided.','cba5f6b5-0d57-425a-8d6a-cd1d23b86588','2024-10-05 22:34:29.277475','2024-10-05 22:34:29.277475'),('78248ca9-a175-4f2a-9a01-c38cca183a92','Fourth','Fourth POD 1',120000,0,'The meeting rooms at WorkChill can be reserved online, accommodating up to 4 people in a spacious, verdant setting, complete with all essential equipment provided.','cba5f6b5-0d57-425a-8d6a-cd1d23b86588','2024-10-05 22:21:21.537604','2024-10-05 22:21:21.537605'),('a3f26dd6-b769-476a-8acd-6a60d01b8c9e','Single','Single POD 1',50000,0,'The meeting rooms at WorkChill can be reserved online, accommodating up to 1 people in a spacious, verdant setting, complete with all essential equipment provided.','cba5f6b5-0d57-425a-8d6a-cd1d23b86588','2024-10-05 22:42:54.311284','2024-10-05 22:42:54.311285');
+INSERT INTO `rooms` VALUES ('41ba7082-47f8-4292-a7f7-854ad324bf34','Meeting','Meeting POD 1',210000,0,'The meeting rooms at WorkChill can be reserved online, accommodating up to 10 people in a spacious, verdant setting, complete with all essential equipment provided.',0,'cba5f6b5-0d57-425a-8d6a-cd1d23b86588','2024-10-05 22:05:16.666548','2024-10-05 22:05:16.666548'),('44c2711f-ae5b-472c-94c4-d076a4068080','Double','Double POD 1',80000,0,'The meeting rooms at WorkChill can be reserved online, accommodating up to 2 people in a spacious, verdant setting, complete with all essential equipment provided.',0,'cba5f6b5-0d57-425a-8d6a-cd1d23b86588','2024-10-05 22:34:29.277475','2024-10-05 22:34:29.277475'),('78248ca9-a175-4f2a-9a01-c38cca183a92','Fourth','Fourth POD 1',120000,0,'The meeting rooms at WorkChill can be reserved online, accommodating up to 4 people in a spacious, verdant setting, complete with all essential equipment provided.',0,'cba5f6b5-0d57-425a-8d6a-cd1d23b86588','2024-10-05 22:21:21.537604','2024-10-05 22:21:21.537605'),('a3f26dd6-b769-476a-8acd-6a60d01b8c9e','Single','Single POD 1',50000,0,'The meeting rooms at WorkChill can be reserved online, accommodating up to 1 people in a spacious, verdant setting, complete with all essential equipment provided.',0,'cba5f6b5-0d57-425a-8d6a-cd1d23b86588','2024-10-05 22:42:54.311284','2024-10-05 22:42:54.311285');
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -627,13 +630,13 @@ INSERT INTO `roomutility` VALUES ('41ba7082-47f8-4292-a7f7-854ad324bf34','097bc3
 UNLOCK TABLES;
 
 --
--- Table structure for table `serivcedetails`
+-- Table structure for table `servicedetails`
 --
 
-DROP TABLE IF EXISTS `serivcedetails`;
+DROP TABLE IF EXISTS `servicedetails`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `serivcedetails` (
+CREATE TABLE `servicedetails` (
   `Id` char(36) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
   `Name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `IsNormal` tinyint(1) NOT NULL,
@@ -642,18 +645,18 @@ CREATE TABLE `serivcedetails` (
   `CreateAt` datetime(6) DEFAULT NULL,
   `UpdateAt` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  KEY `IX_SerivceDetails_AmenitySerivceId` (`AmenitySerivceId`),
-  CONSTRAINT `FK_SerivceDetails_AmenityServices_AmenitySerivceId` FOREIGN KEY (`AmenitySerivceId`) REFERENCES `amenityservices` (`Id`) ON DELETE CASCADE
+  KEY `IX_ServiceDetails_AmenitySerivceId` (`AmenitySerivceId`),
+  CONSTRAINT `FK_ServiceDetails_AmenityServices_AmenitySerivceId` FOREIGN KEY (`AmenitySerivceId`) REFERENCES `amenityservices` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `serivcedetails`
+-- Dumping data for table `servicedetails`
 --
 
-LOCK TABLES `serivcedetails` WRITE;
-/*!40000 ALTER TABLE `serivcedetails` DISABLE KEYS */;
-/*!40000 ALTER TABLE `serivcedetails` ENABLE KEYS */;
+LOCK TABLES `servicedetails` WRITE;
+/*!40000 ALTER TABLE `servicedetails` DISABLE KEYS */;
+/*!40000 ALTER TABLE `servicedetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -795,4 +798,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-23 15:30:43
+-- Dump completed on 2024-11-03  1:49:43

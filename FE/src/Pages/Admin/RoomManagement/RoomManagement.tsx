@@ -3,52 +3,51 @@ import './RoomManagement.css'
 import TableTpl from '../../../Components/Table/Table';
 import { ApiGateway } from '../../../Api/ApiGateway';
 import AddBtn from '../../../Components/AddBtn/AddBtn';
+import Modal from './RoomModal/RoomModal';
 
 const RoomManagement: React.FC = () => {
 
   const [ roomList, setRoomList ] = useState<any>([])
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const data : any[] = [];
+  const [ isModalAddOpen, setIsModalAddOpen ] = useState(false);
+  const [ isModalEditOpen, setIsModalEditOpen ] = useState(false);
+  const [ isModalDeleteOpen, setIsModalDeleteOpen ] = useState(false);
+
+  const [ room, setRoom ] = useState<any>();
 
   interface Data {
-    // image?: string;
+    id: string;
+    image?: string;
     type: string;
     name: string;
     price: number;
     description: string;
-    status: number;
+    status: string;
   }
   function createData(
-    // image: string,
+    id: string,
+    image: string,
     type: string,
     name: string,
     price: number,
     description: string,
-    status: number,
+    status: string,
   ): Data {
-    // return { image, type, name, price, description,status };
-    return { type, name, price, description,status };
+    return { id, image, type, name, price, description, status };
   }
 
   interface Column {
-    // id: 'image' | 'type' | 'name' | 'price' | 'description' | 'status';
-    id: 'type' | 'name' | 'price' | 'description' | 'status';
+    id: 'image' | 'type' | 'name' | 'price' | 'description' | 'status';
     label: string;
     minWidth?: number;
     align?: 'right' | 'center';
     format?: (value: any) => string | React.ReactNode;
   }
   const columns: Column[] = [
-    // { 
-    //   id: 'image', 
-    //   label: 'Image', 
-    //   minWidth: 170,
-    //   format: (value: any) =>(
-    //   <div>
-    //     <img src={value} alt="Room" style={{ width: '100px', height: 'auto' }}/>
-    //   </div>
-    //   ),
-    // },
+    { 
+      id: 'image', 
+      label: 'Image',
+      align: 'center',
+    },
     { 
       id: 'type', 
       label: 'Type', 
@@ -58,12 +57,11 @@ const RoomManagement: React.FC = () => {
     {
       id: 'name',
       label: 'Name',
-      minWidth: 170,
+      minWidth: 100,
     },
     {
       id: 'price',
-      label: 'Price\u00a0(VND\u00b2)',
-      minWidth: 170,
+      label: 'Price\u00a0(VND)',
       align: 'right',
       format: (value: number) => value.toLocaleString('en-US'),
     },
@@ -75,7 +73,6 @@ const RoomManagement: React.FC = () => {
     {
       id: 'status',
       label: 'Status',
-      minWidth: 100,
       align: 'center',
     },
   ];
@@ -84,14 +81,37 @@ const RoomManagement: React.FC = () => {
     getRoomList();
   },[])
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const openModalAdd = () => {
+    setIsModalAddOpen(true)
+  };
+
+  const closeModalAdd = () => {
+    getRoomList()
+    setIsModalAddOpen(false)
+  };
+
+  const openModalEdit = (row: any) => {
+    getRoomInfo(row.id)
     console.log('open')
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    console.log('close')
+  const closeModalEdit = () => {
+    getRoomList()
+    setIsModalEditOpen(false)
+  };
+
+  const openModalDelete = (row: any) => {
+    setRoom({
+      id: row.id, 
+      name: row.name
+    })
+    setIsModalDeleteOpen(true)
+    console.log('open')
+  };
+
+  const closeModalDelete = () => {
+    getRoomList()
+    setIsModalDeleteOpen(false)
   };
 
   const getRoomList = async (): Promise<void> => {
@@ -99,33 +119,74 @@ const RoomManagement: React.FC = () => {
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetRoomList('', '', '', '')
       response.forEach((row: any) => {
-        // rowData.push(createData(row.images?.[0]?.url || '', row.typeRoom, row.name, row.price, row.description, row.status))
-        rowData.push(createData(row.typeRoom + 1, row.name, row.price, row.description, row.status))
+        rowData.push(
+          createData(
+            row.id,
+            row.images?.[0]?.url || '',
+            (row.typeRoom === 0 ? "Single": 
+              row.typeRoom === 1 ? "Double": 
+              row.typeRoom === 2 ? "Fourth": "Meeting"
+            ), 
+            row.name, 
+            row.price, 
+            row.description, 
+            (row.status === 0 ? "Available" : "Unavailable")))
       })
-      rowData.sort((a, b) => {
-        if (a.type < b.type) return -1;
-        if (a.type > b.type) return 1;
-        return 0;
-      });
       setRoomList(rowData)
     } catch(err){
       console.error('Error get room list :', err);
     }
   }
+  
+  const getRoomInfo = async (id: string) : Promise<void> => {
+    try {
+      const response = await ApiGateway.GetRoomDetail(id)
+      setRoom(response)
+      setIsModalEditOpen(true)
+      console.log(response)
+    } catch (error) {
+      console.error("Error getting Room Info: ", error)
+      throw error
+    }
+  }
+
+  const deleteRoom = async () : Promise<void> => {
+    try {
+      const response = await ApiGateway.DeleteRoom(room.id)
+      setRoom({})
+      console.log(response)
+    } catch (error) {
+      console.error("Error deleting Room: ", error)
+      throw error
+    }
+  }
+
+  const updateRoom = async (areaId: string, roomType: string, name: string, price: string, description: string, utilitiesId: string[], images: File[]) : Promise<void>  => {
+    try {
+      const response = await ApiGateway.UpdateRoom(areaId, parseInt(roomType), name, price, description, utilitiesId, images)
+      console.log(response)
+    } catch (error) {
+      console.error("Error updating Room: ", error)
+      throw error
+    }
+  } 
 
   return (
     <div id='room-mng'>
       <h1>Room Management</h1>
       <div className='btn-container'>
-        <AddBtn openModal={openModal}/>
+        <AddBtn openModal={openModalAdd}/>
       </div>
       <div className='content'>
         {roomList ? 
-          <TableTpl columns={columns} rows={roomList}/>
+          <TableTpl columns={columns} rows={roomList} editButton={true} deleteButton={true} openPopup1={openModalEdit} openPopup2={openModalDelete}/>
           :
           <p style={{textAlign: "center"}}>There are no Room</p>
         } 
       </div>
+      {isModalAddOpen && <Modal type='add' closeModal={closeModalAdd} />}
+      {isModalEditOpen && <Modal type='edit' room={room} closeModal={closeModalEdit} />}
+      {isModalDeleteOpen && <Modal type='delete' room={room} closeModal={closeModalDelete} deleteRoom={deleteRoom}/>}
     </div>
   )
 }

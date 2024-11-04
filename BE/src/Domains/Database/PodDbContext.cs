@@ -31,7 +31,7 @@ namespace BE.src.Domains.Database
             public DbSet<Favourite> Favourites { get; set; } = null!;
             public DbSet<UserAreaManagement> UserAreaManagements { get; set; } = null!;
             public DbSet<Location> Locations { get; set; } = null!;
-            public DbSet<SerivceDetail> SerivceDetails { get; set; } = null!;
+            public DbSet<ServiceDetail> ServiceDetails { get; set; } = null!;
             public DbSet<Transaction> Transactions { get; set; } = null!;
             public DbSet<Utility> Utilities { get; set; } = null!;
 
@@ -61,9 +61,11 @@ namespace BE.src.Domains.Database
                   builder.Entity<AmenityService>(entity =>
                   {
                         entity.HasKey(a => a.Id);
+
                         entity.Property(a => a.Name)
                         .IsRequired()
                         .HasMaxLength(100);
+
                         entity.Property(a => a.Type)
                         .IsRequired()
                         .HasMaxLength(10)
@@ -71,8 +73,17 @@ namespace BE.src.Domains.Database
                             v => v.ToString(),
                             v => v.ToEnum<AmenityServiceTypeEnum>()
                             );
+
                         entity.Property(a => a.Price)
                         .IsRequired();
+
+                        entity.Property(a => a.Status)
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasConversion(
+                            v => v.ToString(),
+                            v => v.ToEnum<StatusServiceEnum>()
+                            );
                   });
 
                   builder.Entity<Area>(entity =>
@@ -114,6 +125,9 @@ namespace BE.src.Domains.Database
                         entity.Property(b => b.Total)
                         .IsRequired();
 
+                        entity.Property(b => b.IsCheckIn)
+                        .IsRequired();
+
                         entity.HasOne(b => b.User)
                         .WithMany(u => u.Bookings)
                         .HasForeignKey(b => b.UserId);
@@ -148,7 +162,7 @@ namespace BE.src.Domains.Database
                         entity.Property(bi => bi.ServiceDetailId)
                         .IsRequired(false);
 
-                        entity.HasOne(bi => bi.SerivceDetail)
+                        entity.HasOne(bi => bi.ServiceDetail)
                         .WithMany(s => s.BookingItems)
                         .HasForeignKey(bi => bi.ServiceDetailId);
 
@@ -370,8 +384,12 @@ namespace BE.src.Domains.Database
                               v => v.ToString(),
                               v => string.IsNullOrEmpty(v) ? default : v.ToEnum<PaymentTypeEnum>()
                         );
+
                         entity.Property(pr => pr.Status)
                         .IsRequired();
+
+                        entity.Property(pr => pr.IsRefundReturnRoom)
+                        .IsRequired(false);
 
                         entity.HasOne(pr => pr.Booking)
                         .WithMany(b => b.PaymentRefunds)
@@ -472,7 +490,7 @@ namespace BE.src.Domains.Database
                         .HasForeignKey(r => r.AreaId)
                         .OnDelete(DeleteBehavior.Cascade);
                   });
-                  builder.Entity<SerivceDetail>(entity =>
+                  builder.Entity<ServiceDetail>(entity =>
                   {
                         entity.HasKey(s => s.Id);
 
@@ -487,7 +505,7 @@ namespace BE.src.Domains.Database
                         .IsRequired();
 
                         entity.HasOne(s => s.AmenityService)
-                        .WithMany(s => s.SerivceDetails)
+                        .WithMany(s => s.ServiceDetails)
                         .HasForeignKey(s => s.AmenitySerivceId)
                         .OnDelete(DeleteBehavior.Cascade);
                   }

@@ -32,7 +32,7 @@ export class ApiGateway {
             console.error("Login error:", error);
             throw error;
         }
-    } public static async Register<T>(email: string, username: string, phone: string, password: string): Promise<T> {
+    }   public static async Register<T>(email: string, username: string, phone: string, password: string): Promise<T> {
         try {
             const data = {
                 email: email,
@@ -40,6 +40,7 @@ export class ApiGateway {
                 phone: phone,
                 password: password
             };
+            console.log(data);
             const response = await this.axiosInstance.post<T>("user/Register", data);
             return response.data;
         } catch (error) {
@@ -71,7 +72,7 @@ export class ApiGateway {
 
     public static async GetUserList<T>(): Promise<T[]> {
         try {
-            const response = await this.axiosInstance.get<T[]>(`user/GetListUserCustomer`);
+            const response = await this.axiosInstance.get<T[]>(`user/GetAllUser`);
             console.log(response.data);
             return response.data
         } catch (error) {
@@ -312,6 +313,163 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
             return response.data
         } catch (error) {
             console.error("Get Feedback Error: ", error)
+            throw error
+        }
+    }
+
+    public static async DeleteService<T>(id: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.delete<T>(`amenityservice/DeleteService/${id}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Deleting Service: ", error)
+            throw error
+        }
+    }
+
+    public static async UpdateService<T>(id: string, name: string, price: number, image: File): Promise<T> {
+        try {
+            const formData = new FormData();
+            formData.append("Name", name);
+            formData.append("Price", price.toString());
+            formData.append("Image", image);
+            const response = await axios.put<T>(`http://localhost:5101/amenityservice/UpdateService/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            return response.data;
+        } catch (error) {
+            console.error("Error Updating Service: ", error)
+            throw error
+        }
+    }
+    
+    public static async TotalUser<T>(): Promise<T> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/user/Total`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+            throw error
+        }
+    }
+
+    public static async CreateRoom<T>(areaId: string, type: number, name: string, price: string, description: string, images: File[]): Promise<T> {
+        try {
+            const utilityIds = [
+                '9e87c47c-e91e-4adc-947d-9d5f17723523',
+                '54cdf248-846c-4d8e-98e1-7d0a48a1982e',
+                '4c756c56-6145-4137-9b62-7ec9276db800',
+                '09dbc964-4755-414b-9e73-3229cd97f8ec',
+                'acb81410-f3b5-4a55-863f-9ea01aca0619'
+            ]
+            const formData = new FormData()
+            formData.append("AreaId", areaId)
+            formData.append("RoomType", type.toString())
+            formData.append("Name", name)
+            formData.append("Price", price)
+            formData.append("Description", description)
+            utilityIds.forEach((id) => formData.append(`UtilitiesId`, id));
+
+            images.forEach((image) => formData.append(`Images`, image));
+            for (const [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            const response = await axios.post(`http://localhost:5101/room/Create`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return response.data
+        } catch (error) {
+            console.error("Error creating room:", error);
+            throw error;
+        }
+    }
+
+    public static async TotalIncome<T>(): Promise<T> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/transaction/Total-Income`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+            throw error
+        }
+    }
+
+    public static async TotalBooking<T>(): Promise<T> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/booking/TotalBooking`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+            throw error
+        }
+    }
+
+    public static async Statistic<T>(year: number): Promise<T> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/transaction/Statistic-Month/${year}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+            throw error
+        }
+    }
+
+    public static async Trending<T>(): Promise<T> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/room/Trending`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+            throw error
+        }
+    }
+
+    public static async DeleteRoom<T>(roomId: string) : Promise<T> {
+        try {
+            const response = await this.axiosInstance.post<T>(`/room/Delete`, roomId)
+            return response.data
+        } catch (error) {
+            console.error("Error Deleting Room", error)
+            throw error
+        }
+    }
+
+    public static async UpdateRoom<T>(areaId: string, type: number, name: string, price: string, description: string, utilityIds: string[],images: File[]): Promise<T> {
+        try {
+            const formData = new FormData()
+            formData.append("AreaId", areaId)
+            formData.append("RoomType", type.toString())
+            formData.append("Name", name)
+            formData.append("Price", price)
+            formData.append("Description", description)
+            utilityIds.forEach((id) => formData.append(`UtilitiesId`, id));
+
+            images.forEach((image) => formData.append(`Images`, image));
+            for (const [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            const response = await axios.put(`http://localhost:5101/room/Update`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return response.data
+        } catch (error) {
+            console.error("Error updating room:", error);
+            throw error;
+        }
+    }
+
+    public static async DeleteUser<T>(id: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.put('/user/DeleteUser', id)
+            return response.data
+        } catch (error) {
+            console.error("Error deleting user:", error);
             throw error
         }
     }

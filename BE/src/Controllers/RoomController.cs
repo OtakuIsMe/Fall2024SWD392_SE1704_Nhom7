@@ -77,14 +77,27 @@ namespace BE.src.Controllers
         }
 
         [HttpGet("GetRoomListWithBookingTimes")]
-        public async Task<IActionResult> GetRoomListWithBookingTimes([FromQuery] Guid? areaId, [FromQuery] TypeRoomEnum? typeRoom,[FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        public async Task<IActionResult> GetRoomListWithBookingTimes([FromQuery] Guid? areaId, [FromQuery] TypeRoomEnum? typeRoom, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
-            return await _roomServ.GetRoomListWithBookingTimes(areaId, typeRoom,startDate, endDate);
+            return await _roomServ.GetRoomListWithBookingTimes(areaId, typeRoom, startDate, endDate);
         }
 
         [HttpGet("Trending")]
-        public async Task<IActionResult> TrendingRoom(){
+        public async Task<IActionResult> TrendingRoom()
+        {
             return await _roomServ.TrendingRoom();
+        }
+
+        [HttpPost("Delete")]
+        public async Task<IActionResult> DeleteRoom(Guid RoomId)
+        {
+            return await _roomServ.DeleteRoom(RoomId);
+        }
+
+        [HttpPut("Update/{roomId}")]
+        public async Task<IActionResult> UpdateRoom(Guid roomId, [FromForm] UpdateRoomDTO data)
+        {
+            return await _roomServ.UpdateRoom(roomId, data);
         }
     }
 }

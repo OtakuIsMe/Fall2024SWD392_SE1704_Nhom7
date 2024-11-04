@@ -9,7 +9,6 @@ const MembershipManagement: React.FC = () => {
   const [ isModalOpen, setIsModalOpen ] = useState(false);
 
   interface Data {
-    index: number;
     name: string;
     rank: number;
     discount: number;
@@ -18,7 +17,6 @@ const MembershipManagement: React.FC = () => {
     membershipUsers: number;
   }
   function createData(
-    index: number,
     name: string,
     rank: number,
     discount: number,
@@ -26,21 +24,17 @@ const MembershipManagement: React.FC = () => {
     timeleft: number,
     membershipUsers: number,
   ): Data {
-    return { index, name, rank, discount, price, timeleft, membershipUsers, };
+    return {name, rank, discount, price, timeleft, membershipUsers, };
   }
 
   interface Column {
-    id: 'index' | 'name' | 'rank' |'discount' |  'price' | 'timeleft' | 'membershipUsers';
+    id: 'name' | 'rank' |'discount' |  'price' | 'timeleft' | 'membershipUsers';
     label: string;
     minWidth?: number;
     align?: 'right' | 'center';
     format?: (value: number) => string;
   }
   const columns: Column[] = [
-    { 
-      id: 'index', 
-      label: 'Index', 
-    },
     { 
       id: 'name', 
       label: 'Name', 
@@ -81,8 +75,8 @@ const MembershipManagement: React.FC = () => {
     try {
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetMembership()
-      response.forEach((row: any, index: number) => {
-        rowData.push(createData(index+1 , row.name, row.rank, row.discount, row.price, row.timeLeft, (row.membershipUser ? row.membershipUser.length : 0)))
+      response.forEach((row: any) => {
+        rowData.push(createData(row.name, row.rank, row.discount, row.price, row.timeLeft, (row.membershipUser ? row.membershipUser.length : 0)))
       })
       setMembershipList(rowData)
       console.log(rowData)
