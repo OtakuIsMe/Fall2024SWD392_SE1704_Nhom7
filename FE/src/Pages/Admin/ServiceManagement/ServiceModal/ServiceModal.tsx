@@ -29,7 +29,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
   const [ isTypeSelected, setIsTypeSelected ] = useState(true)
   const [ isPriceFilled, setIsPriceFilled ] = useState(true)
   const [ isImageSelected, setImageSelected ] = useState(true)
-  const [formData, setFormData] = useState<FormData>({
+  const [ formData, setFormData ] = useState<FormData>({
     id: '',
     name: '',
     type: -1, 
@@ -100,6 +100,8 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
         image: formData.image as File,
       };
 
+      console.log("FormServiceData: ", formServiceData);
+
       const response = await ApiGateway.CreateService(
         formServiceData.name,
         formServiceData.type,
@@ -119,6 +121,13 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const forbiddenKeys = ["e", "+", "-", "."];
+    if (forbiddenKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  };
+
   const handleDelete = (): void => {
     if (deleteService) {
       deleteService()
@@ -126,9 +135,30 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
     }
   }
 
-  const handleEdit = (id: string, name: string, price: number, image: File): void => {
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+
+    let error = 0;
+
+    if (formData.price < 5000) {
+      setIsPriceFilled(false);
+      error++;
+    }
+
+    if (error > 0) {
+      return;
+    }
+
+    const formServiceData = {
+      id: formData.id,
+      name: formData.name,
+      price: formData.price,
+      image: formData.image instanceof File ? formData.image : null,
+    }
+
     if (editService) {
-      editService(id, name, price, image)
+      console.log(formServiceData)
+      const response = ApiGateway.UpdateService(formServiceData.id, formServiceData.name, formServiceData.price, formServiceData.image)
       closeModal()
     }
   }
@@ -143,7 +173,6 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
         image: service.image
       })
     }
-    console.log(service)
   },[])
 
   switch (type) {
@@ -260,7 +289,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
     case 'edit':
       return (
         <div id="service_modal" style={{display: "static"}}>
-          <form className="modal" onSubmit={addService}>
+          <form className="modal" onSubmit={handleEdit}>
             <div className="popup-header">
               <h1>Edit {service ? service.name : 'Service'}</h1>
             </div>
@@ -268,10 +297,12 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
               <div className="content">
                 <div className="column1">
                   <div className="img-container">
-                    {/* {formData.image ?
+                    {formData.image ?
                       <div className="image-selected">
                         <label htmlFor="input-file1" className="image-label">
-                          <img src={URL.createObjectURL(formData.image)} />
+                          <img src={formData.image instanceof File
+                            ? URL.createObjectURL(formData.image)
+                            : formData.image} />
                           <input
                             id="input-file1"
                             name="selectedFile1"
@@ -292,9 +323,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
                       :
                       <div className="image-placeholder">
                         <label htmlFor="input-file1" className="image-label">
-                          <div>
-                            <AddPhotoAlternateIcon sx={{fontSize: '32px'}}/>
-                          </div>
+                          <img src={service.image}/>
                           <input
                             id="input-file1"
                             name="selectedFile1"
@@ -312,7 +341,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
                           />
                         </label>
                       </div>
-                    } */}
+                    }
                   </div>
                 </div>
                 <div className="column2">
@@ -356,7 +385,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
                         <></>
                       }
                     </div>
-                    <TextField name="price" variant="outlined" size="small" fullWidth onChange={handleChange} placeholder={service.price}/>
+                    <TextField type="number" name="price" variant="outlined" onKeyDown={handleKeyDown} size="small" fullWidth onChange={handleChange} placeholder={service.price}/>
                   </label>
                 </div>
               </div>

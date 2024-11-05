@@ -7,27 +7,36 @@ import Modal from './UserModal/UserModal'
 
 const UserManagement: React.FC = () => {
   const [ isModalOpen, setIsModalOpen ] = useState(false);
+  const [ isBanModalOpen, setIsBanModalOpen ] = useState(false);
+  const [ isChangeRoleModalOpen, setIsChangeRoleModalOpen ] = useState(false);
+  const [ thisUser, setThisUser ] = useState<any>();
 
   interface Data {
+    id: string;
     username: string;
     email: string;
     phone: number;
+    roleId: string;
+    status: string;
     wallet: number;
   }
   function createData(
+    id: string,
     username: string,
     email: string,
     phone: number,
+    roleId: string,
+    status: string,
     wallet: number,
   ): Data {
-    return { username, email, phone, wallet };
+    return { id, username, email, phone, roleId, status, wallet };
   }
 
   interface Column {
-    id: 'username' | 'email' | 'phone' | 'wallet' ;
+    id: 'id' | 'username' | 'email' | 'phone' | 'roleId' | 'status' | 'wallet' ;
     label: string;
     minWidth?: number;
-    align?: 'right';
+    align?: 'right' | 'center';
     format?: (value: number) => string;
   }
   const columns: Column[] = [
@@ -44,8 +53,16 @@ const UserManagement: React.FC = () => {
       label: 'Phone',
     },
     {
+      id: 'roleId',
+      label: 'Role',
+    },
+    {
+      id: 'status',
+      label: 'Status',
+    },
+    {
       id: 'wallet',
-      label: 'Wallet',
+      label: 'Wallet\u00a0(VND)',
       align: 'right',
       format: (value: number) => value.toLocaleString('en-US'),
     },
@@ -63,12 +80,25 @@ const UserManagement: React.FC = () => {
     let rowData : any[] = [] ;
     const response = await ApiGateway.GetUserList()
     response.forEach((row: any) => {
-      rowData.push(createData(row.username, row.email, row.phone, row.wallet))
+      rowData.push(
+        createData(
+          row.id, 
+          row.username, 
+          row.email, 
+          row.phone, 
+          (row.roleId === "8f02a88d-24d3-43ee-8020-40b9dc94e4cb" ? 
+            "Customer" : 
+            row.roleId === "5a4226d9-e58a-42c4-a786-dba8369b234b" ?
+              "Staff" : 
+              row.roleId === "42feaeb5-fc53-4163-98b5-d28cfceafa7c" ?
+                "Manager" : "Admin"
+          ), 
+          (row.status === 0 ? "Unban" : "Banned"),
+          row.wallet))
     })
     setUserList(rowData);
     return userList
   }
-
   
   const openModal = () => {
     setIsModalOpen(true);
@@ -76,9 +106,56 @@ const UserManagement: React.FC = () => {
   };
 
   const closeModal = () => {
+    fetchUsers()
     setIsModalOpen(false);
     console.log('close')
   };
+
+  const openBanModal = (row: any) => {
+    console.log(row.id)
+    console.log(row.name)
+    setThisUser({
+      ...thisUser,
+      id: row.id,
+      userName: row.userName
+    })
+    setIsBanModalOpen(true);
+    console.log('open')
+  };
+
+  const closeBanModal = () => {
+    fetchUsers()
+    setIsBanModalOpen(false);
+    console.log('close')
+  };
+
+  const openChangeRoleModal = (row: any) => {
+    console.log(row.id)
+    console.log(row.name)
+    setThisUser({
+      ...thisUser,
+      id: row.id,
+      userName: row.userName
+    })
+    setIsChangeRoleModalOpen(true);
+    console.log('open')
+  };
+
+  const closeChangeRoleModal = () => {
+    fetchUsers()
+    setIsChangeRoleModalOpen(false);
+    console.log('close')
+  };
+
+  const banUser = async (): Promise<void> => {
+    try {
+      const response = await ApiGateway.DeleteUser(thisUser.id);
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
 
   return (
     <div id='user-mng'>
@@ -88,12 +165,14 @@ const UserManagement: React.FC = () => {
       </div>
       <div className='content'>
         {userList ? 
-          <TableTpl columns={columns} rows={userList}/>
+          <TableTpl columns={columns} rows={userList} banButton={true} openPopup2={openBanModal}/>
           :
           <p style={{textAlign: "center"}}>There are no User</p>
         }
       </div>
-      {isModalOpen && <Modal closeModal={closeModal} />}
+      {isModalOpen && <Modal type='add' closeModal={closeModal} />}
+      {isBanModalOpen && <Modal type='ban' user={thisUser} closeModal={closeBanModal} banUser={banUser}/>}
+      {isChangeRoleModalOpen && <Modal type='changerole' user={thisUser} closeModal={closeChangeRoleModal} banUser={banUser}/>}
     </div>
   )
 }

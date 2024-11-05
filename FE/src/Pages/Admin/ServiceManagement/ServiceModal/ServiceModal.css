@@ -101,35 +101,33 @@
     overflow: hidden;
 }
 
-#service_modal > .modal > .modal-content > .content > .column1 > .img-container {
-    height: 100%;
-}
- 
-#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-placeholder {
+#service_modal .img-container {
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-selected > .image-label,
-#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-placeholder > .image-label {
+#service_modal .image-placeholder,#service_modal .image-selected {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+#service_modal .image-label {
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
 }
 
-#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-selected > .image-label > img {
-    width: 100%;
-    height: 297px;
-}
-
-#service_modal > .modal > .modal-content > .content > .column1 > .img-container > .image-placeholder > .image-label > div {
+#service_modal .image-label > img {
     height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    object-fit: cover; 
+    border-radius: 8px; 
 }
 
 #service_modal > .modal > .modal-content > .content > .column2 {
@@ -219,4 +217,10 @@
 
 #service_delete_modal > .delete-confirm > .btn-group > .cancel:hover {
     background-color: rgb(200, 200, 200);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

@@ -12,35 +12,31 @@ const ServiceManagement: React.FC = () => {
   const [ isModalAddOpen, setIsModalAddOpen ] = useState(false);
   const [ isModalEditOpen, setIsModalEditOpen ] = useState(false);
   const [ isModalDeleteOpen, setIsModalDeleteOpen ] = useState(false);
-  const [ serviceId, setServiceId ] = useState('');
-  const [ serviceImage, setServiceImage ] = useState('');
-  const [ serviceName, setServiceName ] = useState('');
-  const [ servicePrice, setServicePrice ] = useState(0);
 
   const [ service, setService ] = useState<any>();
 
   interface Data {
     id: string;
     image: string;
-    index: number;
     type: string;
     name: string;
+    status: string;
     price: number;
   }
 
   function createData(
     id: string,
     image: string,
-    index: number,
     type: string,
     name: string,
+    status: string,
     price: number,
   ): Data {
-    return { id, image, index, type, name, price };
+    return { id, image, type, name, status, price };
   }
 
   interface Column {
-    id: 'index' | 'image' | 'type' | 'name' | 'price' ;
+    id: 'image' | 'type' | 'name' | 'status' | 'price' ;
     label: string;
     minWidth?: number;
     align?: 'right' | 'center';
@@ -48,10 +44,6 @@ const ServiceManagement: React.FC = () => {
   }
 
   const columns: Column[] = [
-    { 
-      id: 'index', 
-      label: 'No',
-    },
     {
       id: 'image',
       label: 'Image',
@@ -65,9 +57,14 @@ const ServiceManagement: React.FC = () => {
       id: 'type', 
       label: 'Type',
     },
+    { 
+      id: 'status', 
+      label: 'Status',
+      align: 'center',
+    },
     {
       id: 'price',
-      label: 'Price',
+      label: 'Price\u00a0(VND)',
       align: 'right',
       format: (value: number) => value.toLocaleString('en-US'),
     },
@@ -107,11 +104,11 @@ const ServiceManagement: React.FC = () => {
     console.log('close')
   };
 
-  const openModalDelete = (id: string, name: string) => {
+  const openModalDelete = (row: any) => {
     setService({
       ...service,
-      id: id,
-      name: name,
+      id: row.id,
+      name: row.name,
     })
     setIsModalDeleteOpen(true);
   };
@@ -134,10 +131,11 @@ const ServiceManagement: React.FC = () => {
     try {
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetServices()
-      response.forEach((row: any, index: number) => {
-        rowData.push(createData(row.amenityService.id, row.amenityService.image.url , index+1 , getService(row.amenityService.type), row.amenityService.name, row.amenityService.price))
+      response.forEach((row: any) => {
+        rowData.push(createData(row.amenityService.id, row.amenityService.image.url , getService(row.amenityService.type), row.amenityService.name, (row.amenityService.status === 0 ? "Available" : "Unavailable"), row.amenityService.price))
       })
       setServiceList(rowData)
+      console.log("list updated")
       console.log(response)
     } catch (err) {
       console.error('Error get servicelist :', err);
@@ -146,19 +144,20 @@ const ServiceManagement: React.FC = () => {
 
   const deleteSevice = async (): Promise<void> => {
     try {
-      console.log(service.id);
       const response = await ApiGateway.DeleteService(service.id);
       setService({})
-      return response
+      await fetchServices()
+      console.log("Service is deleted: ", response) 
     } catch (error) {
       console.error('Error delete service :', error);
     }
   }
 
-  const updatedService = async (id: string, image: File, name: string, price: number): Promise<void> => {
+  const updatedService = async (id: string, name: string, price: number, image: File): Promise<void> => {
     try {
       const response = await ApiGateway.UpdateService(id, name, price, image)
       setService({})
+      await fetchServices()
       console.log('Service updated successfully:', response)
     } catch (error) {
       console.error("Error updating service: ", error);
@@ -173,13 +172,13 @@ const ServiceManagement: React.FC = () => {
       </div>
       <div className='content'>
         {serviceList ? 
-          <TableTpl columns={columns} rows={serviceList} editButton={true} deleteButton={true} openPopup2={openModalDelete} openPopup1={openModalEdit}/>
+          <TableTpl columns={columns} rows={serviceList} editButton={true} deleteButton={true} openPopup1={openModalEdit} openPopup2={openModalDelete}/>
           :
           <p style={{textAlign: "center"}}>There are no service in here</p>
         } 
       </div>
       {isModalAddOpen && <Modal type='add' closeModal={closeModalAdd} />}
-      {isModalEditOpen && <Modal type='edit' service={service} closeModal={closeModalEdit} />}
+      {isModalEditOpen && <Modal type='edit' service={service} closeModal={closeModalEdit} editService={updatedService} />}
       {isModalDeleteOpen && <Modal type='delete' service={service} closeModal={closeModalDelete} deleteService={deleteSevice}/>}
     </div>
   )

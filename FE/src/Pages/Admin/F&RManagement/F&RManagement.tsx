@@ -7,7 +7,6 @@ const FRManagement: React.FC = () => {
   const [ feedbackList, setFeedbackList ] = useState<any[]>([])
 
   interface Data {
-    index: number;
     feedback: string;
     ratingStar: number;
     userId: string;
@@ -16,7 +15,6 @@ const FRManagement: React.FC = () => {
     updateAt: string;
   }
   function createData(
-    index: number,
     feedback: string,
     ratingStar: number,
     userId: string,
@@ -24,7 +22,7 @@ const FRManagement: React.FC = () => {
     createAt: string,
     updateAt: string,
   ): Data {
-    return { index, feedback, ratingStar, userId, roomId, createAt, updateAt, };
+    return { feedback, ratingStar, userId, roomId, createAt, updateAt, };
   }
 
   interface Column {
@@ -34,10 +32,6 @@ const FRManagement: React.FC = () => {
     align?: 'right' | 'center';
   }
   const columns: Column[] = [
-    { 
-      id: 'index', 
-      label: 'No', 
-    },
     { 
       id: 'feedback', 
       label: 'Feedback', 
@@ -83,7 +77,7 @@ const FRManagement: React.FC = () => {
       let rowData : any[] = [];
       const response = await ApiGateway.GetFeedback();
       response.forEach((row : any, index: number) => {
-        rowData.push(createData(index+1, row.feedback, row.ratingStar, row.userId, row.roomId, row.createAt, row.updateAt));
+        rowData.push(createData(row.feedback, row.ratingStar, row.userId, row.roomId, row.createAt, row.updateAt));
       })
       setFeedbackList(rowData)
       console.log(rowData)

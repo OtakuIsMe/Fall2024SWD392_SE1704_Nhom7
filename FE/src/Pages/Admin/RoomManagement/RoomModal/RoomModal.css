@@ -1,4 +1,4 @@
-#my_modal {
+#room_modal {
     position: absolute;
     width: 100%;
     height: 100vh;
@@ -7,7 +7,7 @@
     transition: all 0s;
 }
 
-#my_modal::before {
+#room_modal::before {
     content: '';
     position: absolute;
     width: 100%;
@@ -15,11 +15,11 @@
     top: 0;
     left: 0;
 
-    background-color: rgb(200, 200, 200, .3);
+    background-color: rgb(200, 200, 200, .2);
     z-index: 2;
 }
 
-#my_modal > .modal {
+#room_modal > .modal {
     display: flex;
     flex-direction: column;
     width: 50%;
@@ -36,17 +36,17 @@
     z-index: 3;
 }
 
-#my_modal > .modal > .popup-header > h1 {
+#room_modal > .modal > .popup-header > h1 {
     margin: 0;
 }
 
-#my_modal > .modal > .popup-header {
+#room_modal > .modal > .popup-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-#my_modal > .modal > .modal-btns {
+#room_modal > .modal > .modal-btns {
     position: relative;
     right: 0;
     bottom: 0;
@@ -56,31 +56,230 @@
     gap: 10px;
 }
 
-#my_modal > .modal > .modal-btns > .btn {
+#room_modal > .modal > .modal-btns > .btn {
     padding: 10px 15px;
     border-radius: 8px;
     cursor: pointer;
 }
 
-#my_modal > .modal > .modal-btns > .modal-confirm {
+#room_modal > .modal > .modal-btns > .modal-confirm {
+    font-size: 1rem;
+    border: none;
     background-color: rgb(93, 190, 163);
     color: white;
+    font-family: "Kanit", Arial, sans-serif;
 }
 
-#my_modal > .modal > .modal-btns > .modal-confirm:hover {
+#room_modal > .modal > .modal-btns > .modal-confirm:hover {
     background-color: rgb(72, 147, 126);
 }
 
-#my_modal > .modal > .modal-btns > .modal-cancel:hover {
+#room_modal > .modal > .modal-btns > .modal-cancel:hover {
     color: rgb(150, 150, 150);
 }
 
-#my_modal > .modal > .modal-content {
+#room_modal > .modal > .modal-content {
     min-height: calc(50vh - 30px - 44px);
     max-height: calc(80vh - 30px - 44px);
     overflow-y: auto;
 }
 
-#my_modal > .modal > .modal-content > .content {
-    /* height: 1000px */
+#room_modal > .modal > .modal-content > .content {
+    min-height: calc(50vh - 30px - 44px);
+    max-height: calc(80vh - 30px - 44px);
+    display: flex;
+    gap: 10px;
+}
+
+#room_modal > .modal > .modal-content > .content > .column1 {
+    min-height: calc(50vh - 30px - 44px);
+    max-height: calc(80vh - 30px - 44px);
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+#room_modal .column1 .img-container {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+#room_modal .column1 .img-container .remove-image-button {
+    position: absolute;
+    bottom: 15px;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 5px;
+    background-color: white;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.remove-all-images-button {
+    background-color: #F12425;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 5px;
+}
+
+#room_modal .column1 .img-container .remove-image-button:hover, .remove-all-images-button:hover {
+    background-color: rgb(247, 90, 90);
+    color: white;
+}
+
+#room_modal .column1 .img-container .image {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    object-fit: cover;
+}
+
+#room_modal .column1 .image-placeholder, 
+#room_modal .column1 .image-selected {
+    display: flex;
+    box-sizing: border-box;
+    background-color: lightgray;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+#room_modal .column1 .image-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#room_modal .column1 .image-label,
+#room_modal .column1 .image-label > div{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#room_modal .column1 .image-label > img {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+#room_modal > .modal > .modal-content > .content > .column2 {
+    min-height: calc(50vh - 30px - 44px);
+    max-height: calc(80vh - 30px - 44px);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 0 0 15px 0;
+    justify-content: space-between;
+    flex: 1;
+}
+
+#room_modal > .modal > .modal-content > .content > .column2 label {
+    margin-bottom: 5px;
+}
+
+#room_modal > .modal > .modal-content > .content > .column2 label p {
+    margin: 0;
+}
+
+#room_modal > .modal > .modal-content > .content > .column2 label select {
+    padding: 7px 10px;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 3px;
+}
+
+#room_modal > .modal > .modal-content > .content > .column2 label select:focus {
+    outline-width: 0;
+}
+
+#room_delete_modal {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    transition: all 0s;
+}
+
+#room_delete_modal::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgb(200, 200, 200, .1);
+    z-index: 2;
+}
+
+#room_delete_modal > .delete-confirm {
+    width: 30%;
+    min-width: 400px;
+    height: 30vh;
+    min-height: 200px;
+    padding: 25px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(200, 200, 200, .3);
+    z-index: 3;
+}
+
+#room_delete_modal > .delete-confirm > .btn-group {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+#room_delete_modal > .delete-confirm > .btn-group > div {
+    padding: 15px 80px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#room_delete_modal > .delete-confirm > .btn-group > .confirm {
+    background-color: rgb(93, 190, 163);
+    color: white;
+}
+
+#room_delete_modal > .delete-confirm > .btn-group > .confirm:hover {
+    background-color: rgb(72, 147, 126);
+}
+
+#room_delete_modal > .delete-confirm > .btn-group > .cancel:hover {
+    background-color: rgb(200, 200, 200);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
