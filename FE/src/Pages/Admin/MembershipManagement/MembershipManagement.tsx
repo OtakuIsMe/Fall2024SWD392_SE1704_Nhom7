@@ -62,16 +62,16 @@ const MembershipManagement: React.FC = () => {
 
   const openModalEdit = (row: any) => {
     setMembership({
-      ...membership,
       id: row.id,
       name: row.name,
       discount: row.discount,
-      project: row.project,
+      dayLeft: row.dayLeft,
+      price: row.price,
       rank: row.rank,
     });
     setIsModalEditOpen(true);
   };
-
+  
   const closeModalEdit = () => {
     fetchMemberships();
     setIsModalEditOpen(false);
@@ -122,17 +122,37 @@ const MembershipManagement: React.FC = () => {
       console.error('Error deleting membership:', error);
     }
   };
-
-  const updatedMembership = async (id: string, name: string, discount: number, project: string, rank: number): Promise<void> => {
+  const addMembership = async (name: string, discount: number, dayLeft: number, price: number, rank: number): Promise<void> => {
     try {
-      const response = await ApiGateway.UpdateMembership(id, name, discount, project, rank);
-      setMembership({});
+      const response = await ApiGateway.CreateMembership(name, discount, dayLeft, price, rank);
       await fetchMemberships();
-      console.log('Membership updated successfully:', response);
+      console.log('Membership added successfully:', response);
     } catch (error) {
-      console.error('Error updating membership:', error);
+      console.error('Error adding membership:', error);
     }
   };
+  
+  const updatedMembership = async (id: string, name: string, discount: number, dayLeft: number, price: number, rank: number): Promise<void> => {
+    try {
+        // Gọi hàm với các giá trị đã chuyển đổi kiểu số
+        const response = await ApiGateway.UpdateMembership(
+            id,
+            name,
+            Number(discount),  // Chuyển đổi thành số
+            Number(dayLeft),   // Chuyển đổi thành số
+            Number(price),     // Chuyển đổi thành số
+            Number(rank)       // Chuyển đổi thành số
+        );
+        setMembership({});
+        await fetchMemberships();
+        console.log('Membership updated successfully:', response);
+    } catch (error) {
+        console.error('Error updating membership:', error);
+    }
+};
+
+  
+  
 
   return (
     <div id='membership-mng'>
@@ -154,7 +174,8 @@ const MembershipManagement: React.FC = () => {
           <p style={{ textAlign: 'center' }}>There are no memberships available</p>
         )}
       </div>
-      {isModalAddOpen && <MembershipModal type='add' closeModal={closeModalAdd} />}
+      {isModalAddOpen && <MembershipModal type='add' closeModal={closeModalAdd} membership={addMembership} />}
+
       {isModalEditOpen && <MembershipModal type='edit' membership={membership} closeModal={closeModalEdit} editMembership={updatedMembership} />}
       {isModalDeleteOpen && <MembershipModal type='delete' membership={membership} closeModal={closeModalDelete} deleteMembership={deleteMembership} />}
     </div>

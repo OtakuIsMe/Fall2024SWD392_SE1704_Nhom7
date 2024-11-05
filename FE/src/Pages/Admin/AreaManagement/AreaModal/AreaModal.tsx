@@ -1,7 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import './AreaModal.css';
-import { ApiGateway } from "../../../../Api/ApiGateway";
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { TextField } from "@mui/material";
 
 interface PopupType {
@@ -25,31 +23,43 @@ interface FormData {
 const Modal: React.FC<PopupType> = ({ type, closeModal, addArea, editArea, area }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [formData, setFormData] = useState<FormData>({
-    id: '',
-    name: '',
-    description: '',
-    address: '',
-    longitude: 0,
-    latitude: 0,
+    id: area?.id || '',
+    name: area?.name || '',
+    description: area?.description || '',
+    address: area?.address || '',
+    longitude: area?.longitude || 0,
+    latitude: area?.latitude || 0,
     images: null,
   });
 
+  useEffect(() => {
+    if (area) {
+      setFormData({
+        id: area.id,
+        name: area.name,
+        description: area.description,
+        address: area.address,
+        longitude: area.longitude,
+        latitude: area.latitude,
+        images: null,
+      });
+    }
+  }, [area]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: name === 'longitude' || name === 'latitude' ? parseFloat(value) : value,
+    }));
   };
 
   const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const files = e.target.files ? Array.from(e.target.files) : null;
-    if (files) {
-      setFormData({
-        ...formData,
-        images: files,
-      });
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      images: files,
+    }));
   };
 
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -91,56 +101,27 @@ const Modal: React.FC<PopupType> = ({ type, closeModal, addArea, editArea, area 
     }
   };
 
-  switch (type) {
-    case 'add':
-      return (
-        <div id="area_modal">
-          <form className="modal" onSubmit={handleAdd}>
-            <div className="popup-header">
-              <h1>Add New Area</h1>
-            </div>
-            <div className="modal-content">
-              <TextField name="name" label="Name" variant="outlined" fullWidth onChange={handleChange} />
-              <TextField name="description" label="Description" variant="outlined" fullWidth onChange={handleChange} />
-              <TextField name="address" label="Address" variant="outlined" fullWidth onChange={handleChange} />
-              <TextField name="longitude" label="Longitude" type="number" variant="outlined" fullWidth onChange={handleChange} />
-              <TextField name="latitude" label="Latitude" type="number" variant="outlined" fullWidth onChange={handleChange} />
-              <input type="file" multiple ref={fileInputRef} onChange={handleChangeImage} />
-
-              <div className="modal-btns">
-                <button type="button" className="modal-cancel" onClick={closeModal}>Cancel</button>
-                <button type="submit" className="modal-confirm">Add Area</button>
-              </div>
-            </div>
-          </form>
+  return (
+    <div id="area_modal">
+      <form className="modal" onSubmit={type === 'add' ? handleAdd : handleEdit}>
+        <div className="popup-header">
+          <h1>{type === 'add' ? 'Add New Area' : 'Edit Area'}</h1>
         </div>
-      );
-    case 'edit':
-      return (
-        <div id="area_modal">
-          <form className="modal" onSubmit={handleEdit}>
-            <div className="popup-header">
-              <h1>Edit Area</h1>
-            </div>
-            <div className="modal-content">
-              <TextField name="name" label="Name" variant="outlined" fullWidth onChange={handleChange} value={formData.name} />
-              <TextField name="description" label="Description" variant="outlined" fullWidth onChange={handleChange} value={formData.description} />
-              <TextField name="address" label="Address" variant="outlined" fullWidth onChange={handleChange} value={formData.address} />
-              <TextField name="longitude" label="Longitude" type="number" variant="outlined" fullWidth onChange={handleChange} value={formData.longitude} />
-              <TextField name="latitude" label="Latitude" type="number" variant="outlined" fullWidth onChange={handleChange} value={formData.latitude} />
-              <input type="file" multiple ref={fileInputRef} onChange={handleChangeImage} />
-
-              <div className="modal-btns">
-                <button type="button" className="modal-cancel" onClick={closeModal}>Cancel</button>
-                <button type="submit" className="modal-confirm">Save Changes</button>
-              </div>
-            </div>
-          </form>
+        <div className="modal-content">
+          <TextField name="name" label="Name" variant="outlined" fullWidth onChange={handleChange} value={formData.name} />
+          <TextField name="description" label="Description" variant="outlined" fullWidth onChange={handleChange} value={formData.description} />
+          <TextField name="address" label="Address" variant="outlined" fullWidth onChange={handleChange} value={formData.address} />
+          <TextField name="longitude" label="Longitude" type="number" variant="outlined" fullWidth onChange={handleChange} value={formData.longitude} />
+          <TextField name="latitude" label="Latitude" type="number" variant="outlined" fullWidth onChange={handleChange} value={formData.latitude} />
+          <input type="file" multiple ref={fileInputRef} onChange={handleChangeImage} />
         </div>
-      );
-    default:
-      return null;
-  }
+        <div className="modal-btns">
+          <button type="button" className="modal-cancel" onClick={closeModal}>Cancel</button>
+          <button type="submit" className="modal-confirm">{type === 'add' ? 'Add Area' : 'Save Changes'}</button>
+        </div>
+      </form>
+    </div>
+  );
 };
 
 export default Modal;

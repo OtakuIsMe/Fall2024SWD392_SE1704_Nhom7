@@ -119,22 +119,23 @@ export class ApiGateway {
             throw error;
         }
     }
-    public static async CreateMembership<T>(name: string, discount: number, expDate: string, rank: number): Promise<T> {
+    public static async CreateMembership<T>(name: string, discount: number, dayLeft: number, price: number, rank: number): Promise<T> {
         try {
-          const requestBody = {
-            name,
-            discount,
-            expDate,
-            rank,
-          };
+            const requestBody = {
+                name,
+                discount,
+                dayLeft,
+                price,
+                rank,
+            };
     
-          const response = await this.axiosInstance.post<T>('/membership/Create-membership', requestBody);
-          return response.data;
+            const response = await this.axiosInstance.post<T>('/membership/Create-membership', requestBody);
+            return response.data;
         } catch (error) {
-          console.error("Create Membership Error:", error);
-          throw error;
+            console.error("Create Membership Error:", error);
+            throw error;
         }
-      }
+    }
     
       public static async GetMembershipDetails<T>(id: string): Promise<T> {
         try {
@@ -154,22 +155,24 @@ export class ApiGateway {
           throw error;
         }
       }
-      public static async UpdateMembership<T>(id: string, name: string, discount: number, expDate: string, rank: number): Promise<T> {
+      public static async UpdateMembership<T>(id: string, name: string, discount: number, dayLeft: number, price: number, rank: number): Promise<T> {
         try {
-          const requestBody = {
-            name,
-            discount,
-            expDate,
-            rank,
-          };
+            const requestBody = {
+                name,
+                discount,
+                dayLeft,
+                price,
+                rank,
+            };
     
-          const response = await this.axiosInstance.put<T>(`/membership/Update-membership/${id}`, requestBody);
-          return response.data;
+            const response = await this.axiosInstance.put<T>(`/membership/Update-membership/${id}`, requestBody);
+            return response.data;
         } catch (error) {
-          console.error("Update Membership Error:", error);
-          throw error;
+            console.error("Update Membership Error:", error);
+            throw error;
         }
-      }
+    }
+    
       public static async GetAllMemberships<T>(): Promise<T[]> {
         try {
           const response = await this.axiosInstance.get<T[]>('/membership/Get-All');

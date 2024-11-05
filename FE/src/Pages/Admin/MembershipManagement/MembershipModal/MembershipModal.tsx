@@ -8,16 +8,18 @@ import { TextField } from "@mui/material";
 interface PopupType {
   type: string;
   closeModal: () => void;
-  editMembership?: (id: string, name: string, discount: number, project: string, rank: number) => Promise<any>;
+  editMembership?: (id: string, name: string, discount: number, dayLeft: number, price: number, rank: number) => Promise<any>;
   deleteMembership?: () => Promise<any>;
   membership?: any;
 }
+
 
 interface FormData {
   id: string;
   name: string;
   discount: number;
-  project: string;
+  dayLeft: number;
+  price: number;
   rank: number;
 }
 
@@ -29,18 +31,22 @@ const MembershipModal: React.FC<PopupType> = ({ type, closeModal, editMembership
     id: '',
     name: '',
     discount: 0,
-    project: '',
+    dayLeft: 0,
+    price: 0,
     rank: 0,
   });
 
-  // handleChange for TextField inputs (Name, Discount, Project, Rank)
+  // handleChange for TextField inputs (Name, Discount, DayLeft, Price, Rank)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData({
-      ...formData,
-      [name]: value,
+        ...formData,
+        [name]: name === 'discount' || name === 'dayLeft' || name === 'price' || name === 'rank'
+            ? Number(value)
+            : value,
     });
-  };
+};
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
@@ -62,23 +68,27 @@ const MembershipModal: React.FC<PopupType> = ({ type, closeModal, editMembership
     }
 
     try {
-      const formMembershipData = {
-        id: formData.id,
-        name: formData.name,
-        discount: formData.discount,
-        project: formData.project,
-        rank: formData.rank,
-      };
-
       if (type === 'edit' && editMembership) {
         await editMembership(
-          formMembershipData.id,
-          formMembershipData.name,
-          formMembershipData.discount,
-          formMembershipData.project,
-          formMembershipData.rank
+          formData.id,
+          formData.name,
+          formData.discount,
+          formData.dayLeft,
+          formData.price,
+          formData.rank
         );
         console.log('Membership edited successfully');
+      }
+
+      if (type === 'add') {
+        await ApiGateway.CreateMembership(
+          formData.name,
+          formData.discount,
+          formData.dayLeft,
+          formData.price,
+          formData.rank
+        );
+        console.log('Membership created successfully');
       }
 
       closeModal();
@@ -100,7 +110,8 @@ const MembershipModal: React.FC<PopupType> = ({ type, closeModal, editMembership
         id: membership.id,
         name: membership.name,
         discount: membership.discount,
-        project: membership.project,
+        dayLeft: membership.dayLeft,
+        price: membership.price,
         rank: membership.rank,
       });
     }
@@ -127,8 +138,12 @@ const MembershipModal: React.FC<PopupType> = ({ type, closeModal, editMembership
                   <TextField name="discount" type="number" variant="outlined" size="small" fullWidth onChange={handleChange} />
                 </label>
                 <label>
-                  <p>Project</p>
-                  <TextField name="project" variant="outlined" size="small" fullWidth onChange={handleChange} />
+                  <p>Day Left</p>
+                  <TextField name="dayLeft" type="number" variant="outlined" size="small" fullWidth onChange={handleChange} />
+                </label>
+                <label>
+                  <p>Price</p>
+                  <TextField name="price" type="number" variant="outlined" size="small" fullWidth onChange={handleChange} />
                 </label>
                 <label>
                   <p>Rank</p>
@@ -161,8 +176,12 @@ const MembershipModal: React.FC<PopupType> = ({ type, closeModal, editMembership
                   <TextField name="discount" type="number" variant="outlined" size="small" fullWidth value={formData.discount} onChange={handleChange} />
                 </label>
                 <label>
-                  <p>Project</p>
-                  <TextField name="project" variant="outlined" size="small" fullWidth value={formData.project} onChange={handleChange} />
+                  <p>Day Left</p>
+                  <TextField name="dayLeft" type="number" variant="outlined" size="small" fullWidth value={formData.dayLeft} onChange={handleChange} />
+                </label>
+                <label>
+                  <p>Price</p>
+                  <TextField name="price" type="number" variant="outlined" size="small" fullWidth value={formData.price} onChange={handleChange} />
                 </label>
                 <label>
                   <p>Rank</p>
