@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 import './UserModal.css'
 import { ApiGateway } from "../../../../Api/ApiGateway";
@@ -10,7 +10,7 @@ interface PopupType {
   banUser?: () => Promise<void>;
   user?: any;
 }
-const Modal:React.FC<PopupType> = ({closeModal, type, user}) => {
+const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
   
   const [ isEmailFilled, setIsEmailFilled ] = useState(true);
   const [ isUserNameFilled, setIsUserNameFilled ] = useState(true);
@@ -25,6 +25,13 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user}) => {
     pwd: "",
     cfPwd: "",
   });
+
+  const [ changeRoleData, setChangeRoleData ] = useState({
+    email:'',
+    username: '',
+    phone: '',
+    role: '',
+  })
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -87,6 +94,17 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user}) => {
       throw error;
     }
   }
+
+  useEffect(() => {
+    if (user) {
+      setChangeRoleData({
+        email: user.email,
+        username: user.username,
+        phone: user.phone,
+        role: user.roleId
+      })
+    }
+  },[])
 
   switch (type) {
     case "add":
@@ -174,12 +192,88 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user}) => {
               <p>Are you sure to ban <b>{user? user.userName : "this User"}</b>?</p>
               <div className="btn-group">
                 <div className="cancel" onClick={closeModal}>No</div>
-                <div className="confirm">Yes</div>
+                <div className="confirm" >Yes</div>
               </div>
             </div>
           </div>
         </div>
       );
+      case "changerole":
+        return (
+          <div id="user_modal" style={{display: "static"}}>
+            <form className="modal" onSubmit={createUser}>
+              <div className="popup-header">
+                <h1>Change Role User</h1>
+              </div>
+              <div className="modal-content">
+                <div className="content">
+                  <label>
+                    <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
+                      <p>Email</p>
+                      { !isEmailFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Name is required</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <TextField name="email" type="text" fullWidth size="small" value={formData.email} onChange={handleChange} disabled/>
+                  </label>
+                  <label>
+                    <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
+                      <p>User Name</p>
+                      { !isUserNameFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*User name is required</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <TextField name="username" type="text" fullWidth size="small" value={formData.username} onChange={handleChange}/>
+                  </label>
+                  <label>
+                    <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
+                      <p>Phone</p>
+                      { !isPhoneFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Phone is required</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <TextField name="phone" type="number" onKeyDown={handleKeyDown} fullWidth size="small" value={formData.phone} onChange={handleChange}/>
+                  </label>
+                  <label>
+                    <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
+                      <p>Password</p>
+                      { !isPwdFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Password is required</p>
+                        :
+                        <></>
+                      }
+                    </div>
+                    <TextField name="pwd" type="password" fullWidth size="small" value={formData.pwd} onChange={handleChange}/>
+                  </label>
+                  <label>
+                    <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
+                      <p>Confirm Password</p>
+                      { !isCfPwdFilled ? 
+                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Please confirm password</p>
+                        :
+                        !isCfPwdMatch ? 
+                          <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Confirm password doesn't match</p>
+                          :
+                          <></>
+                      }
+                    </div>
+                    <TextField name="cfPwd" type="password" fullWidth size="small" value={formData.cfPwd} onChange={handleChange}/>
+                  </label>
+                </div>
+              </div>
+              <div className="modal-btns">
+                <div className="modal-cancel btn" onClick={closeModal}>Cancel</div>
+                <button type="submit" className="modal-confirm btn">Confirm</button>
+              </div>
+            </form>
+          </div>
+        );
   }
   
 };

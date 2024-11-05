@@ -191,6 +191,12 @@
     font-size: 14px;
 }
 
+#room-detail-page .room-detail-container .room-info .info-comments {
+    display: flex;
+    padding: 10px;
+    justify-content: center;
+}
+
 #room-detail-page .room-detail-container .room-booking .price-booking {
     font-size: 28px;
     margin: 0;
@@ -569,4 +575,88 @@
     background-color: rgb(255, 145, 0);
     width: 100%;
     height: 2px;
+}
+
+#room-detail-page .service-popup .caution {
+    position: relative;
+    background-color: white;
+    width: fit-content;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    gap: 10px;
+    border-radius: 15px;
+}
+
+#room-detail-page .service-popup .caution p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+#room-detail-page .service-popup .caution .btns {
+    width: 70%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#room-detail-page .service-popup .caution .btns div {
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#room-detail-page .service-popup .caution .btns .login {
+    background-color: #48937e;
+    color: white;
+}
+
+#room-detail-page .service-popup .caution .btns .login:hover {
+    background-color: #3b7766;
+}
+
+#room-detail-page .service-popup .caution .btns .cancel:hover {
+    color: #777b81;
+}
+
+#room-detail-page .service-popup .success {
+    position: relative;
+    background-color: white;
+    width: fit-content;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    gap: 10px;
+    border-radius: 15px;
+}
+
+#room-detail-page .service-popup .success p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+}
+
+#room-detail-page .service-popup .success div {
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: #48937e;
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 5px;
+}
+
+#room-detail-page .service-popup .success div:hover {
+    background-color: #3b7766;
 }

@@ -190,7 +190,7 @@ export class ApiGateway {
 
     public static async ApproveBooking<T>(bookingId: string): Promise<T> {
         try {
-            const response = await this.axiosInstance.put<T>(`booking/AcceptBooking/${bookingId}`)
+            const response = await this.axiosInstance.put<T>(`booking/AcceptBookingByManager/${bookingId}`)
             return response.data
         } catch (error) {
             console.log("Accept Request Error: ", error)
@@ -200,7 +200,7 @@ export class ApiGateway {
 
     public static async CancelBooking<T>(bookingId: string): Promise<T> {
         try {
-            const response = await this.axiosInstance.put<T>(`booking/CancelBooking/${bookingId}`)
+            const response = await this.axiosInstance.put<T>(`booking/CancelBookingByManager/${bookingId}`)
             return response.data
         } catch (error) {
             console.log("Accept Request Error: ", error)
@@ -263,7 +263,12 @@ export class ApiGateway {
             const formData = new FormData();
             formData.append("Name", name);
             formData.append("Price", price.toString());
-            formData.append("Image", image);
+            if (image) {
+                formData.append("Image", image);
+            } else {
+                const placeholderFile = new File([""], "placeholder.txt", { type: "text/plain" });
+                formData.append("Image", placeholderFile);
+            }
             const response = await axios.put<T>(`http://localhost:5101/amenityservice/UpdateService/${id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -304,9 +309,6 @@ export class ApiGateway {
             utilityIds.forEach((id) => formData.append(`UtilitiesId`, id));
 
             images.forEach((image) => formData.append(`Images`, image));
-            for (const [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
             const response = await axios.post(`http://localhost:5101/room/Create`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -361,7 +363,8 @@ export class ApiGateway {
 
     public static async DeleteRoom<T>(roomId: string) : Promise<T> {
         try {
-            const response = await this.axiosInstance.post<T>(`/room/Delete`, roomId)
+            console.log(roomId)
+            const response = await this.axiosInstance.post<T>(`/room/Delete?RoomId=${roomId}`)
             return response.data
         } catch (error) {
             console.error("Error Deleting Room", error)
@@ -369,26 +372,32 @@ export class ApiGateway {
         }
     }
 
-    public static async UpdateRoom<T>(areaId: string, type: number, name: string, price: string, description: string, utilityIds: string[],images: File[]): Promise<T> {
+    public static async UpdateRoom<T>(roomId: string , type: number, name: string, price: string, description: string, images: (File | null)[]): Promise<T> {
         try {
-            const formData = new FormData()
-            formData.append("AreaId", areaId)
-            formData.append("RoomType", type.toString())
-            formData.append("Name", name)
-            formData.append("Price", price)
-            formData.append("Description", description)
-            utilityIds.forEach((id) => formData.append(`UtilitiesId`, id));
-
-            images.forEach((image) => formData.append(`Images`, image));
+            const formData = new FormData();
+            formData.append("RoomType", type.toString());
+            formData.append("Name", name);
+            formData.append("Price", price);
+            formData.append("Description", description);
+    
+            images
+                .filter((image): image is File => image !== null) 
+                .forEach((image) => formData.append("Images", image));
+    
             for (const [key, value] of formData.entries()) {
                 console.log(key, value);
             }
-            const response = await axios.put(`http://localhost:5101/room/Update`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            return response.data
+    
+            const response = await axios.put<T>(
+                `http://localhost:5101/room/Update/${roomId}`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            return response.data;
         } catch (error) {
             console.error("Error updating room:", error);
             throw error;
