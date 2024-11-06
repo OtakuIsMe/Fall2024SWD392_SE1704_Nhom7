@@ -86,7 +86,7 @@ const RequestManagement: React.FC = () => {
     { id: 'start', label: 'Start', minWidth: 150 },
     { id: 'end', label: 'End', minWidth: 130 },
     { id: 'status', label: 'Status', minWidth: 30, align: 'center' },
-    { id: 'isPay', label: 'Is Pay', minWidth: 50, align: 'center' },
+    { id: 'isPay', label: 'Is Pay', minWidth: 30, align: 'center' },
   ];
 
   const openApproveModal = (row: any) => {
@@ -177,7 +177,6 @@ const RequestManagement: React.FC = () => {
     try {
         console.log(bookingId);
         const response = await ApiGateway.ApproveBooking(bookingId)
-        setIsApproveModalOpen(false)
         await fetchRequest()
     } catch (error) {
         console.error("Approve booking error",error);
@@ -188,7 +187,6 @@ const RequestManagement: React.FC = () => {
     try {
         console.log(bookingId);
         const response = await ApiGateway.CancelBooking(bookingId)
-        setIsDeclineModalOpen(false)
         await fetchRequest()
     } catch (error) {
         console.error("Approve booking error",error);

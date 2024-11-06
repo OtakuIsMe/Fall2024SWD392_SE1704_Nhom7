@@ -96,6 +96,7 @@ const RoomManagement: React.FC = () => {
   };
 
   const closeModalEdit = () => {
+    getRoomList()
     setIsModalEditOpen(false)
   };
 
@@ -104,12 +105,12 @@ const RoomManagement: React.FC = () => {
       id: row.id, 
       name: row.name
     })
-    console.log(row)
     setIsModalDeleteOpen(true)
     console.log('open')
   };
 
   const closeModalDelete = () => {
+    getRoomList()
     setIsModalDeleteOpen(false)
   };
 
@@ -153,7 +154,6 @@ const RoomManagement: React.FC = () => {
     try {
       const response = await ApiGateway.DeleteRoom(room.id)
       setRoom({})
-      getRoomList()
       console.log(response)
     } catch (error) {
       console.error("Error deleting Room: ", error)
@@ -161,11 +161,9 @@ const RoomManagement: React.FC = () => {
     }
   }
 
-  const updateRoom = async (roomId: string, roomType: string, name: string, price: string, description: string, images: (File | null)[] ) : Promise<void>  => {
+  const updateRoom = async (areaId: string, roomType: string, name: string, price: string, description: string, utilitiesId: string[], images: File[]) : Promise<void>  => {
     try {
-      const response = await ApiGateway.UpdateRoom(roomId, parseInt(roomType), name, price, description, images)
-      setRoom({})
-      getRoomList()
+      const response = await ApiGateway.UpdateRoom(areaId, parseInt(roomType), name, price, description, utilitiesId, images)
       console.log(response)
     } catch (error) {
       console.error("Error updating Room: ", error)
@@ -187,7 +185,7 @@ const RoomManagement: React.FC = () => {
         } 
       </div>
       {isModalAddOpen && <Modal type='add' closeModal={closeModalAdd} />}
-      {isModalEditOpen && <Modal type='edit' room={room} closeModal={closeModalEdit} editRoom={updateRoom}/>}
+      {isModalEditOpen && <Modal type='edit' room={room} closeModal={closeModalEdit} />}
       {isModalDeleteOpen && <Modal type='delete' room={room} closeModal={closeModalDelete} deleteRoom={deleteRoom}/>}
     </div>
   )

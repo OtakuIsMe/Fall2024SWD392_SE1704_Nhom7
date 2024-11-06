@@ -49,50 +49,28 @@ const HomePage: React.FC = () => {
 
   const search = () => {
     navigate('/roomlist')
+    sessionStorage.setItem('startDate', startDate)
+    sessionStorage.setItem('endDate', endDate)
   }
 
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let startT = event.target.value
-    let endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+    const startT = event.target.value
     setStart(startT);
-    if (dayjs(endDate).isBefore(startT)) {
-      setEnd(endT);
-      
-      sessionStorage.setItem('endDate', endDate)
-    }
+    const endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+    setEnd(endT);
     setMinEnd(endT);
-    sessionStorage.setItem('startDate', startDate)
   };
 
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const endT = event.target.value;
-
-    if (dayjs(endT).isBefore(minEnd)) {
-      setEnd(minEnd);
-    } else {
-      setEnd(endT);
-      sessionStorage.setItem('endDate', endDate)
-    }
-  };
-
-  const preventKeyboardInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    event.preventDefault();
-  };
-
-  const preventClearInput = (event: React.FormEvent<HTMLInputElement>) => {
-    const input = event.target as HTMLInputElement;
-    if (input.value === '') {
-      input.value = input.defaultValue;
-    }
+    setEnd(event.target.value);
   };
 
   useEffect(() => {},[user])
 
   useEffect(() => {
-    window.scrollTo(0, 0)
     const date = new Date();
-    const curTime = dayjs(date).set('minute', 0).add(1, 'day').set('hour', 7).format('YYYY-MM-DDThh:mm')
-    const endTime = dayjs(date).set('minute', 0).add(1, 'day').set('hour', 8).format('YYYY-MM-DDThh:mm')
+    const curTime = dayjs(date).set('minute', 0).add(1, 'hour').format('YYYY-MM-DDThh:mm')
+    const endTime = dayjs(date).set('minute', 0).add(2, 'hour').format('YYYY-MM-DDThh:mm')
     const maxTime = dayjs(date).set('hour', 0).set('minute', 0).add(30, 'day').format('YYYY-MM-DDThh:mm')
     setStart(curTime)
     setEnd(endTime)
@@ -118,31 +96,11 @@ const HomePage: React.FC = () => {
           <div className="hp_input_container">
             <div className='hp_search_input start'>
               <label htmlFor="start_date"><p>From</p></label>
-              <input 
-                id='start_date' 
-                className='hp_date_input' 
-                type="datetime-local" 
-                min={min} 
-                max={max} 
-                value={startDate} 
-                onChange={handleStartDateChange} 
-                onKeyDown={preventKeyboardInput}
-                onInput={preventClearInput}
-              />
+              <input type="datetime-local" id='start_date' min={min} max={max} value={startDate} onChange={handleStartDateChange} className='hp_date_input' />
             </div>
             <div className='hp_search_input end'>
               <label htmlFor="end_date"><p>To</p></label>
-              <input
-                id='end_date'
-                className='hp_date_input'
-                type="datetime-local"
-                min={minEnd}
-                max={max}
-                value={endDate}
-                onChange={handleEndDateChange}
-                onKeyDown={preventKeyboardInput}
-                onInput={preventClearInput}
-              />
+              <input type="datetime-local" id='end_date' min={minEnd} max={max} value={endDate} onChange={handleEndDateChange} className='hp_date_input' />
             </div>
           </div>
           <button className='hp_comfirm' onClick={() => search()}>Check</button>

@@ -56,16 +56,16 @@
     overflow: hidden;
 }
 
-#ad-layout > .content > .ad-sidebar {
+#ad-layout > .content > .sidebar {
     border-right: 1px solid rgb(225, 225, 225);
 }
 
-#ad-layout > .content > .ad-sidebar > .nav-container {
+#ad-layout > .content > .sidebar > .nav-container {
     width: 100%;
     z-index: 0;
 }
 
-#ad-layout > .content > .ad-sidebar > .nav-container > div {
+#ad-layout > .content > .sidebar > .nav-container > div {
     display: flex;
     align-items: center;
     padding: 20px 35px;
@@ -75,7 +75,7 @@
     cursor: pointer;
 }
 
-#ad-layout > .content > .ad-sidebar > .nav-container > div p {
+#ad-layout > .content > .sidebar > .nav-container > div p {
     margin: 0 0 0 10px;
 }
 

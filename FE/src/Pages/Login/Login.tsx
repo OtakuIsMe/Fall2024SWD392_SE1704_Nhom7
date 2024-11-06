@@ -27,17 +27,11 @@ export const Login: React.FC = () => {
         console.log(user);
         if (user) {
             try{
-                let last_href = sessionStorage.getItem('last_href');
+                console.log(user.roleId)
                 if( user.roleId === '6489cb2a-f4df-4020-bf31-56f2a19d30c3'){
                     navigate('/dashboard')
-                } else if(user.roleId === '42feaeb5-fc53-4163-98b5-d28cfceafa7c'){
-                    navigate('/dashboard')
-                } else if (user.roleId === '5a4226d9-e58a-42c4-a786-dba8369b234b') {
-                    navigate('/check-in')
-                } else if (last_href) {
-                    window.location.href = last_href;
-                    sessionStorage.removeItem('last_href');
                 } else {
+                    console.log("K2")
                     navigate('/')
                 }
             } catch (e) {

@@ -8,7 +8,6 @@ import Modal from './UserModal/UserModal'
 const UserManagement: React.FC = () => {
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ isBanModalOpen, setIsBanModalOpen ] = useState(false);
-  const [ isChangeRoleModalOpen, setIsChangeRoleModalOpen ] = useState(false);
   const [ thisUser, setThisUser ] = useState<any>();
 
   interface Data {
@@ -129,24 +128,6 @@ const UserManagement: React.FC = () => {
     console.log('close')
   };
 
-  const openChangeRoleModal = (row: any) => {
-    console.log(row.id)
-    console.log(row.name)
-    setThisUser({
-      ...thisUser,
-      id: row.id,
-      userName: row.userName
-    })
-    setIsChangeRoleModalOpen(true);
-    console.log('open')
-  };
-
-  const closeChangeRoleModal = () => {
-    fetchUsers()
-    setIsChangeRoleModalOpen(false);
-    console.log('close')
-  };
-
   const banUser = async (): Promise<void> => {
     try {
       const response = await ApiGateway.DeleteUser(thisUser.id);
@@ -170,9 +151,8 @@ const UserManagement: React.FC = () => {
           <p style={{textAlign: "center"}}>There are no User</p>
         }
       </div>
-      {isModalOpen && <Modal type='add' closeModal={closeModal} />}
+      {isModalOpen && <Modal closeModal={closeModal} type='add'/>}
       {isBanModalOpen && <Modal type='ban' user={thisUser} closeModal={closeBanModal} banUser={banUser}/>}
-      {isChangeRoleModalOpen && <Modal type='changerole' user={thisUser} closeModal={closeChangeRoleModal} banUser={banUser}/>}
     </div>
   )
 }

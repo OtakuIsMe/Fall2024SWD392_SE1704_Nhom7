@@ -92,7 +92,7 @@ const AdminLayout: React.FC = () => {
     <div id='ad-layout'>
       <AdHeader />
       <div className="content">
-        <div className='ad-sidebar'>
+        <div className='sidebar'>
           <SideNav />
         </div>
         <div className='main-content'>

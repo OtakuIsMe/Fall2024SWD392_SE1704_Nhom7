@@ -36,7 +36,6 @@ interface Data {
     unAccessButton?: boolean;
     cancelButton?: boolean;
     banButton?: boolean;
-    changeRoleButton?: boolean;
     openPopup1?: (row: any) => void;
     openPopup2?: (row: any) => void;
 }
@@ -83,7 +82,6 @@ const TableTpl:React.FC<Data> = (
         unAccessButton, 
         cancelButton, 
         banButton,
-        changeRoleButton, 
         openPopup1, 
         openPopup2,
     }) => {
@@ -106,7 +104,6 @@ const TableTpl:React.FC<Data> = (
         { condition: unAccessButton, icon: <Btn name='Unaccess' />, label: "Unaccess" },
         { condition: cancelButton, icon: <Btn name='Cancel' />, label: "Cancel" },
         { condition: banButton, icon: <Btn name='Ban'/>, label: "Ban" },
-        { condition: changeRoleButton, icon: <Btn name='Change-Role'/>, label: "Change role" },
     ];
   
     const handleChangePage = (event: unknown, newPage: number) => {

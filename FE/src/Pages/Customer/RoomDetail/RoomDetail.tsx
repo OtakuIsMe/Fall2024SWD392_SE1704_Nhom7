@@ -21,9 +21,6 @@ import { TbAirConditioning } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { RiDrinks2Fill } from "react-icons/ri";
 import SelectedItemCard from '../../../Components/SelectedItem/SelectedItemCard'
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
-import { useNavigate } from 'react-router'
 
 dayjs.extend(duration);
 
@@ -35,7 +32,6 @@ const RoomDetail = () => {
   }
 
   const { user } = context;
-  const navigate = useNavigate()
 
   const [roomInfo, setRoomInfo] = useState<any>([])
 
@@ -50,8 +46,6 @@ const RoomDetail = () => {
   const [typeNumberServiceSelected, setTypeNumberServiceSelected] = useState('0');
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopupMsg, setOpenPopupMsg] = useState(false);
-  const [openCautionPopup, setOpenCautionPopup] = useState(false);
-  const [openSuccessPopup, setOpenSuccessPopup] = useState(false);
 
   const [payment, setPayment] = useState<string>('COD')
 
@@ -148,16 +142,11 @@ const RoomDetail = () => {
   }
 
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let startT = event.target.value
-    let endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+    const startT = event.target.value
     setStart(startT);
-    if (dayjs(endDate).isBefore(startT)) {
-      setEnd(endT);
-      
-      sessionStorage.setItem('endDate', endDate)
-    }
+    const endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+    setEnd(endT);
     setMinEnd(endT);
-    sessionStorage.setItem('startDate', startDate)
   };
 
   const priceConvert = (amount: number): string => {
@@ -165,27 +154,11 @@ const RoomDetail = () => {
   };
 
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const endT = event.target.value;
-
-    if (dayjs(endT).isBefore(minEnd)) {
-      setEnd(minEnd);
-    } else {
-      setEnd(endT);
-    }
-    sessionStorage.setItem('endDate', endDate)
+    setEnd(event.target.value);
   };
 
   const handleNavbarClick = (type: string) => {
     setInfoSelected(type);
-  }
-
-  const handleOpenMsgPopup = () => {
-    if (!user) {
-      setOpenCautionPopup(true);
-      sessionStorage.setItem('last_href', window.location.href)
-    } else {
-      setOpenPopupMsg(true)
-    }
   }
 
   interface ServiceData {
@@ -259,9 +232,6 @@ const RoomDetail = () => {
         const response = await ApiGateway.payBill(bookId);
         window.location.href = response.message;
       }
-      setOpenSuccessPopup(true)
-      sessionStorage.removeItem('startDate')
-      sessionStorage.removeItem('endDate')
     } catch (error) {
       console.error('Error booking room:', error);
     }
@@ -405,17 +375,6 @@ const RoomDetail = () => {
     }
   }
 
-  const preventKeyboardInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    event.preventDefault();
-  };
-
-  const preventClearInput = (event: React.FormEvent<HTMLInputElement>) => {
-    const input = event.target as HTMLInputElement;
-    if (input.value === '') {
-      input.value = input.defaultValue;
-    }
-  };
-
   const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setPayment(e.target.value)
   }
@@ -463,24 +422,18 @@ const RoomDetail = () => {
       <div className="room-detail">
         <div className="room-images">
           <div className="main-image">
-            <img src={roomInfo?.images?.[0]?.url || room1} alt="" />
+            <img src={roomInfo?.images?.[3]?.url || room1} alt="" />
           </div>
           <div className="others-image">
-            {roomInfo?.images?.[1] &&
-              <div className="child-image">
-                <img src={roomInfo?.images?.[1]?.url || room2} alt="" />
-              </div>
-            }
-            {roomInfo?.images?.[2] &&
-              <div className="child-image">
-                <img src={roomInfo?.images?.[2]?.url || room3} alt="" />
-              </div>
-            }
-            {roomInfo?.images?.[3] &&
-              <div className="child-image">
-                <img src={roomInfo?.images?.[3]?.url || room4} alt="" />
-              </div>
-            }
+            <div className="child-image">
+              <img src={roomInfo?.images?.[2]?.url || room2} alt="" />
+            </div>
+            <div className="child-image">
+              <img src={roomInfo?.images?.[1]?.url || room3} alt="" />
+            </div>
+            <div className="child-image">
+              <img src={roomInfo?.images?.[0]?.url || room4} alt="" />
+            </div>
           </div>
         </div>
         <div className="room-detail-container">
@@ -509,30 +462,20 @@ const RoomDetail = () => {
                   <div className="utilities-container">
                     <p className="title">Utilities</p>
                     <div className="utilities">
-                      {roomInfo ?
-                        roomInfo?.utilities?.map((utility: any) => (
-                            <div className="utility" key={utility.id}>
-                              {iconReturn(utility.id)}
-                              <span className="utility-name">{utility.name}</span>
-                            </div>
-                          ))
-                        :
-                          utilities.map((utility: any, index: number) => (
-                            <div className="utility" key={index}>
-                              {iconReturn(utility.id)}
-                              <span className="utility-name">
-                                {utility.name}
-                              </span>
-                            </div>
-                          )
-                        )
-                      }
+                      {utilities.map((utility, index) => (
+                        <div className="utility" key={index}>
+                          {iconReturn(utility.id)}
+                          <span className="utility-name">
+                            {utility.name}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                   <div className="description-container">
                     <p className="title">Workspace Description</p>
                     <p className="description">
-                      {roomInfo ? roomInfo.description  :"Welcome to the ideal workspace, where creativity and productivity are sparked. Centrally located, this space is designed to bring comfort and inspiration to everyone."}
+                      Welcome to the ideal workspace, where creativity and productivity are sparked. Centrally located, this space is designed to bring comfort and inspiration to everyone.
                     </p>
                   </div>
                 </div>
@@ -548,7 +491,7 @@ const RoomDetail = () => {
             {infoSelected === "comments" && (
               <React.Fragment>
                 <div className="info-comments">
-                  There are no comments
+
                 </div>
               </React.Fragment>
             )}
@@ -559,29 +502,11 @@ const RoomDetail = () => {
               <div className="book-interval">
                 <div className="check-in box-time">
                   <p className='title'>CHECK-IN</p>
-                  <input
-                    className="time-oclock"
-                    min={min}
-                    max={max}
-                    type='datetime-local'
-                    value={startDate}
-                    onChange={handleStartDateChange}
-                    onKeyDown={preventKeyboardInput}
-                    onInput={preventClearInput}
-                  />
+                  <input className="time-oclock" min={min} max={max} type='datetime-local' value={startDate} onChange={handleStartDateChange} />
                 </div>
                 <div className="check-out box-time">
                   <p className='title'>CHECK-OUT</p>
-                  <input
-                  className="time-oclock"
-                  min={minEnd}
-                  max={max}
-                  type='datetime-local'
-                  value={endDate}
-                  onChange={handleEndDateChange}
-                  onKeyDown={preventKeyboardInput}
-                  onInput={preventClearInput}
-                />
+                  <input className="time-oclock" min={minEnd} max={max} type='datetime-local' value={endDate} onChange={handleEndDateChange} />
                 </div>
               </div>
               <div className="hour-booking date">
@@ -638,7 +563,7 @@ const RoomDetail = () => {
               </div>
             </div>
             <div className='service-btn but' onClick={async () => { await fetchServices(), setOpenPopup(true) }}>Additional Services</div>
-            <div className='but' onClick={() => handleOpenMsgPopup()} >Request To Book</div>
+            <div className='but' onClick={() => setOpenPopupMsg(true)} >Request To Book</div>
             <div className="service-popup" style={!openPopupMsg ? { display: "none" } : { display: "flex" }}>
               <div className="noti">
                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z" /></svg>
@@ -790,28 +715,6 @@ const RoomDetail = () => {
           </div>
         </div>
       </div>
-      {openCautionPopup &&
-        <div className="service-popup">
-          <div className="caution">
-            <ErrorOutlineOutlinedIcon sx={{fontSize: "48px", color: "#F12425"}}/>
-            <p>You haven't logged in yet!</p>
-            <div className="btns">
-              <div className="cancel" onClick={() => setOpenCautionPopup(false)}>Cancel</div>
-              <div className="login" onClick={() => navigate('/login')}>Login</div>
-            </div>
-          </div>
-        </div>
-      }
-      {openSuccessPopup && 
-        <div className="service-popup">
-          <div className="success"> 
-            <CheckCircleOutlineOutlinedIcon sx={{fontSize: "48px", color: "#48937e"}}/>
-            <p>We have receive your Booking Request!</p>
-            <p>Please wait for confirmation</p>
-            <div onClick={() => navigate('/')}>Ok</div>
-          </div>
-        </div>
-      }
     </div>
   )
 }

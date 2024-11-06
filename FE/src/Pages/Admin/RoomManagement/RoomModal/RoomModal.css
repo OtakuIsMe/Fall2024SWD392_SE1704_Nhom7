@@ -128,14 +128,7 @@
     z-index: 2;
 }
 
-.remove-all-images-button {
-    background-color: #F12425;
-    border: none;
-    border-radius: 3px;
-    padding: 3px 5px;
-}
-
-#room_modal .column1 .img-container .remove-image-button:hover, .remove-all-images-button:hover {
+#room_modal .column1 .img-container .remove-image-button:hover {
     background-color: rgb(247, 90, 90);
     color: white;
 }
