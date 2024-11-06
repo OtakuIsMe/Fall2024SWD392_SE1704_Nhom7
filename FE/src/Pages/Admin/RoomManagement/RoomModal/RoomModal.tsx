@@ -8,7 +8,7 @@ import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
 interface PopupType {
   type: string;
   closeModal: () => void;
-  editRoom?: (id: string, name: string, price: number, image: File) => Promise<any>;
+  editRoom?: (id: string, roomType: string, name: string, price: string,description: string, image: (File | null)[]) => Promise<any>;
   deleteRoom?: () => Promise<any>;
   room?: any;
 }
@@ -40,31 +40,31 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
       setImages(updatedImages);
 
       if (updatedImages.length < maxImages && !updatedImages.includes(null)) {
-        setImages([...updatedImages, null]);
+        updatedImages.push(null);
         fileInputRefs.current.push(null);
       }
     }
-    console.log(images)
+    console.log(images);
   };
 
   const handleClick = (index: number) => {
+    console.log(index);
     fileInputRefs.current[index]?.click();
   };
 
   const handleRemoveImageField = (index: number) => {
-    let updatedImages = images.filter((_, i) => i !== index);
-
-    updatedImages = updatedImages.filter((img) => img !== null && img !== undefined);
-
-    if (updatedImages.length < maxImages) {
-        updatedImages.push(null);
-    }
-
+    const updatedImages = [...images];
+    updatedImages[index] = null;
     setImages(updatedImages);
 
-    fileInputRefs.current = fileInputRefs.current.filter((_, i) => i !== index);
-    fileInputRefs.current.push(null); 
-    console.log(images)
+    fileInputRefs.current[index] = null;
+    
+    console.log(images);
+    console.log(fileInputRefs.current);
+  };
+
+  const handleRemoveAllImages = () => {
+    setImages([null]);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -81,6 +81,7 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
   const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => setDescription(event.target.value);
 
   useEffect(() => {
+    console.log(images)
     getArea()
     if(room){
       setImages(room.images)
@@ -146,9 +147,56 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
 
       const response = await ApiGateway.CreateRoom(areaId, roomType, name, price, description, filteredImages)
       console.log(response)
+      closeModal()
     } catch (error) {
       console.error("Error creating Room: ", error)
       throw error
+    }
+  }
+
+  const handleEdit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault()
+    if(editRoom) {
+      let error = 0
+      
+      if (areaId === '') {
+        setIsAreaIdSelected(false)
+        error++
+      }
+
+      if (roomType === -1) {
+        setIsRoomTypeSelected(false)
+        error++
+      }
+
+      if (name === '') {
+        setIsNameFilled(false)
+        error++
+      }
+
+      if (parseInt(price) < 50000) {
+        setIsPriceFilled(false)
+        error++
+      }
+
+      if (description === '') {
+        setIsDescriptionFilled(false)
+        error++
+      }
+
+      if (images.length === 0 || (images.length === 1 && images[0] === null)) {
+        setIsImageSelected(false)
+        error++
+      }
+
+      if (error > 0) {
+        return
+      }
+
+      const filteredImages = images.filter((image): image is File => image !== null);
+      console.log(filteredImages)
+      editRoom(room.id, roomType.toString(), name, price, description, filteredImages)
+      closeModal()
     }
   }
 
@@ -300,7 +348,7 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
     case "edit":
       return (
         <div id="room_modal" style={{display: "static"}}>
-          <form className="modal" onSubmit={createRoom}>
+          <form className="modal" onSubmit={handleEdit}>
             <div className="popup-header">
               <h1>Edit {room ? room.name: 'Room'}</h1>
             </div>
@@ -323,13 +371,6 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
                                       onChange={(event) => handleChangeImage(event, index)}
                                     />
                                   </label>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveImageField(index)}
-                                    className="remove-image-button"
-                                  >
-                                    Remove
-                                  </button>
                                 </div>
                               ):(
                                 <div className="image-placeholder">
@@ -351,6 +392,17 @@ const Modal:React.FC<PopupType> = ({type, closeModal, editRoom, deleteRoom, room
                           </div>
                       </div>
                     ))}
+                    {images.length > 0 && (
+                      <div className="delete-all-button-container">
+                        <button
+                          type="button"
+                          onClick={handleRemoveAllImages}
+                          className="remove-all-images-button"
+                        >
+                          Remove All
+                        </button>
+                      </div>
+                    )}
                 </div>
                 <div className="column2">
                   <div style={{display: 'flex', gap: "20%"}}>

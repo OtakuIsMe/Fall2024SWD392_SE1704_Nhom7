@@ -158,7 +158,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
 
     if (editService) {
       console.log(formServiceData)
-      console.log("It did run")
+      const response = ApiGateway.UpdateService(formServiceData.id, formServiceData.name, formServiceData.price, formServiceData.image)
       closeModal()
     }
   }
