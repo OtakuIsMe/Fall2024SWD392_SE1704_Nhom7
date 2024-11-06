@@ -19,7 +19,11 @@ import { MdRoomService, MdOutlineFoodBank, MdHomeRepairService } from "react-ico
 import { TbAirConditioning, TbCurrencyDong } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { RiDrinks2Fill } from "react-icons/ri";
+<<<<<<< HEAD
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+=======
+import SelectedItemCard from '../../../Components/SelectedItem/SelectedItemCard'
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
 
 dayjs.extend(duration);
 
@@ -204,6 +208,28 @@ const RoomDetail = () => {
     setInfoSelected(type);
   }
 
+<<<<<<< HEAD
+=======
+  interface ServiceData {
+    index: number;
+    id: string;
+    image: string;
+    type: number;
+    name: string;
+    price: number;
+  }
+  function createData(
+    index: number,
+    id: string,
+    image: string,
+    type: number,
+    name: string,
+    price: number,
+  ): ServiceData {
+    return { index, id, image, type, name, price };
+  }
+
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
   const { roomHashing } = useParams();
 
   interface Data {
@@ -219,6 +245,7 @@ const RoomDetail = () => {
   const postBookingRoom = async (e : React.FormEvent): Promise<void> => {
     e.preventDefault()
     try {
+<<<<<<< HEAD
       const roomId = "a3f26dd6-b769-476a-8acd-6a60d01b8c9e";
       const userId = user.id;
       const bookingItemDTOs : any[] = [];
@@ -235,6 +262,17 @@ const RoomDetail = () => {
       console.log('Booking successful:', response);
       setBookingId(response)
       showMessage()
+=======
+      const bookId = bookingId;
+      if (payment === 'COD') {
+        const response = await ApiGateway.payCOD(bookId);
+        console.log(response);
+        setOpenPopupMsg(false);
+      } else if (payment === 'Paypal') {
+        const response = await ApiGateway.payBill(bookId);
+        window.location.href = response.message;
+      }
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
     } catch (error) {
       console.error('Error booking room:', error);
     }
@@ -353,11 +391,16 @@ const RoomDetail = () => {
     }
   }
 
+<<<<<<< HEAD
   const showMessage = () : void => {
     setOpenPopupMsg(true);
     setTimeout(() => {
       setOpenPopupMsg(false);
     }, 2000);
+=======
+  const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setPayment(e.target.value)
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
   }
 
   interface CardPSevice {
@@ -382,6 +425,7 @@ const RoomDetail = () => {
       <div className="room-detail">
         <div className="room-images">
           <div className="main-image">
+<<<<<<< HEAD
             <img src={room1} alt="" />
           </div>
           <div className="others-image">
@@ -393,6 +437,19 @@ const RoomDetail = () => {
             </div>
             <div className="child-image">
               <img src={room4} alt="" />
+=======
+            <img src={roomInfo?.images?.[3]?.url || room1} alt="" />
+          </div>
+          <div className="others-image">
+            <div className="child-image">
+              <img src={roomInfo?.images?.[2]?.url || room2} alt="" />
+            </div>
+            <div className="child-image">
+              <img src={roomInfo?.images?.[1]?.url || room3} alt="" />
+            </div>
+            <div className="child-image">
+              <img src={roomInfo?.images?.[0]?.url || room4} alt="" />
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
             </div>
           </div>
         </div>
@@ -462,11 +519,19 @@ const RoomDetail = () => {
               <div className="book-interval">
                 <div className="check-in box-time">
                   <p className='title'>CHECK-IN</p>
+<<<<<<< HEAD
                   <input className="time-oclock" min={min} max={max} type='datetime-local' value={startDate} onChange={handleStartDateChange}/>
                 </div>
                 <div className="check-out box-time">
                   <p className='title'>CHECK-OUT</p>
                   <input className="time-oclock" min={minEnd} max={max} type='datetime-local' value={endDate} onChange={handleEndDateChange}/>
+=======
+                  <input className="time-oclock" min={min} max={max} type='datetime-local' value={startDate} onChange={handleStartDateChange} />
+                </div>
+                <div className="check-out box-time">
+                  <p className='title'>CHECK-OUT</p>
+                  <input className="time-oclock" min={minEnd} max={max} type='datetime-local' value={endDate} onChange={handleEndDateChange} />
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
                 </div>
               </div>
               <div className="hour-booking date">
@@ -509,8 +574,57 @@ const RoomDetail = () => {
                 </span>
               </div>
             </div>
+<<<<<<< HEAD
             <div className='service-btn but' onClick={() => setOpenPopup(true)}>Additional Services</div>
             <button className='book-btn but' type='submit'>Request To Book</button>
+=======
+            <div className='service-btn but' onClick={async () => { await fetchServices(), setOpenPopup(true) }}>Additional Services</div>
+            <div className='but' onClick={() => setOpenPopupMsg(true)} >Request To Book</div>
+            <div className="service-popup" style={!openPopupMsg ? { display: "none" } : { display: "flex" }}>
+              <div className="noti">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z" /></svg>
+                <p>Confirm booking</p>
+                <div className="total" style={{ margin: "0", width: "100%" }}>
+                  <div className="Room-price line">
+                    <span className='title-result'>
+                      Room:
+                    </span>
+                    <span className='results'>
+                      {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
+                    </span>
+                  </div>
+                  <div className="services-price line">
+                    <span className='title-result'>
+                      Services:
+                    </span>
+                    <span className='results'>
+                      {priceConvert(totalService)}
+                    </span>
+                  </div>
+                  <div className="membsership-price line">
+                    <span className='title-result'>
+                      Membership:
+                    </span>
+                    <span className='results'>
+                      0%
+                    </span>
+                  </div>
+                  <div className="total-price line">
+                    <span className='title-result'>
+                      Total Price:
+                    </span>
+                    <span className='results'>
+                      {totalPrice(roomInfo?.price, '0', startDate, endDate, totalService)}
+                    </span>
+                  </div>
+                </div>
+                <div className='form-btns'>
+                  <div onClick={() => setOpenPopupMsg(false)}>Cancel</div>
+                  <button type='submit'>Confirm</button>
+                </div>
+              </div>
+            </div>
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
           </form>
         </div>
       </div>
@@ -557,12 +671,15 @@ const RoomDetail = () => {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
       <div className="service-popup" style={!openPopupMsg ? {display: "none"}:{display: "flex"}}>
         <div className="noti">
           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z"/></svg>
           <p>Booking successful!</p>
         </div>
       </div>
+=======
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
     </div>
   )
 }

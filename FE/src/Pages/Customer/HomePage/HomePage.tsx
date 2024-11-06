@@ -48,7 +48,11 @@ const HomePage: React.FC = () => {
   ]
 
   const search = () => {
+<<<<<<< HEAD
     navigate('/roomslist')
+=======
+    navigate('/roomlist')
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
     sessionStorage.setItem('startDate', startDate)
     sessionStorage.setItem('endDate', endDate)
   }

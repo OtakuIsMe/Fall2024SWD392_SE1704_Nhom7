@@ -79,12 +79,115 @@ const RoomManagement: React.FC = () => {
     },
   ];
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    getRoomList();
+  },[])
+
+  const openModalAdd = () => {
+    setIsModalAddOpen(true)
+  };
+
+  const closeModalAdd = () => {
+    getRoomList()
+    setIsModalAddOpen(false)
+  };
+
+  const openModalEdit = (row: any) => {
+    getRoomInfo(row.id)
+    console.log('open')
+  };
+
+  const closeModalEdit = () => {
+    getRoomList()
+    setIsModalEditOpen(false)
+  };
+
+  const openModalDelete = (row: any) => {
+    setRoom({
+      id: row.id, 
+      name: row.name
+    })
+    setIsModalDeleteOpen(true)
+    console.log('open')
+  };
+
+  const closeModalDelete = () => {
+    getRoomList()
+    setIsModalDeleteOpen(false)
+  };
+
+  const getRoomList = async (): Promise<void> => {
+    try{
+      let rowData : any[] = [] ;
+      const response = await ApiGateway.GetRoomList('', '', '', '')
+      response.forEach((row: any) => {
+        rowData.push(
+          createData(
+            row.id,
+            row.images?.[0]?.url || '',
+            (row.typeRoom === 0 ? "Single": 
+              row.typeRoom === 1 ? "Double": 
+              row.typeRoom === 2 ? "Fourth": "Meeting"
+            ), 
+            row.name, 
+            row.price, 
+            row.description, 
+            (row.status === 0 ? "Available" : "Unavailable")))
+      })
+      setRoomList(rowData)
+    } catch(err){
+      console.error('Error get room list :', err);
+    }
+  }
+  
+  const getRoomInfo = async (id: string) : Promise<void> => {
+    try {
+      const response = await ApiGateway.GetRoomDetail(id)
+      setRoom(response)
+      setIsModalEditOpen(true)
+      console.log(response)
+    } catch (error) {
+      console.error("Error getting Room Info: ", error)
+      throw error
+    }
+  }
+
+  const deleteRoom = async () : Promise<void> => {
+    try {
+      const response = await ApiGateway.DeleteRoom(room.id)
+      setRoom({})
+      console.log(response)
+    } catch (error) {
+      console.error("Error deleting Room: ", error)
+      throw error
+    }
+  }
+
+  const updateRoom = async (areaId: string, roomType: string, name: string, price: string, description: string, utilitiesId: string[], images: File[]) : Promise<void>  => {
+    try {
+      const response = await ApiGateway.UpdateRoom(areaId, parseInt(roomType), name, price, description, utilitiesId, images)
+      console.log(response)
+    } catch (error) {
+      console.error("Error updating Room: ", error)
+      throw error
+    }
+  } 
+
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
   return (
     <div id='room-mng'>
       <h1>Room Management</h1>
       <div className='content'>
         <TableTpl rows={rows} columns={columns}/> 
       </div>
+<<<<<<< HEAD
+=======
+      {isModalAddOpen && <Modal type='add' closeModal={closeModalAdd} />}
+      {isModalEditOpen && <Modal type='edit' room={room} closeModal={closeModalEdit} />}
+      {isModalDeleteOpen && <Modal type='delete' room={room} closeModal={closeModalDelete} deleteRoom={deleteRoom}/>}
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
     </div>
   )
 }

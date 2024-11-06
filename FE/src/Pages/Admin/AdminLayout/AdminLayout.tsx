@@ -80,7 +80,11 @@ const AdminLayout:React.FC = () => {
       <AdHeader />
       <div className="content">
         <div className='sidebar'>
+<<<<<<< HEAD
           <SideNav/>
+=======
+          <SideNav />
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
         </div>
         <div className='main-content'>
           <Outlet />

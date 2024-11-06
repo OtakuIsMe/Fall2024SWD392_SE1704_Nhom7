@@ -39,10 +39,15 @@ const RoomList: React.FC = () => {
   const [startDate, setStart] = useState('')
   const [endDate, setEnd] = useState('')
   const [roomList, setRoomList] = useState<any>(rooms);
+<<<<<<< HEAD
   const [filterOps, setFilterOps] = useState({
     type: '',
     area: '',
   });
+=======
+  const [selectedLocation, setSelectedLocation] = useState<string>(locations[0]?.value || '');
+  const [selectedType, setSelectedType] = useState<string>(types[0]?.value || '');
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
 
   useEffect(() => {
     const date = new Date();
@@ -51,6 +56,7 @@ const RoomList: React.FC = () => {
     setMax(maxTime)
     setMin(curTime)
     getTimeSpanFromSessions()
+<<<<<<< HEAD
   },[]);
 
   useEffect(() => {
@@ -70,6 +76,23 @@ const RoomList: React.FC = () => {
       [key]: value,
     }));
   };
+=======
+    getFilter();
+  },[]);
+
+  const getFilter = async (): Promise<void> => {
+    try{
+      const areaId = selectedLocation;
+      const roomType = selectedType;
+      const start = startDate;
+      const end = endDate;
+      const response = await ApiGateway.GetRoomList(areaId, roomType, start, end)
+      setRoomList(response)
+    } catch(err){
+      console.error('Error get room list :', err);
+    }
+  }
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
 
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) : void => {
     const startT = event.target.value
@@ -97,6 +120,21 @@ const RoomList: React.FC = () => {
     }
   }
 
+<<<<<<< HEAD
+=======
+  // Handle change for location
+  const handleLocationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedLocation(event.target.value);
+    console.log(event.target.value)
+  };
+
+  // Handle change for type
+  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedType(event.target.value);
+    console.log(event.target.value)
+  };
+
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
   return (
     <>
       <Header isTransparent={false} />
@@ -140,12 +178,47 @@ const RoomList: React.FC = () => {
               <input type="datetime-local" id='end_date' min={minEnd} max={max} value={endDate} onChange={handleEndDateChange} className='hp_date_input' />
             </div>
           </div>
+<<<<<<< HEAD
+=======
+          <div className="location-container">
+            <p>Location</p>
+            <select className="select" value={selectedLocation} onChange={handleLocationChange}>
+              {locations.map((loc, index) => (
+                <option value={`${loc.value}`} key={index}>
+                  {loc.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="type-container">
+            <p>Type</p>
+            <select className="select" value={selectedType} onChange={handleTypeChange}>
+              {types.map((ty, index) => (
+                <option value={`${ty.value}`} key={index}>
+                  {ty.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="filter-btn" onClick={() =>getFilter()}>Filter</div>
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
         </div>
         <div className="room-list-container">
           <div className="room-list">
             <div className="list">
+<<<<<<< HEAD
               {rooms.map((room, index) =>
                 (<Card key={index} id={room.id} img={room.img} type={room.type} price={room.price} />)
+=======
+              {roomList.map((room: any, index: number) =>
+                (<Card 
+                  key={room.id || index}  // Prefer room.id for key, fallback to index if room.id is undefined
+                  id={room.id} 
+                  img={room.images?.[0]?.url || '/default.jpg'}  // Safeguard against missing images
+                  type={room.name} 
+                  price={room.price} 
+              />)
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
               )}
             </div>
           </div>

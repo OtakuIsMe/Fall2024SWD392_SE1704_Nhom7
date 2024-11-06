@@ -4,6 +4,12 @@ import { ApiGateway } from '../../../Api/ApiGateway'
 import './UserManagement.css'
 
 const UserManagement: React.FC = () => {
+<<<<<<< HEAD
+=======
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
+  const [ isBanModalOpen, setIsBanModalOpen ] = useState(false);
+  const [ thisUser, setThisUser ] = useState<any>();
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
 
   interface Data {
     username: string;
@@ -87,6 +93,48 @@ const UserManagement: React.FC = () => {
     setUserList(rowData);
     return userList
   }
+<<<<<<< HEAD
+=======
+  
+  const openModal = () => {
+    setIsModalOpen(true);
+    console.log('open')
+  };
+
+  const closeModal = () => {
+    fetchUsers()
+    setIsModalOpen(false);
+    console.log('close')
+  };
+
+  const openBanModal = (row: any) => {
+    console.log(row.id)
+    console.log(row.name)
+    setThisUser({
+      ...thisUser,
+      id: row.id,
+      userName: row.userName
+    })
+    setIsBanModalOpen(true);
+    console.log('open')
+  };
+
+  const closeBanModal = () => {
+    fetchUsers()
+    setIsBanModalOpen(false);
+    console.log('close')
+  };
+
+  const banUser = async (): Promise<void> => {
+    try {
+      const response = await ApiGateway.DeleteUser(thisUser.id);
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
 
   return (
     <div id='user-mng'>
@@ -98,6 +146,11 @@ const UserManagement: React.FC = () => {
           <TableTpl columns={columns} rows={data}/>
         }
       </div>
+<<<<<<< HEAD
+=======
+      {isModalOpen && <Modal closeModal={closeModal} type='add'/>}
+      {isBanModalOpen && <Modal type='ban' user={thisUser} closeModal={closeBanModal} banUser={banUser}/>}
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
     </div>
   )
 }

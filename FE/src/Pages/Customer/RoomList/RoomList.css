@@ -118,8 +118,14 @@
 #rooms > .room-list-container > .room-list > .list {
     height: fit-content;
     
+<<<<<<< HEAD
     display: grid;
     grid-template-columns: 250px 250px 250px 250px;
+=======
+    /* display: grid;
+    grid-template-columns: 250px 250px 250px 250px; */
+    display: flex;
+>>>>>>> parent of ef202b4 (Merge branch 'dat' into thanh)
     background-color: white;
     padding: 25px;
     gap: 30px;
