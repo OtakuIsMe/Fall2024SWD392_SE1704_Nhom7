@@ -525,17 +525,23 @@ const RoomDetail = () => {
   }
 
   const getTimeSpanFromSessions = (): void => {
+    const date = new Date();
     const sesStartDate = sessionStorage.getItem("startDate");
     const sesEndDate = sessionStorage.getItem("endDate");
-    if (sesStartDate) {
+    if (sesStartDate && sesStartDate !== 'Invalid Date') {
       setStart(sesStartDate);
       const endT = dayjs(sesStartDate)
         .add(1, "hour")
         .format("YYYY-MM-DDTHH:mm");
       setEnd(endT);
       setMinEnd(endT);
+    } else {
+      const curTime = dayjs(date).add(1, 'day').set('minute', 0).set('hour', 7).format('YYYY-MM-DDThh:mm');
+      const endTime = dayjs(date).add(1, 'day').set('minute', 0).set('hour', 8).format('YYYY-MM-DDThh:mm');
+      setStart(curTime);
+      setEnd(endTime);
     }
-    if (sesEndDate) {
+    if (sesEndDate && sesEndDate !== 'Invalid Date') {
       setEnd(sesEndDate);
     }
   };
