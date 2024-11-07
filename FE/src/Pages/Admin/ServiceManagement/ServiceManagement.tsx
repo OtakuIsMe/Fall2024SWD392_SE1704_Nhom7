@@ -136,7 +136,7 @@ const ServiceManagement: React.FC = () => {
       })
       setServiceList(rowData)
       console.log("list updated")
-      console.log(response)
+      console.log(rowData)
     } catch (err) {
       console.error('Error get servicelist :', err);
     }

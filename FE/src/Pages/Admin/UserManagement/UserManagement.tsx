@@ -147,10 +147,10 @@ const UserManagement: React.FC = () => {
     console.log('close')
   };
 
-  const banUser = async (): Promise<void> => {
+  const banUser = async (userId: string): Promise<void> => {
     try {
-      const response = await ApiGateway.DeleteUser(thisUser.id);
-      console.log(response)
+      console.log(userId)
+      const response = await ApiGateway.BanUser(userId);
     } catch (error) {
       console.log(error)
       throw error

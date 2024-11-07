@@ -34,12 +34,12 @@ export class ApiGateway {
         }
     }   public static async Register<T>(email: string, username: string, phone: string, password: string): Promise<T> {
         try {
-            const data = {
-                email: email,
-                username: username,
-                phone: phone,
-                password: password
-            };
+            const data = new FormData();
+            data.append('email', email)
+            data.append('username', username)
+            data.append('phone', phone)
+            data.append('password', password)
+
             console.log(data);
             const response = await this.axiosInstance.post<T>("user/Register", data);
             return response.data;
@@ -338,6 +338,7 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
 }
     public static async CreateService<T>(name: string, type: number, price: number, image: File): Promise<T> {
         try {
+            console.log(image)
             const formData = new FormData();
             formData.append("Name", name);
             formData.append("Type", type.toString());
@@ -410,7 +411,7 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
 
     public static async DeleteService<T>(id: string): Promise<T> {
         try {
-            const response = await this.axiosInstance.delete<T>(`amenityservice/DeleteService/${id}`)
+            const response = await this.axiosInstance.put<T>(`amenityservice/DeleteService/${id}`)
             return response.data;
         } catch (error) {
             console.error("Error Deleting Service: ", error)
@@ -596,9 +597,9 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
         }
     }
 
-    public static async DeleteUser<T>(id: string): Promise<T> {
+    public static async BanUser<T>(id: string): Promise<T> {
         try {
-            const response = await this.axiosInstance.put('/user/DeleteUser', id)
+            const response = await this.axiosInstance.put(`/user/DeleteUser?userId=${id}`)
             return response.data
         } catch (error) {
             console.error("Error deleting user:", error);

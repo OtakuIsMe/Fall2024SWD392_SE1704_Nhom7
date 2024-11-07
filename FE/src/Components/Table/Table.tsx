@@ -289,13 +289,6 @@ const TableTpl:React.FC<Data> = (
                         rows
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row: any, index: number) => {
-                                let rId = row.id;
-                                let rName = row.name;
-                                let rUName: string;
-                                if (row.username) {
-                                    console.log(row.username)
-                                    rUName = row.username;
-                                }
                                 return (
                                 <TableRow hover role="checkbox" tabIndex={-1}>
                                     <TableCell align='center'>
