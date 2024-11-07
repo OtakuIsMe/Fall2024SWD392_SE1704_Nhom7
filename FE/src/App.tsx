@@ -16,8 +16,10 @@ import RoomManagement from "./Pages/Admin/RoomManagement/RoomManagement.tsx";
 import FRManagement from "./Pages/Admin/F&RManagement/F&RManagement.tsx";
 import MembershipManagement from "./Pages/Admin/MembershipManagement/MembershipManagement.tsx";
 import TransactionHistory from "./Pages/Customer/ProfilePage/TransactionHistory/TransactionHistory.tsx";
+import FavoriteList from "./Pages/Customer/ProfilePage/FavoriteList/FavoriteList.tsx";
 import { Login } from "./Pages/Login/Login.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
+import ResetPassword from "./Pages/Customer/ProfilePage/ResetPassword/ResetPassword.tsx";
 
 import Profile from "./Pages/Customer/ProfilePage/Profile/Profile.tsx";
 import { Register } from "./Pages/Register/Register.tsx";
@@ -41,9 +43,12 @@ const App: React.FC = () => {
           <Route path="/roomDetail/:roomHashing" element={<RoomDetail />} />
           <Route path="/areadetails/:locationId" element={<AreaDetail />} />
           <Route path="/transaction-history" element={<TransactionHistory />} />
+          <Route path="/favorites" element={<FavoriteList />} />
           <Route path="/profile" element={<Profile />} />
           {/* <Route path="/favorites" element={<FavoriteList />} /> */}
           <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<ResetPassword />} />\
+          
 
           <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3']} />}>
             <Route path="/" element={<AdminLayout />}>

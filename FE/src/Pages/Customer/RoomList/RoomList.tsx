@@ -72,8 +72,8 @@ const RoomList: React.FC = () => {
     try{
       const areaId = selectedLocation;
       const roomType = selectedType;
-      const start = startDate;
-      const end = endDate;
+      const start = (startDate === 'Invalid Date' ? '' : startDate);
+      const end = (endDate === 'Invalid Date' ? '' : endDate);
       const response = await ApiGateway.GetRoomList(areaId, roomType, start, end)
       setRoomList(response)
     } catch(err){
@@ -131,13 +131,6 @@ const RoomList: React.FC = () => {
     event.preventDefault();
   };
 
-  const preventClearInput = (event: React.FormEvent<HTMLInputElement>) => {
-    const input = event.target as HTMLInputElement;
-    if (input.value === '') {
-      input.value = input.defaultValue;
-    }
-  };
-
   const getTimeSpanFromSessions = () : void => {
     const sesStartDate = sessionStorage.getItem('startDate');
     const sesEndDate = sessionStorage.getItem('endDate');
@@ -181,7 +174,6 @@ const RoomList: React.FC = () => {
                 value={startDate}
                 onChange={handleStartDateChange}
                 onKeyDown={preventKeyboardInput}
-                onInput={preventClearInput}
               />
             </div>
             <div className='search_input end'>
@@ -195,7 +187,6 @@ const RoomList: React.FC = () => {
                 value={endDate}
                 onChange={handleEndDateChange}
                 onKeyDown={preventKeyboardInput}
-                onInput={preventClearInput}
               />
             </div>
           </div>

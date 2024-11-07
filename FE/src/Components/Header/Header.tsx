@@ -234,6 +234,7 @@ const handleProfileCLick = () => {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>{user.username}</MenuItem>
+              <MenuItem onClick={handleProfileCLick}>User Profile</MenuItem>
               <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
             </Menu>
           </>

@@ -45,7 +45,6 @@ namespace BE.src.Domains.Database
 
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
-                  optionsBuilder.EnableSensitiveDataLogging();
                   if (!optionsBuilder.IsConfigured)
                   {
                         optionsBuilder.UseLazyLoadingProxies(false)

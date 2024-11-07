@@ -25,6 +25,7 @@ namespace BE.src.Services
         Task<IActionResult> ListBookingUserUpcoming(Guid User);
         Task<IActionResult> TotalBooking();
         Task<IActionResult> CancleServiceByCustomer(List<CancleServiceDTO> data, Guid BookingId);
+        Task<IActionResult> HandleCheckIn(CheckInRqDTO data);
     }
 
     public class BookingServ : IBookingServ
@@ -301,21 +302,31 @@ namespace BE.src.Services
             }
         }
 
+        // var groupedBookings = bookings
+        // .GroupBy(b => new DateTime(b.booking.DateBooking.Year, b.booking.DateBooking.Month, b.booking.DateBooking.Day, b.booking.DateBooking.Hour, 0, 0))
+        // .Select(group => new BookingScheduleRp
+        // {
+        //     Amount = group.Count(),
+        //     StartBooking = group.Key,
+        //     Bookings = group.ToList()
+        // })
+        // .ToList();
+
         public async Task<IActionResult> GetScheduleBookingForStaff(DateTime startDate, DateTime endDate)
         {
             try
             {
                 var bookings = await _bookingRepo.GetScheduleBookingForStaff(startDate, endDate);
-                var groupedBookings = bookings
-                .GroupBy(b => new DateTime(b.DateBooking.Year, b.DateBooking.Month, b.DateBooking.Day, b.DateBooking.Hour, 0, 0))
-                .Select(group => new BookingScheduleRp
-                {
-                    Amount = group.Count(),
-                    StartBooking = group.Key,
-                    bookings = group.ToList()
-                })
-                .ToList();
 
+                var groupedBookings = bookings
+        .GroupBy(b => new DateTime(b.DateBooking.Year, b.DateBooking.Month, b.DateBooking.Day, b.DateBooking.Hour, 0, 0))
+        .Select(group => new BookingScheduleRp
+        {
+            Amount = group.Count(),
+            StartBooking = group.Key,
+            Bookings = group.ToList()
+        })
+        .ToList();
                 return SuccessResp.Ok(groupedBookings);
             }
             catch (System.Exception ex)
@@ -430,6 +441,33 @@ namespace BE.src.Services
                 var isCreatedNotification = await _userRepo.CreateNotification(notification);
                 //Notification
                 return SuccessResp.Ok("Cancle service success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> HandleCheckIn(CheckInRqDTO data)
+        {
+            try
+            {
+                var booking = await _bookingRepo.GetBookingById(data.BookingId);
+                if (booking == null)
+                {
+                    return ErrorResp.NotFound("Cant find Booking");
+                }
+                if (booking.PaymentRefunds.FirstOrDefault() == null)
+                {
+                    return ErrorResp.NotFound("Cant find Payment");
+                }
+                if (booking.PaymentRefunds.FirstOrDefault().PaymentType == PaymentTypeEnum.COD)
+                {
+                    booking.IsPay = true;
+                }
+                booking.IsCheckIn = data.IsCheckIn;
+                var isUpdatedBooking = await _bookingRepo.UpdateBooking(booking);
+                return SuccessResp.Ok("Check In Success");
             }
             catch (System.Exception ex)
             {

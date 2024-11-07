@@ -7,7 +7,7 @@ import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
 interface PopupType {
   type: string;
   closeModal: () => void;
-  banUser?: () => Promise<void>;
+  banUser?: (userId: string) => Promise<void>;
   user?: any;
 }
 const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
@@ -92,6 +92,12 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
     } catch (error) {
       console.error('Error creating user: ', error);
       throw error;
+    }
+  }
+
+  const handleBanUser = () => {
+    if (banUser) {
+      banUser(user.id);
     }
   }
 
@@ -192,7 +198,7 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
               <p>Are you sure to ban <b>{user? user.userName : "this User"}</b>?</p>
               <div className="btn-group">
                 <div className="cancel" onClick={closeModal}>No</div>
-                <div className="confirm" >Yes</div>
+                <div className="confirm" onClick={handleBanUser}>Yes</div>
               </div>
             </div>
           </div>

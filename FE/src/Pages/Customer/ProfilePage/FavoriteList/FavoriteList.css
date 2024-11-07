@@ -1,0 +1,93 @@
+.favorite-page-container {
+  display: flex;
+  justify-content: center; /* Căn giữa phần nội dung */
+  padding: 20px;
+  background-color: #f0f4f8;
+}
+
+.sidebar {
+  width: 250px;
+  margin-right: 20px; /* Khoảng cách giữa sidebar và nội dung */
+  background: linear-gradient(135deg, #4f4fd6, #a0c1f7);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.favorite-content {
+  flex: 1;
+  max-width: 800px; /* Đảm bảo phần nội dung không quá rộng */
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.no-favorites {
+  color: #666;
+  font-size: 16px;
+}
+
+.room-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.room-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.room-item:hover {
+  transform: translateY(-5px);
+}
+
+.image-container {
+  position: relative;
+}
+
+.room-image {
+  width: 100%;
+  height: auto;
+}
+
+.heart-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #ff4d4f;
+  font-size: 28px;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.heart-icon:hover {
+  color: darkred;
+  transform: scale(1.1);
+}
+
+.room-details {
+  padding: 15px;
+}
+
+.room-details h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.room-details p {
+  margin: 5px 0;
+  color: #555;
+}
