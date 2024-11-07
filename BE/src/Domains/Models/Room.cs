@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using BE.src.Domains.Enum;
 using BE.src.Domains.Models.Base;
+using Newtonsoft.Json;
 
 namespace BE.src.Domains.Models
 {
@@ -11,7 +12,6 @@ namespace BE.src.Domains.Models
                 public float Price { get; set; }
                 public StatusRoomEnum Status { get; set; }
                 public string Description { get; set; } = null!;
-                public bool IsDeleted { get; set; }
 
                 public Guid AreaId { get; set; }
                 public Area Area { get; set; } = null!;

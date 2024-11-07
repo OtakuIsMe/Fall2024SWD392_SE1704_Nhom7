@@ -1,4 +1,4 @@
-import { ThirtyFpsSelect } from "@mui/icons-material";
+import { Password, ThirtyFpsSelect } from "@mui/icons-material";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 export class ApiGateway {
@@ -32,15 +32,13 @@ export class ApiGateway {
             console.error("Login error:", error);
             throw error;
         }
-    } 
-    
-    public static async Register<T>(email: string, username: string, phone: string, password: string): Promise<T> {
+    }   public static async Register<T>(email: string, username: string, phone: string, password: string): Promise<T> {
         try {
             const data = {
                 email: email,
                 username: username,
                 phone: phone,
-                password: password,
+                password: password
             };
             console.log(data);
             const response = await this.axiosInstance.post<T>("user/Register", data);
@@ -50,7 +48,15 @@ export class ApiGateway {
             throw error;
         }
     }
-
+    public static async GetTransactionHistory<T>(userId: string): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`transaction/History/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error("GetTransactionHistory error:", error);
+            throw error;
+        }
+    }
     public static async GetUserByToken<T>(token: string): Promise<T> {
         try {
             const data = {
@@ -74,7 +80,17 @@ export class ApiGateway {
             throw error;
         }
     }
-
+    public static async UpdateUserProfile<T>(userData: any): Promise<T> {
+        try {
+            
+            const headers = userData instanceof FormData ? {} : { 'Content-Type': 'application/json' };
+            const response = await this.axiosInstance.post<T>("user/UpdateUserProfile", userData, { headers });
+            return response.data;
+        } catch (error) {
+            console.error("UpdateUserProfile error:", error);
+            throw error;
+        }
+    }
     public static async GetRoomList<T>(areaId: string = '', typeRoom: string = '', startDate: string = '', endDate: string = ''): Promise<T[]> {
         try {
             let fetchLink = 'room/GetRoomListWithBookingTimes?';
@@ -103,7 +119,68 @@ export class ApiGateway {
             throw error;
         }
     }
-
+    public static async CreateMembership<T>(name: string, discount: number, expDate: string, rank: number): Promise<T> {
+        try {
+          const requestBody = {
+            name,
+            discount,
+            expDate,
+            rank,
+          };
+    
+          const response = await this.axiosInstance.post<T>('/membership/Create-membership', requestBody);
+          return response.data;
+        } catch (error) {
+          console.error("Create Membership Error:", error);
+          throw error;
+        }
+      }
+    
+      public static async GetMembershipDetails<T>(id: string): Promise<T> {
+        try {
+          const response = await this.axiosInstance.get<T>(`/membership/get-membership-details/${id}`);
+          return response.data;
+        } catch (error) {
+          console.error("Get Membership Details Error:", error);
+          throw error;
+        }
+      }
+      public static async DeleteMembership<T>(id: string): Promise<T> {
+        try {
+          const response = await this.axiosInstance.delete<T>(`/membership/Delete-membership/${id}`);
+          return response.data;
+        } catch (error) {
+          console.error("Delete Membership Error:", error);
+          throw error;
+        }
+      }
+      public static async UpdateMembership<T>(id: string, name: string, discount: number, expDate: string, rank: number): Promise<T> {
+        try {
+          const requestBody = {
+            name,
+            discount,
+            expDate,
+            rank,
+          };
+    
+          const response = await this.axiosInstance.put<T>(`/membership/Update-membership/${id}`, requestBody);
+          return response.data;
+        } catch (error) {
+          console.error("Update Membership Error:", error);
+          throw error;
+        }
+      }
+      public static async GetAllMemberships<T>(): Promise<T[]> {
+        try {
+          const response = await this.axiosInstance.get<T[]>('/membership/Get-All');
+          return response.data;
+        } catch (error) {
+          console.error("Error fetching memberships:", error);
+          throw error;
+        }
+      }
+      
+    
     public static async GetRoomDetail<T>(hashCode: string): Promise<T> {
         try {
             const response = await this.axiosInstance.get<T>(`room/${hashCode}`);
@@ -114,7 +191,25 @@ export class ApiGateway {
             throw error;
         }
     }
-
+    public static async ResetPassword<T>(userId: string, oldPassword: string, newPassword: string): Promise<T> {
+        try {
+            const data = {
+                userId: userId,
+                oldPassword: oldPassword,
+                newPassword: newPassword
+            };
+            
+            const response = await this.axiosInstance.put<T>("user/ResetPassword", data);
+            return response.data;
+        } catch (error) {
+            console.error("ResetPassword error:", error);
+            throw error;
+        }
+    }
+    
+    
+    
+    
     public static async BookRoom<T>(userId: string, roomId: string, bookingItemDTOs: object[], timeHourBooking: number, dateBooking: string): Promise<T> {
         try {
             const bookingData = {
@@ -124,8 +219,6 @@ export class ApiGateway {
                 timeHourBooking: timeHourBooking,
                 dateBooking: dateBooking
             };
-
-            console.log(bookingData)
 
             const response = await this.axiosInstance.post<T>(`booking/room/`, bookingData);
 
@@ -197,7 +290,18 @@ export class ApiGateway {
             throw error
         }
     }
-
+    public static async ViewProfile<T>(data: any): Promise<T> {
+        try {
+            const response = await this.axiosInstance.post<T>("user/ViewProfile", data, {
+                headers: { 'Content-Type': 'application/json' } 
+            });
+            return response.data;
+        } catch (error) {
+    
+    
+            throw error;
+        }
+    }
     public static async CancelBooking<T>(bookingId: string): Promise<T> {
         try {
             const response = await this.axiosInstance.put<T>(`booking/CancelBookingByManager/${bookingId}`)
@@ -207,7 +311,31 @@ export class ApiGateway {
             throw error
         }
     }
+    public static async GetFavoriteRooms<T>(userId: string): Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`room/ViewListFavourite/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error("GetFavoriteRooms error:", error);
+            throw error;
+        }
+    }
 
+   
+
+
+// Thêm hoặc xóa phòng khỏi danh sách yêu thích
+public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T> {
+    try {
+        const response = await this.axiosInstance.get<T>(
+            `room/(Un)Favourite?userId=${userId}&roomId=${roomId}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error("UnfavoriteRoom error:", error);
+        throw error;
+    }
+}
     public static async CreateService<T>(name: string, type: number, price: number, image: File): Promise<T> {
         try {
             const formData = new FormData();
@@ -226,7 +354,39 @@ export class ApiGateway {
             throw error
         }
     }
-
+    public static async CreateArea<T>(
+        name: string,
+        description: string,
+        address: string,
+        longitude: number,
+        latitude: number,
+        images: File[]
+    ): Promise<T> {
+        try {
+            const formData = new FormData();
+            formData.append("Name", name);
+            formData.append("Description", description);
+            formData.append("Address", address);
+            formData.append("Longitude", longitude.toString());
+            formData.append("Latitude", latitude.toString());
+    
+            // Append multiple images
+            images.forEach((image, index) => {
+                formData.append(`Images`, image);
+            });
+    
+            const response = await axios.post<T>(`http://localhost:5101/area/Create`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.log("Create Area Error: ", error);
+            throw error;
+        }
+    }
+    
     public static async GetMembership<T>(): Promise<T[]> {
         try {
             const response = await this.axiosInstance.get<T[]>(`membership/Get-All`)
@@ -290,7 +450,39 @@ export class ApiGateway {
             throw error
         }
     }
-
+    public static async UpdateArea<T>(
+        id: string,
+        name: string,
+        description: string,
+        address: string,
+        longitude: number,
+        latitude: number,
+        images: File[] // Thêm kiểu images là mảng File
+      ): Promise<T> {
+        try {
+          const formData = new FormData();
+          formData.append("Name", name);
+          formData.append("Description", description);
+          formData.append("Address", address);
+          formData.append("Longitude", longitude.toString());
+          formData.append("Latitude", latitude.toString());
+    
+          // Thêm từng hình ảnh vào formData
+          images.forEach((image, index) => {
+            formData.append("Images", image); // Hoặc "Image[${index}]" nếu backend yêu cầu
+          });
+    
+          const response = await axios.put<T>(`http://localhost:5101/area/Update/${id}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          return response.data;
+        } catch (error) {
+          console.error("Update Area Error: ", error);
+          throw error;
+        }
+      }
     public static async CreateRoom<T>(areaId: string, type: number, name: string, price: string, description: string, images: File[]): Promise<T> {
         try {
             const utilityIds = [
@@ -411,6 +603,35 @@ export class ApiGateway {
         } catch (error) {
             console.error("Error deleting user:", error);
             throw error
+        }
+    }
+    public static async ScheduleManager<T>(startDate: string, endDate: string): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/booking/GetScheduleBookingForStaff?startDate=${startDate}&endDate=${endDate}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async CheckIn<T>(bookingId: string, isCheckIn: boolean): Promise<any> {
+        try {
+            const data = {
+                bookingId: bookingId,
+                isCheckIn: isCheckIn
+            }
+            const response = await this.axiosInstance.post<T>(`/booking/HandleCheckIn`, data)
+            return response.data;
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+    public static async ScheduleRoom<T>(startDate: string, endDate: string, roomId: any): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/room/RoomSchedule?roomId=${roomId}&StartDate=${startDate}&EndDate=${endDate}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
         }
     }
 }

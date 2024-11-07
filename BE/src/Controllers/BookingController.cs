@@ -86,5 +86,10 @@ namespace BE.src.Controllers
         {
             return await _bookingServ.CancleServiceByCustomer(data, bookingId);
         }
+        [HttpPost("HandleCheckIn")]
+        public async Task<IActionResult> HandleCheckIn([FromBody] CheckInRqDTO data)
+        {
+            return await _bookingServ.HandleCheckIn(data);
+        }
     }
 }

@@ -29,6 +29,7 @@ namespace BE.src.Services
         Task<IActionResult> TrendingRoom();
         Task<IActionResult> DeleteRoom(Guid RoomId);
         Task<IActionResult> UpdateRoom(Guid id, UpdateRoomDTO data);
+        Task<IActionResult> RoomSchedule(Guid roomId, DateTime StartDate, DateTime EndDate);
     }
     public class RoomServ : IRoomServ
     {
@@ -399,8 +400,8 @@ namespace BE.src.Services
                 {
                     return ErrorResp.NotFound("Not found image");
                 }
-                
-                if(data.Images == null || data.Images.Count == 0)
+
+                if (data.Images == null || data.Images.Count == 0)
                 {
                     room.Images = existingImages;
 
@@ -415,7 +416,7 @@ namespace BE.src.Services
                     int count = 0;
                     foreach (IFormFile image in data.Images)
                     {
-                        string? urlFirebase = await Utils.UploadImgToFirebase(image, count.ToString(), 
+                        string? urlFirebase = await Utils.UploadImgToFirebase(image, count.ToString(),
                                 $"Room/{Utils.ConvertToUnderscore(room.Area?.Name ?? "Unknown")}/{Utils.ConvertToUnderscore(room.Name)}");
                         if (urlFirebase == null)
                         {
@@ -453,6 +454,19 @@ namespace BE.src.Services
                 }
 
                 return SuccessResp.Ok("Update room success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> RoomSchedule(Guid roomId, DateTime StartDate, DateTime EndDate)
+        {
+            try
+            {
+                List<Booking> bookings = await _bookingRepo.ScheduleRoom(roomId, StartDate, EndDate);
+                return SuccessResp.Ok(bookings);
             }
             catch (System.Exception ex)
             {
