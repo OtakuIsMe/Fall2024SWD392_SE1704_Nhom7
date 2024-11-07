@@ -198,10 +198,18 @@
 }
 
 #room-detail-page .room-detail-container .room-booking .price-booking {
-    font-size: 28px;
-    margin: 0;
+    display: flex;
+    font-size: 2rem;
     font-weight: 600;
+    margin: 0;
     color: #00002c;
+    align-items: end;
+}
+
+#room-detail-page .room-detail-container .room-booking .price-booking p {
+    font-size: 1rem;
+    margin: 0;
+    margin-bottom: 5px;
 }
 
 #room-detail-page .room-detail-container .room-booking .booking-detail {

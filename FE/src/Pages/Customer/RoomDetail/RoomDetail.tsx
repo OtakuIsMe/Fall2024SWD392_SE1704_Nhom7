@@ -576,7 +576,7 @@ const RoomDetail = () => {
             )}
           </div>
           <form className="room-booking" onSubmit={postBookingRoom}>
-            <p className="price-booking">{priceConvert(roomInfo?.price)}VND/h</p>
+            <p className="price-booking">{priceConvert(roomInfo?.price)}<p>VND/h</p></p>
             <div className="booking-detail">
               <div className="book-interval">
                 <div className="check-in box-time">
