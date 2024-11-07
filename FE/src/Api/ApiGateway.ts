@@ -69,7 +69,35 @@ export class ApiGateway {
             throw error;
         }
     }
-
+    public static async AddFeedback<T>(userId: string, roomId: string, feedback: string, ratingStar: number): Promise<T> {
+        try {
+            const data = {
+                feedback,
+                ratingStar
+            };
+            
+            const response = await this.axiosInstance.post<T>(`/user/AddFeedback?userId=${userId}&roomId=${roomId}`, data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            return response.data;
+        } catch (error) {
+            console.error("AddFeedback error:", error);
+            throw error;
+        }
+    }
+    public static async ViewNotification<T>(userId: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/user/ViewNotification/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error("ViewNotification error:", error);
+            throw error;
+        }
+    }
+    
     public static async GetUserList<T>(): Promise<T[]> {
         try {
             const response = await this.axiosInstance.get<T[]>(`user/GetAllUser`);
@@ -402,7 +430,33 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
             throw error
         }
     }
-
+    public static async CancelServiceByCustomer<T>(bookingId: string, bookingItems: { bookingItemId: string, amount: number }[]): Promise<T> {
+        try {
+            const response = await this.axiosInstance.post<T>(`/booking/CancelServiceByCustomer/${bookingId}`, bookingItems, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("CancelServiceByCustomer error:", error);
+            throw error;
+        }
+    }
+    public static async CancelBookingByCustomer<T>(bookingId: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.post<T>(`/booking/CancelBookingByCustomer/${bookingId}`, null, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("CancelBookingByCustomer error:", error);
+            throw error;
+        }
+    }
+    
     public static async GetFeedback<T>(): Promise<T[]> {
         try {
             const response = await this.axiosInstance.get<T[]>(`report/rating-feedbacks`)
