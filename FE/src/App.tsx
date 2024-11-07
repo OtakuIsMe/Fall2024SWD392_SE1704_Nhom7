@@ -24,6 +24,7 @@ import ResetPassword from "./Pages/Customer/ProfilePage/ResetPassword/ResetPassw
 import Profile from "./Pages/Customer/ProfilePage/Profile/Profile.tsx";
 import { Register } from "./Pages/Register/Register.tsx";
 import CheckIn from "./Pages/Admin/CheckIn/CheckIn.tsx";
+import Membership from "./Pages/Customer/Membership/Membership.tsx";
 const App: React.FC = () => {
   const location = useLocation();
 
@@ -47,8 +48,9 @@ const App: React.FC = () => {
           <Route path="/profile" element={<Profile />} />
           {/* <Route path="/favorites" element={<FavoriteList />} /> */}
           <Route path="/register" element={<Register />} />
-          <Route path="/reset-password" element={<ResetPassword />} />\
-          
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/membership" element={<Membership />} />
+
 
           <Route element={<ProtectedRoute allowedRoles={['6489cb2a-f4df-4020-bf31-56f2a19d30c3']} />}>
             <Route path="/" element={<AdminLayout />}>
@@ -60,7 +62,7 @@ const App: React.FC = () => {
               <Route path="/rooms" element={<RoomManagement />} />
               <Route path="/feedbacks&reports" element={<FRManagement />} />
               <Route path="/areas" element={<AreaManagement />} />
-              <Route path="/membership" element={<MembershipManagement />} />
+              <Route path="/membership-mng" element={<MembershipManagement />} />
             </Route>
           </Route>
 
@@ -74,7 +76,7 @@ const App: React.FC = () => {
               <Route path="/requests" element={<RequestManagement />} />
               <Route path="/rooms" element={<RoomManagement />} />
               <Route path="/feedbacks&reports" element={<FRManagement />} />
-              <Route path="/membership" element={<MembershipManagement />} />
+              <Route path="/membership-mng" element={<MembershipManagement />} />
               {/* Excluding "/areas" for Managers */}
             </Route>
           </Route>

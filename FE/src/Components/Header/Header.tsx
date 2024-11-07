@@ -8,6 +8,7 @@ import { Button, IconButton, Menu, MenuItem } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Header.css';
 import { AuthenContext } from '../AuthenContext';
+import { HiOutlineBellAlert } from "react-icons/hi2";
 
 // Define the props type
 interface HeaderProps {
@@ -18,6 +19,7 @@ gsap.registerPlugin(ScrollTrigger, CSSRulePlugin);
 
 const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const navigate = useNavigate();
+  const [isOpenNotification, setIsOnpenNotification] = useState<boolean>(false);
 
   const navbar = [
     { name: 'Home', link: '/' },
@@ -44,9 +46,9 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const handleLoginClick = () => {
     navigate('/login');
   };
-const handleProfileCLick = () => {
-  navigate('/profile');
-}
+  const handleProfileCLick = () => {
+    navigate('/profile');
+  }
   const handleRegisterClick = () => {
     setIsRegisterOpen(true);
   };
@@ -69,7 +71,7 @@ const handleProfileCLick = () => {
     setIsRegisterOpen(false);
   };
 
-  useEffect(() => {},[user]);
+  useEffect(() => { }, [user]);
 
   useEffect(() => {
     if (divRef1.current) {
@@ -225,6 +227,9 @@ const handleProfileCLick = () => {
       <div ref={divRef2} className="account">
         {user ? (
           <>
+            <div className=' bell-container'>
+              <HiOutlineBellAlert className='bell' onClick={() => { }} />
+            </div>
             <IconButton onClick={handleMenu} color="inherit">
               <AccountCircleIcon />
             </IconButton>

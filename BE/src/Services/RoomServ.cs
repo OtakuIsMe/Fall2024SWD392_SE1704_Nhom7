@@ -331,7 +331,6 @@ namespace BE.src.Services
 
                         var isCreateRefund = await _transactionRepo.CreatePaymentRefund(newPaymentRefund);
                         //Add Transaction
-                        Console.WriteLine("c");
                         Transaction transaction = new()
                         {
                             TransactionType = TypeTransactionEnum.Refund,
@@ -340,17 +339,14 @@ namespace BE.src.Services
                             UserId = booking.UserId
                         };
                         var isCreateTransaction = await _transactionRepo.CreateTransaction(transaction);
-                        Console.WriteLine("c");
                         //Add Money for customer
                         var user = await _userRepo.GetUserById(booking.UserId);
-                        Console.WriteLine("c");
                         if (user == null)
                         {
                             return ErrorResp.NotFound("Cant find user");
                         }
                         user.Wallet += booking.Total;
                         var isUpdateUser = await _userRepo.UpdateUser(user);
-                        Console.WriteLine("c");
                     }
                     //Send Notification
                     Notification notification = new()
@@ -360,11 +356,9 @@ namespace BE.src.Services
                         UserId = booking.UserId
                     };
                     var isCreateNotification = await _userRepo.CreateNotification(notification);
-                    Console.WriteLine("c");
                     //Change Booking Status
                     booking.Status = StatusBookingEnum.Canceled;
                     var isUpdateBooking = await _bookingRepo.UpdateBooking(booking);
-                    Console.WriteLine("c");
                 }
                 //Change Room Status
                 var room = await _roomRepo.GetRoomById(roomId);
