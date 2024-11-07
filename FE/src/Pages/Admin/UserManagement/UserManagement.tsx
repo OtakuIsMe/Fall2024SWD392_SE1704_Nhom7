@@ -113,13 +113,7 @@ const UserManagement: React.FC = () => {
   };
 
   const openBanModal = (row: any) => {
-    console.log(row.id)
-    console.log(row.name)
-    setThisUser({
-      ...thisUser,
-      id: row.id,
-      userName: row.userName
-    })
+    setThisUser(row)
     setIsBanModalOpen(true);
     console.log('open')
   };
@@ -146,6 +140,7 @@ const UserManagement: React.FC = () => {
       const responsse = await ApiGateway.ChangeRoleAndStatus(userId, role, status)
       console.log(responsse)
       await fetchUsers()
+      setThisUser({})
       closeChangeRoleModal()
     } catch (error) {
       throw error
@@ -157,6 +152,8 @@ const UserManagement: React.FC = () => {
       console.log(userId)
       const response = await ApiGateway.ChangeRoleAndStatus(userId, role, status);
       await fetchUsers()
+      setThisUser({})
+      closeBanModal()
     } catch (error) {
       console.log(error)
       throw error

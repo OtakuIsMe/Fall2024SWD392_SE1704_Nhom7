@@ -20,6 +20,28 @@ export class ApiGateway {
         }
     }
 
+    public static async GetServicesCustomer<T>(startDate: string, endDate: string): Promise<T[]> {
+        try {
+            let fetchLink = '/amenityservice/GetServiceWhenBooking?';
+            const params: string[] = [];
+
+            if (startDate) {
+                params.push(`startDate=${encodeURIComponent(startDate)}`);
+            }
+            if (endDate) {
+                params.push(`endDate=${encodeURIComponent(endDate)}`);
+            }
+
+            fetchLink += params.join('&');
+            console.log(fetchLink);
+
+            const response = await this.axiosInstance.get<T[]>(fetchLink);
+            return response.data
+        } catch (error) {
+            throw error
+        }
+    }
+
     public static async LoginDefault<T>(email: string, password: string): Promise<T> {
         try {
             const data = {
@@ -184,7 +206,6 @@ export class ApiGateway {
     public static async GetRoomDetail<T>(hashCode: string): Promise<T> {
         try {
             const response = await this.axiosInstance.get<T>(`room/${hashCode}`);
-            console.log(response.data);
             return response.data
         } catch (error) {
             console.error("GetRoomDetail error:", error);

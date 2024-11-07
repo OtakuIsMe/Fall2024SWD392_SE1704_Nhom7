@@ -101,10 +101,10 @@ const Modal:React.FC<PopupType> = ({closeModal, type, userInfo, banUser, changeR
 
   const handleBanUser = () => {
     if (banUser) {
-      if (userInfo.status === 'Banned') {
-        banUser(userInfo.id, userRole, 2);
+      if (userInfo.status !== 'Banned') {
+        banUser(userInfo.id, getUserRoleCode(userInfo.role), 2);
       } else {
-        banUser(userInfo.id, userRole, 0);
+        banUser(userInfo.id, getUserRoleCode(userInfo.role), 0);
       }
     }
   }
@@ -128,7 +128,6 @@ const Modal:React.FC<PopupType> = ({closeModal, type, userInfo, banUser, changeR
   }
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) =>{setUserRole(parseInt(e.target.value))}
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) =>{setUserStatus(parseInt(e.target.value))}
 
   useEffect(() => {
     if (userInfo) {
@@ -220,7 +219,7 @@ const Modal:React.FC<PopupType> = ({closeModal, type, userInfo, banUser, changeR
           <div id="user_ban_modal" style={{display: "static"}}>
             <div className="ban-confirm">
               <ErrorRoundedIcon sx={{color: "#C90000", fontSize: "64px"}}/>
-              <p>Are you sure to ban <b>{userInfo? userInfo.userName : "this User"}</b>?</p>
+              <p>Are you sure to ban <b>{userInfo? userInfo.username : "this User"}</b>?</p>
               <div className="btn-group">
                 <div className="cancel" onClick={closeModal}>No</div>
                 <div className="confirm" onClick={handleBanUser}>Yes</div>
