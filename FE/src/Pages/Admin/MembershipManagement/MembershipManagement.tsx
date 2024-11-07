@@ -84,7 +84,7 @@ const MembershipManagement: React.FC = () => {
       console.error('Error get membership list :', error);
     }
   }
-
+    
   const openModal = () => {
     setIsModalOpen(true);
     console.log('open')
