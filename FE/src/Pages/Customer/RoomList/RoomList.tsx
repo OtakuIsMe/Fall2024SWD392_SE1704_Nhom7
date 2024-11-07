@@ -49,7 +49,7 @@ const RoomList: React.FC = () => {
 
   useEffect(() => {
     const date = new Date();
-    const curTime = dayjs(date).set('minute', 0).add(1, 'hour').format('YYYY-MM-DDThh:mm')
+    const curTime = dayjs(date).add(1, 'day').set('minute', 0).set('hour', 7).format('YYYY-MM-DDThh:mm')
     const maxTime = dayjs(date).set('hour', 0).set('minute', 0).add(30, 'day').format('YYYY-MM-DDThh:mm')
     setMax(maxTime)
     setMin(curTime)
@@ -81,28 +81,50 @@ const RoomList: React.FC = () => {
     }
   }
 
-  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) : void => {
-    let startT = event.target.value
-    let endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let startT = event.target.value;
+    
+    let startDateTime = dayjs(startT);
+    const startMinutes = startDateTime.minute();
+    startDateTime = startMinutes <= 30 
+      ? startDateTime.minute(0) 
+      : startDateTime.add(1,'hour').minute(0);
+    startT = startDateTime.format('YYYY-MM-DDTHH:mm');
+
+    let endDateTime = startDateTime.add(1, 'hour');
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1, 'hour').minute(0);
+    const endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
     setStart(startT);
-    if (dayjs(endDate).isBefore(startT)) {
+    sessionStorage.setItem('startDate', startT);
+  
+    if (dayjs(endDate).isBefore(startT) || dayjs(endDate).isSame(startT)) {
       setEnd(endT);
-      
-      sessionStorage.setItem('endDate', endDate)
+      sessionStorage.setItem('endDate', endT);
     }
+  
     setMinEnd(endT);
-    sessionStorage.setItem('startDate', startDate)
   };
-
-  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) : void => {
-    const endT = event.target.value;
-
+  
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let endT = event.target.value;
+  
+    let endDateTime = dayjs(endT);
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1,'hour').minute(0);
+    endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
     if (dayjs(endT).isBefore(minEnd)) {
       setEnd(minEnd);
     } else {
       setEnd(endT);
+      sessionStorage.setItem('endDate', endT);
     }
-    sessionStorage.setItem('endDate', endDate)
   };
 
   const preventKeyboardInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -203,7 +225,7 @@ const RoomList: React.FC = () => {
         <div className="room-list-container">
           <div className="room-list">
             <div className="list">
-              {roomList.map((room: any, index: number) =>
+              {roomList?.map((room: any, index: number) =>
                 (<Card 
                   key={index}
                   id={room.id} 
