@@ -79,3 +79,12 @@
 #header>.account>.register:hover::before {
     width: 100%;
 }
+
+#header .bell-container {
+    position: relative;
+}
+
+#header .bell {
+    font-size: 33px;
+    margin-right: 20px;
+}

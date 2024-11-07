@@ -10,10 +10,11 @@ interface ItemCardProps {
     name: string;
     type: number;
     price: number;
+    quantity?: number;
     children: ReactNode
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ id, img, name , type, price, children}) => {
+const ItemCard: React.FC<ItemCardProps> = ({ id, img, name , type, price, quantity, children}) => {
     const priceConvert = (amount: number): string => {
         return new Intl.NumberFormat('de-DE', { style: 'decimal' }).format(amount);
     }

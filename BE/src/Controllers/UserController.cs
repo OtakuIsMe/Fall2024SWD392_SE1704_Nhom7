@@ -84,11 +84,6 @@ namespace BE.src.Controllers
         {
             return await _userServ.AddFeedback(userId, roomId, data);
         }
-        [HttpPut("DeleteUser")]
-        public async Task<IActionResult> DeleteUser([FromQuery] Guid userId)
-        {
-            return await _userServ.DeleteUser(userId);
-        }
 
         [HttpGet("Total")]
         public async Task<IActionResult> GetUserCount()
@@ -102,9 +97,9 @@ namespace BE.src.Controllers
         }
 
         [HttpPost("UpdateRoleUser/{userId:Guid}")]
-        public async Task<IActionResult> UpdateRoleUser(Guid userId, [FromForm] RoleEnum roles)
+        public async Task<IActionResult> UpdateRoleUser(Guid userId, [FromBody] UpdateRoleUserDTO data)
         {
-            return await _userServ.UpdateRoleUser(userId, roles);
+            return await _userServ.UpdateRoleUser(userId, data.roles, data.status);
         }
     }
 }

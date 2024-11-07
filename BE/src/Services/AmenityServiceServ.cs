@@ -18,6 +18,7 @@ namespace BE.src.Services
         Task<IActionResult> UpdateService(Guid id, UpdateServiceDTO service);
         Task<IActionResult> DeleteService(Guid amenityServiceId);
         Task<IActionResult> CheckService(Guid BookingItemsId, Guid StaffId, DeviceCheckingDTO data);
+        Task<IActionResult> GetServicesWhenBooking(DateTime startDate, DateTime endDate);
     }
 
     public class AmenityServiceServ : IAmenityServiceServ
@@ -87,7 +88,6 @@ namespace BE.src.Services
                 {
                     Name = data.Name,
                     IsNormal = true,
-                    IsInUse = false,
                     AmenitySerivceId = data.AmenityServiceId
                 };
                 bool isCreated = await _amenityServiceRepo.CreateServiceDetail(serviceDetail);
@@ -108,18 +108,7 @@ namespace BE.src.Services
             try
             {
                 var amenityServices = await _amenityServiceRepo.GetAllAmenityService();
-                List<GetServicesDTO> returnServices = new List<GetServicesDTO>();
-                foreach (AmenityService amenityService in amenityServices)
-                {
-                    int count = await _amenityServiceRepo.CountServiceRemain(amenityService.Id);
-                    GetServicesDTO returnService = new()
-                    {
-                        amenityService = amenityService,
-                        RemainingQuantity = count
-                    };
-                    returnServices.Add(returnService);
-                }
-                return SuccessResp.Ok(returnServices);
+                return SuccessResp.Ok(amenityServices);
             }
             catch (System.Exception)
             {
@@ -150,7 +139,7 @@ namespace BE.src.Services
                 if (service.Price != null)
                 {
                     serviceToUpdate.Price = (float)service.Price;
-                }        
+                }
                 else
                 {
                     serviceToUpdate.Price = serviceToUpdate.Price;
@@ -306,6 +295,39 @@ namespace BE.src.Services
                     }
                 }
                 return SuccessResp.Ok("Check Device Success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetServicesWhenBooking(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                List<AmenityService> amenityServicesAvailable = (await _amenityServiceRepo.GetAllAmenityService())
+                                                                    .Where(s => s.Status == StatusServiceEnum.Available)
+                                                                    .ToList();
+                List<GetServicesDTO> returnServices = new();
+
+                foreach (var amenityService in amenityServicesAvailable)
+                {
+                    GetServicesDTO returnService = new()
+                    {
+                        amenityService = amenityService
+                    };
+                    if (amenityService.Type == AmenityServiceTypeEnum.Amenity)
+                    {
+                        returnService.RemainingQuantity = (await _amenityServiceRepo
+                                                            .GetListServiceAvailableByDateAndServiceId(startDate, endDate, amenityService.Id))
+                                                            .Count();
+                    }
+                    returnService.amenityService.ServiceDetails = [];
+                    returnServices.Add(returnService);
+                }
+
+                return SuccessResp.Ok(returnServices);
             }
             catch (System.Exception ex)
             {

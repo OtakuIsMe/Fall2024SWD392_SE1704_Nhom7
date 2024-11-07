@@ -4,3 +4,16 @@
     transition: all .05s;
     cursor: pointer;
 }
+
+.roleLabel {
+    width: fit-content;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.statusLabel{
+    padding: 5px 8px;
+    border-radius: 50px;
+    cursor: pointer;
+}

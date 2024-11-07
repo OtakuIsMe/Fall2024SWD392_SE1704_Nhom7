@@ -385,7 +385,7 @@ const Modal:React.FC<PopupType> = ({ type, closeModal, editService, deleteServic
                         <></>
                       }
                     </div>
-                    <TextField type="number" name="price" variant="outlined" onKeyDown={handleKeyDown} size="small" fullWidth onChange={handleChange} placeholder={service.price}/>
+                    <TextField type="number" name="price" variant="outlined" onKeyDown={handleKeyDown} size="small" fullWidth onChange={handleChange} placeholder={service.price.toString()}/>
                   </label>
                 </div>
               </div>

@@ -73,9 +73,7 @@ builder.Services.AddScoped<ITransactionRepo, TrasactionRepo>();
 builder.Services.AddScoped<IAnalysticRepo, AnalysticRepo>();
 builder.Services.AddScoped<IReportRepo, ReportRepo>();
 
-builder.Services.AddDbContext<PodDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-    new MySqlServerVersion(new Version(8, 0, 27))));
+builder.Services.AddDbContext<PodDbContext>();
 
 var app = builder.Build();
 

@@ -1,0 +1,79 @@
+#membership-page .body-container {
+    height: calc(100vh - 260px);
+    padding-top: 180px;
+}
+
+#membership-page .body {
+    margin: auto auto;
+    width: fit-content;
+}
+
+#membership-page .body .title {
+    width: fit-content;
+    margin: 0 auto 60px auto;
+}
+
+#membership-page .body .cards {
+    display: flex;
+    height: 360px;
+    align-items: center;
+}
+
+#membership-page .body .cards .card {
+    width: 330px;
+    height: fit-content;
+    border-radius: 20px;
+    margin: 0 15px;
+    cursor: pointer;
+}
+
+#membership-page .body .cards .card:hover {
+    height: 320px;
+}
+
+#membership-page .body .cards .card:hover .head-card {
+    font-size: 24px;
+    height: 62px;
+}
+
+
+#membership-page .body .cards .card .head-card {
+    height: 60px;
+    background-color: aqua;
+    border-top-left-radius: 17px;
+    border-top-right-radius: 17px;
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+#membership-page .body .cards .card .body-card {
+    padding: 30px;
+}
+
+#membership-page .body .cards .card .body-card .price {
+    font-size: 50px;
+    margin: 0;
+    margin-bottom: 30px;
+    font-family: Arial, sans-serif;
+}
+
+#membership-page .body .cards .card:hover .body-card .price {
+    font-size: 55px;
+}
+
+#membership-page .body .cards .card .body-card .price svg {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+#membership-page .body .cards .card .body-card .time-left {
+    margin: 0;
+    margin-bottom: 30px;
+}
+
+#membership-page .body .cards .card .body-card p {
+    font-size: 14px;
+}

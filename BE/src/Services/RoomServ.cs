@@ -29,6 +29,8 @@ namespace BE.src.Services
         Task<IActionResult> TrendingRoom();
         Task<IActionResult> DeleteRoom(Guid RoomId);
         Task<IActionResult> UpdateRoom(Guid id, UpdateRoomDTO data);
+        Task<IActionResult> RoomSchedule(Guid roomId, DateTime StartDate, DateTime EndDate);
+        Task<IActionResult> GetAllRoomsAsync();
     }
     public class RoomServ : IRoomServ
     {
@@ -329,7 +331,6 @@ namespace BE.src.Services
 
                         var isCreateRefund = await _transactionRepo.CreatePaymentRefund(newPaymentRefund);
                         //Add Transaction
-                        Console.WriteLine("c");
                         Transaction transaction = new()
                         {
                             TransactionType = TypeTransactionEnum.Refund,
@@ -338,17 +339,14 @@ namespace BE.src.Services
                             UserId = booking.UserId
                         };
                         var isCreateTransaction = await _transactionRepo.CreateTransaction(transaction);
-                        Console.WriteLine("c");
                         //Add Money for customer
                         var user = await _userRepo.GetUserById(booking.UserId);
-                        Console.WriteLine("c");
                         if (user == null)
                         {
                             return ErrorResp.NotFound("Cant find user");
                         }
                         user.Wallet += booking.Total;
                         var isUpdateUser = await _userRepo.UpdateUser(user);
-                        Console.WriteLine("c");
                     }
                     //Send Notification
                     Notification notification = new()
@@ -358,11 +356,9 @@ namespace BE.src.Services
                         UserId = booking.UserId
                     };
                     var isCreateNotification = await _userRepo.CreateNotification(notification);
-                    Console.WriteLine("c");
                     //Change Booking Status
                     booking.Status = StatusBookingEnum.Canceled;
                     var isUpdateBooking = await _bookingRepo.UpdateBooking(booking);
-                    Console.WriteLine("c");
                 }
                 //Change Room Status
                 var room = await _roomRepo.GetRoomById(roomId);
@@ -395,12 +391,15 @@ namespace BE.src.Services
                 room.Description = data.Description ?? room.Description;
 
                 var existingImages = await _roomRepo.GetImagesByRoomId(id);
+
+                Console.WriteLine(existingImages.Count + " - " + data.Images.Count);
+
                 if (existingImages == null || existingImages.Count == 0)
                 {
                     return ErrorResp.NotFound("Not found image");
                 }
-                
-                if(data.Images == null || data.Images.Count == 0)
+
+                if (data.Images == null || data.Images.Count == 0)
                 {
                     room.Images = existingImages;
 
@@ -415,31 +414,56 @@ namespace BE.src.Services
                     int count = 0;
                     foreach (IFormFile image in data.Images)
                     {
-                        string? urlFirebase = await Utils.UploadImgToFirebase(image, count.ToString(), 
+                        string? urlFirebase = await Utils.UploadImgToFirebase(image, count.ToString(),
                                 $"Room/{Utils.ConvertToUnderscore(room.Area?.Name ?? "Unknown")}/{Utils.ConvertToUnderscore(room.Name)}");
                         if (urlFirebase == null)
                         {
                             return ErrorResp.BadRequest("Fail to save image to firebase");
                         }
 
-                        var imageRoom = await _roomRepo.GetImageByRoomId(id);
+                        var imageRoom = await _roomRepo.GetImagesByRoomIdTpUpdate(id);
                         if (imageRoom == null)
                         {
                             return ErrorResp.NotFound("Not found image");
                         }
 
-                        var imageObj = new Image
-                        {
-                            Id = imageRoom.Id,
-                            Url = urlFirebase,
-                            UpdateAt = DateTime.Now
-                        };
+                        var imagesToKeep = new List<Image>();
 
-                        var isImageCreated = await _roomRepo.UpdateImageRoom(imageObj);
-                        if (!isImageCreated)
+                        foreach (var img in imageRoom)
                         {
-                            return ErrorResp.BadRequest("Fail to save image to database");
+                            var imageObj = new Image
+                            {
+                                Id = img.Id,
+                                Url = urlFirebase,
+                                UpdateAt = DateTime.Now
+                            };
+
+                            var isImageUpdated = await _roomRepo.UpdateImageRoom(imageObj);
+                            if (!isImageUpdated)
+                            {
+                                return ErrorResp.BadRequest("Fail to save image to database");
+                            }
+
+                            imagesToKeep.Add(imageObj);
                         }
+
+                        var imgFirstUpdated = await _roomRepo.GetImageBySingleRoomId(id);
+
+                        var allImages = await _roomRepo.GetImagesByRoomId(id);
+                        var imagesToDelete = allImages
+                                        .Where(img => imgFirstUpdated?.UpdateAt != null &&
+                                                        imgFirstUpdated.UpdateAt.Value.Ticks < img.UpdateAt.Value.Ticks)
+                                        .ToList();
+
+                        foreach (var img in imagesToDelete)
+                        {
+                            var isImageDeleted = await _roomRepo.DeleteImageRoom(img.Id);
+                            if (!isImageDeleted)
+                            {
+                                return ErrorResp.BadRequest("Fail to delete image from database");
+                            }
+                        }
+
                         count++;
                     }
                 }
@@ -453,6 +477,32 @@ namespace BE.src.Services
                 }
 
                 return SuccessResp.Ok("Update room success");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> RoomSchedule(Guid roomId, DateTime StartDate, DateTime EndDate)
+        {
+            try
+            {
+                List<Booking> bookings = await _bookingRepo.ScheduleRoom(roomId, StartDate, EndDate);
+                return SuccessResp.Ok(bookings);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetAllRoomsAsync()
+        {
+            try
+            {
+                var rooms = await _roomRepo.GetAllRooms();
+                return SuccessResp.Ok(rooms);
             }
             catch (System.Exception ex)
             {

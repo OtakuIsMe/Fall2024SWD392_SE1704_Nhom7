@@ -49,29 +49,53 @@ const HomePage: React.FC = () => {
 
   const search = () => {
     navigate('/roomlist')
+    sessionStorage.setItem('startDate', startDate)
+    sessionStorage.setItem('endDate', endDate)
   }
 
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let startT = event.target.value
-    let endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+    let startT = event.target.value;
+    
+    let startDateTime = dayjs(startT);
+    const startMinutes = startDateTime.minute();
+    startDateTime = startMinutes <= 30 
+      ? startDateTime.minute(0) 
+      : startDateTime.add(1,'hour').minute(0);
+    startT = startDateTime.format('YYYY-MM-DDTHH:mm');
+
+    let endDateTime = startDateTime.add(1, 'hour');
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1, 'hour').minute(0);
+    const endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
     setStart(startT);
-    if (dayjs(endDate).isBefore(startT)) {
+    sessionStorage.setItem('startDate', startT);
+  
+    if (dayjs(endDate).isBefore(startT) || dayjs(endDate).isSame(startT)) {
       setEnd(endT);
-      
-      sessionStorage.setItem('endDate', endDate)
+      sessionStorage.setItem('endDate', endT);
     }
+  
     setMinEnd(endT);
-    sessionStorage.setItem('startDate', startDate)
   };
-
+  
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const endT = event.target.value;
-
+    let endT = event.target.value;
+  
+    let endDateTime = dayjs(endT);
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1,'hour').minute(0);
+    endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
     if (dayjs(endT).isBefore(minEnd)) {
       setEnd(minEnd);
     } else {
       setEnd(endT);
-      sessionStorage.setItem('endDate', endDate)
+      sessionStorage.setItem('endDate', endT);
     }
   };
 
@@ -99,7 +123,9 @@ const HomePage: React.FC = () => {
     setMax(maxTime)
     setMin(curTime)
     setMinEnd(curTime)
-  }, [])
+    sessionStorage.setItem('startDate', curTime)
+    sessionStorage.setItem('endDate', endTime)
+    }, [])
 
   return (
     <div id='hp'>

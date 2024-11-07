@@ -108,7 +108,8 @@
     align-items: center;
 }
 
-#service_modal .image-placeholder,#service_modal .image-selected {
+#service_modal .image-placeholder,
+#service_modal .image-selected {
     display: flex;
     justify-content: center;
     height: 100%;
@@ -125,7 +126,7 @@
 }
 
 #service_modal .image-label > img {
-    height: 100%;
+    height: calc(50vh - 30px - 44px);
     object-fit: cover; 
     border-radius: 8px; 
 }

@@ -15,10 +15,13 @@ import { AuthenContext } from '../../../Components/AuthenContext';
 import './AdminLayout.css';
 
 const AdminLayout: React.FC = () => {
+
   const context = useContext(AuthenContext);
+
   if (!context) {
     throw new Error("useAuthenContext must be used within an AuthenProvider");
   }
+  
   const { user, logout } = context;
 
   const roleBasedNavItems = [

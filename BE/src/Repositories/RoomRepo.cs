@@ -35,9 +35,13 @@ namespace BE.src.Repositories
         Task<bool> UpdateImageRoom(Image image);
         Task<bool> UpdateSecondImageRoom(List<Image> image);
         Task<List<Image>> GetImagesByRoomId(Guid roomId);
-        Task<Image?> GetImageByRoomId(Guid roomId);
+        Task<Image?> GetImageBySingleRoomId(Guid roomId);
+        Task<List<Image>> GetImagesByRoomIdTpUpdate(Guid roomId);
+        Task<bool> DeleteImageRoom(Guid imageId);
+        Task<List<Room>> GetAllRooms();
     }
     public class RoomRepo : IRoomRepo
+
     {
         private readonly PodDbContext _context;
         public RoomRepo(PodDbContext context)
@@ -262,7 +266,8 @@ namespace BE.src.Repositories
 
         public async Task<List<Image>> GetImagesByRoomId(Guid roomId)
         {
-            return await _context.Images.Where(i => i.RoomId == roomId).ToListAsync();
+            return await _context.Images
+                        .Where(i => roomId.Equals(i.RoomId)).ToListAsync();
         }
 
         public async Task<bool> UpdateImageRoom(Image image)
@@ -282,10 +287,32 @@ namespace BE.src.Repositories
             return true;
         }
 
-        public async Task<Image?> GetImageByRoomId(Guid roomId)
+        public async Task<Image?> GetImageBySingleRoomId(Guid roomId)
         {
-            return await _context.Images.OrderByDescending(i => i.UpdateAt ?? i.CreateAt)
-                                    .Take(1).FirstOrDefaultAsync(i => i.RoomId == roomId);
+            return await _context.Images.Where(i => i.RoomId == roomId).OrderByDescending(i => i.UpdateAt ?? DateTime.MinValue).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Image>> GetImagesByRoomIdTpUpdate(Guid roomId)
+        {
+            return await _context.Images.OrderByDescending(i => i.UpdateAt)
+                        .Where(i => roomId.Equals(i.RoomId)).ToListAsync();
+        }
+
+        public async Task<bool> DeleteImageRoom(Guid imageId)
+        {
+            var image = await _context.Images.FirstOrDefaultAsync(i => i.Id.Equals(imageId));
+            if (image == null) { return false; }
+
+            _context.Images.Remove(image);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<List<Room>> GetAllRooms()
+        {
+            return await _context.Rooms
+                                .Include(r => r.Images)
+                                .ToListAsync();
         }
     }
 }

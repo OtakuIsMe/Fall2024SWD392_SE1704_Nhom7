@@ -99,5 +99,15 @@ namespace BE.src.Controllers
         {
             return await _roomServ.UpdateRoom(roomId, data);
         }
+        [HttpGet("RoomSchedule")]
+        public async Task<IActionResult> RoomSchedule([FromQuery] Guid roomId, [FromQuery] DateTime StartDate, [FromQuery] DateTime EndDate)
+        {
+            return await _roomServ.RoomSchedule(roomId, StartDate, EndDate);
+        }
+        [HttpGet("GetAllRooms")]
+        public async Task<IActionResult> GetAllRooms()
+        {
+            return await _roomServ.GetAllRoomsAsync();
+        }
     }
 }

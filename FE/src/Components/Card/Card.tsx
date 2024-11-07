@@ -27,7 +27,7 @@ const Card: React.FC<CardProps> = ({ id, img, type, price }) => {
                     <p className='title'>{type}</p>
                     {/* <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Magnam et at magni beatae laboriosam mollitia assume</p> */}
                 </div>
-                <p className='price'>{priceConvert(price)}VND/h</p>
+                <p className='price'>{priceConvert(price)}<p>VND/h</p></p>
             </div>
         </div>
     )

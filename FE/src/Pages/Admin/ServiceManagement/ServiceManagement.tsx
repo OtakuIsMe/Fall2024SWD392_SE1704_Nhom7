@@ -132,11 +132,9 @@ const ServiceManagement: React.FC = () => {
       let rowData : any[] = [] ;
       const response = await ApiGateway.GetServices()
       response.forEach((row: any) => {
-        rowData.push(createData(row.amenityService.id, row.amenityService.image.url , getService(row.amenityService.type), row.amenityService.name, (row.amenityService.status === 0 ? "Available" : "Unavailable"), row.amenityService.price))
+        rowData.push(createData(row.id, row.image.url , getService(row.type), row.name, (row.status === 0 ? "Available" : "Unavailable"), row.price))
       })
       setServiceList(rowData)
-      console.log("list updated")
-      console.log(response)
     } catch (err) {
       console.error('Error get servicelist :', err);
     }
