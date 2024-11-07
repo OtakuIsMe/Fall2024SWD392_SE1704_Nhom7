@@ -439,7 +439,7 @@ namespace BE.src.Services
                             var imageObj = new Image
                             {
                                 Id = img.Id,
-                                Url = img.Url,
+                                Url = urlFirebase,
                                 UpdateAt = DateTime.Now
                             };
 
