@@ -5,6 +5,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { RxCross2 } from "react-icons/rx";
 import { MdModeEditOutline } from "react-icons/md";
+import user from "../../../Assets/user.jpg"
 import { useState } from 'react';
 import { ApiGateway } from '../../../Api/ApiGateway';
 import { useRef } from 'react';
@@ -156,7 +157,7 @@ const CheckIn: React.FC = () => {
                                     <div className={`booking ${isEven(index) ? 'even' : ''}`} key={index}>
                                         <div className="no">{index + 1}</div>
                                         <div className="user">
-                                            <img src={booking.user.image.url} alt="" />
+                                            <img src={booking.user.image ? booking.user.image.url : user} alt="" />
                                             <span>{booking.user.name}</span>
                                         </div>
                                         <div className="room">{booking.room.name}</div>

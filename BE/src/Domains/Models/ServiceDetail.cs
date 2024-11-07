@@ -6,7 +6,6 @@ namespace BE.src.Domains.Models
     {
         public string Name { get; set; } = null!;
         public bool IsNormal { get; set; }
-        public bool IsInUse { get; set; }
 
         public Guid AmenitySerivceId { get; set; }
         public AmenityService AmenityService { get; set; } = null!;
