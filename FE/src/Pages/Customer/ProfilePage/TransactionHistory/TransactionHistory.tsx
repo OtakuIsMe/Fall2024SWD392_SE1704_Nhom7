@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { AuthenContext } from '../../../../Components/AuthenContext';
 import { ApiGateway } from '../../../../Api/ApiGateway';
-import Sidebar from '../../../../Components/Sidebar/Sidebar'; // Thêm Sidebar để giữ sự đồng nhất
+import Sidebar from '../../../../Components/Sidebar/Sidebar';
 import './TransactionHistory.css';
 
 const TransactionHistory = () => {
@@ -30,8 +30,32 @@ const TransactionHistory = () => {
   }, [user]);
 
   const handleTransactionClick = (transaction: any) => {
+    console.log(transaction)
     setSelectedTransaction(transaction);
   };
+
+  // Hàm để hủy đặt phòng
+  const cancelBooking = useCallback(async (bookingId: string) => {
+    try {
+      console.log(bookingId)
+      await ApiGateway.CancelBookingByCustomer(bookingId);
+      alert("Booking has been cancelled successfully.");
+      await fetchTransactionHistory(); // Cập nhật lại lịch sử giao dịch
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+    }
+  }, [fetchTransactionHistory]);
+
+  // Hàm để hủy dịch vụ
+  const cancelService = useCallback(async (bookingId: string, bookingItems: { bookingItemId: string, amount: number }[]) => {
+    try {
+      await ApiGateway.CancelServiceByCustomer(bookingId, bookingItems);
+      alert("Service has been cancelled successfully.");
+      await fetchTransactionHistory(); // Cập nhật lại lịch sử giao dịch
+    } catch (error) {
+      console.error("Error cancelling service:", error);
+    }
+  }, [fetchTransactionHistory]);
 
   return (
     <div className="profile-container">
@@ -51,7 +75,6 @@ const TransactionHistory = () => {
                 >
                   <p>{transaction.transactionType === 1 ? 'Mua hàng' : 'Hoàn tiền'}</p>
                   <p>{transaction.total} VND</p>
-                  <p>In process...</p>
                 </div>
               ))
             )}
@@ -82,6 +105,16 @@ const TransactionHistory = () => {
                 <p><strong>Status:</strong> {selectedTransaction.status ? 'Completed' : 'Pending'}</p>
                 <p><strong>Amount:</strong> {selectedTransaction.total} VND</p>
                 <p><strong>Date:</strong> {new Date(selectedTransaction.createAt).toLocaleDateString()}</p>
+
+                {/* Nút hủy đặt phòng */}
+                <button onClick={() => cancelBooking(selectedTransaction.id)}>
+                  Cancel Booking
+                </button>
+
+                {/* Nút hủy dịch vụ */}
+                <button onClick={() => cancelService(selectedTransaction.bookingId, [{ bookingItemId: selectedTransaction.bookingItemId, amount: 0 }])}>
+                  Cancel Service
+                </button>
               </div>
             ) : (
               <p className="transaction-placeholder">Select a transaction to view details</p>
