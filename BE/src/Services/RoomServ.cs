@@ -396,6 +396,9 @@ namespace BE.src.Services
                 room.Description = data.Description ?? room.Description;
 
                 var existingImages = await _roomRepo.GetImagesByRoomId(id);
+
+                Console.WriteLine(existingImages.Count + " - " + data.Images.Count);
+
                 if (existingImages == null || existingImages.Count == 0)
                 {
                     return ErrorResp.NotFound("Not found image");
@@ -423,27 +426,52 @@ namespace BE.src.Services
                             return ErrorResp.BadRequest("Fail to save image to firebase");
                         }
 
-                        var imageRoom = await _roomRepo.GetImageByRoomId(id);
+                        var imageRoom = await _roomRepo.GetImagesByRoomIdTpUpdate(id);
                         if (imageRoom == null)
                         {
                             return ErrorResp.NotFound("Not found image");
                         }
 
-                        var imageObj = new Image
-                        {
-                            Id = imageRoom.Id,
-                            Url = urlFirebase,
-                            UpdateAt = DateTime.Now
-                        };
+                        var imagesToKeep = new List<Image>();
 
-                        var isImageCreated = await _roomRepo.UpdateImageRoom(imageObj);
-                        if (!isImageCreated)
+                        foreach (var img in imageRoom)
                         {
-                            return ErrorResp.BadRequest("Fail to save image to database");
+                            var imageObj = new Image
+                            {
+                                Id = img.Id,
+                                Url = img.Url,
+                                UpdateAt = DateTime.Now
+                            };
+
+                            var isImageUpdated = await _roomRepo.UpdateImageRoom(imageObj);
+                            if (!isImageUpdated)
+                            {
+                                return ErrorResp.BadRequest("Fail to save image to database");
+                            }
+
+                            imagesToKeep.Add(imageObj);
                         }
+
+                        var imgFirstUpdated = await _roomRepo.GetImageBySingleRoomId(id);
+
+                        var allImages = await _roomRepo.GetImagesByRoomId(id);
+                        var imagesToDelete = allImages
+                                        .Where(img => imgFirstUpdated?.UpdateAt != null &&
+                                                        imgFirstUpdated.UpdateAt.Value.Ticks < img.UpdateAt.Value.Ticks)
+                                        .ToList();
+
+                        foreach (var img in imagesToDelete)
+                        {
+                            var isImageDeleted = await _roomRepo.DeleteImageRoom(img.Id);
+                            if (!isImageDeleted)
+                            {
+                                return ErrorResp.BadRequest("Fail to delete image from database");
+                            }
+                        }
+
                         count++;
                     }
-                }
+                }              
 
                 room.UpdateAt = DateTime.Now;
 
