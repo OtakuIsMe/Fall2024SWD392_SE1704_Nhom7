@@ -27,7 +27,7 @@ namespace BE.src.Repositories
         Task<List<Notification>> ViewNotification(Guid userId);
         Task<bool> AddFeedback(RatingFeedback ratingFeedback);
         Task<bool> CreateMembershipUser(MembershipUser membershipUser);
-        Task<bool> DeleteUser(Guid userId);
+        Task<bool> BanOrUnbanUser(Guid userId, UserStatusEnum statusEnum);
         Task<List<User>> GetAllUser();
         Task<bool> UpdateRoleUser(User user);
     }
@@ -141,14 +141,14 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> DeleteUser(Guid userId)
+        public async Task<bool> BanOrUnbanUser(Guid userId, UserStatusEnum statusEnum)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
             {
                 return false;
             }
-            user.Status = UserStatusEnum.IsDelete;
+            user.Status = statusEnum;
             return await _context.SaveChangesAsync() > 0;
         }
 

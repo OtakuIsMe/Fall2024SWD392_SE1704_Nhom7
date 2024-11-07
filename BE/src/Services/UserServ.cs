@@ -22,10 +22,9 @@ namespace BE.src.Services
         Task<IActionResult> UpdateUserProfile(UpdateProfileDTO data);
         Task<IActionResult> ViewNotification(Guid userId);
         Task<IActionResult> AddFeedback(Guid userId, Guid roomId, AddFeedBackDTO data);
-        Task<IActionResult> DeleteUser(Guid userId);
         Task<IActionResult> CountUser();
         Task<IActionResult> GetAllUser();
-        Task<IActionResult> UpdateRoleUser(Guid userId, RoleEnum role);
+        Task<IActionResult> UpdateRoleUser(Guid userId, RoleEnum? role, UserStatusEnum? status);
     }
     public class UserServ : IUserServ
     {
@@ -289,24 +288,6 @@ namespace BE.src.Services
             }
         }
 
-        public async Task<IActionResult> DeleteUser(Guid userId)
-        {
-            try
-            {
-                bool isCancel = await _bookingRepo.CancleAllBookingByUser(userId);
-                bool IsDeleted = await _userRepo.DeleteUser(userId);
-                if (!IsDeleted)
-                {
-                    return ErrorResp.BadRequest("Cant not delete user");
-                }
-                return SuccessResp.Ok("Delete User Success");
-            }
-            catch (System.Exception ex)
-            {
-                return ErrorResp.BadRequest(ex.Message);
-            }
-        }
-
         public async Task<IActionResult> CountUser()
         {
             try
@@ -333,7 +314,7 @@ namespace BE.src.Services
             }
         }
 
-        public async Task<IActionResult> UpdateRoleUser(Guid userId, RoleEnum role)
+        public async Task<IActionResult> UpdateRoleUser(Guid userId, RoleEnum? role, UserStatusEnum? status)
         {
             try
             {
@@ -342,20 +323,31 @@ namespace BE.src.Services
                 {
                     return ErrorResp.NotFound("Not found user");
                 }
-                Role? userRole = await _userRepo.GetRoleByName(role);
-                if (userRole == null)
+                if (role.HasValue)
                 {
-                    return ErrorResp.NotFound("Not found role");
+                    Role? userRole = await _userRepo.GetRoleByName(role.Value);
+                    if (userRole == null)
+                    {
+                        return ErrorResp.NotFound("Not found role");
+                    }
+                    user.Role = userRole;
                 }
-                user.Role = userRole;
+                if (status.HasValue)
+                {
+                    var isBanUser = await _userRepo.BanOrUnbanUser(userId, status.Value);
+                    if (!isBanUser)
+                    {
+                        return ErrorResp.BadRequest("Fail to ban or unban user");
+                    }
+                }
                 bool isUpdated = await _userRepo.UpdateUser(user);
                 if (isUpdated)
                 {
-                    return SuccessResp.Ok("Update role success");
+                    return SuccessResp.Ok("User updated successfully");
                 }
                 else
                 {
-                    return ErrorResp.BadRequest("Fail to update role");
+                    return ErrorResp.BadRequest("Fail to update user");
                 }
             }
             catch (System.Exception ex)
