@@ -105,7 +105,7 @@ const TableTpl:React.FC<Data> = (
         { condition: accessButton, icon: <Btn name='Access' />, label: "Access" },
         { condition: unAccessButton, icon: <Btn name='Unaccess' />, label: "Unaccess" },
         { condition: cancelButton, icon: <Btn name='Cancel' />, label: "Cancel" },
-        { condition: banButton, icon: <Btn name='Ban'/>, label: "Ban" },
+        { condition: banButton, icon: <Btn name='Ban'/>, label: "Action" },
         { condition: changeRoleButton, icon: <Btn name='Change-Role'/>, label: "Change role" },
     ];
   
@@ -303,7 +303,11 @@ const TableTpl:React.FC<Data> = (
                                                     :
                                                     column.format && typeof value === 'number'
                                                         ? column.format(value)
-                                                        : value
+                                                        : column.id === "roleId" ?
+                                                            <RoleLabel role={value}/>
+                                                            : column.id === "status" ?
+                                                                <StatusLabel status={value}/>
+                                                                : value
                                                 }
                                             </TableCell>
                                         );
@@ -316,7 +320,7 @@ const TableTpl:React.FC<Data> = (
                                                         <div className={`tblButton btn${index+1}`} onClick={() => {(index + 1) % 2 === 0 ? handleFunction2(row) : handleFunction1(row)}} >{button.icon}</div>
                                                     ):(
                                                         row?.email !== user?.email ? (
-                                                            <div className={`tblButton btn${index+1}`} onClick={() => {(index + 1) % 2 === 0 ? handleFunction2(row) : handleFunction1(row)}} >{row.status === "Banned" ? <Btn name='Unban'/>:<Btn name='Ban'/>}</div>  
+                                                            <div className={`tblButton btn${index+1}`} onClick={() => handleFunction2(row)} >{row.status === "Banned" ? <Btn name='Unban'/>:<Btn name='Ban'/>}</div>  
                                                         ) : <></>
                                                     )
                                                 }
@@ -341,6 +345,38 @@ const TableTpl:React.FC<Data> = (
             />
         </div>
     )
+}
+
+interface role{
+    role: string;
+}
+
+const RoleLabel:React.FC<role> = ({role}) => {
+    switch (role) {
+        case 'Admin':
+            return (<div className='roleLabel' style={{color: '#A00000', backgroundColor: '#FF7070'}}>{role}</div>)
+        case 'Manager':
+            return (<div className='roleLabel' style={{color: '#8F2600', backgroundColor: '#FF7847'}}>{role}</div>)
+        case 'Staff' :
+            return (<div className='roleLabel' style={{color: '#31A300', backgroundColor: '#7EFF47'}}>{role}</div>)
+        case 'Customer' :
+            return (<div className='roleLabel' style={{color: '#003F66', backgroundColor: '#78CBFF'}}>{role}</div>)
+    }
+}
+
+interface status{
+    status: string;
+}
+
+const StatusLabel:React.FC<status> = ({status}) => {
+    switch (status) {
+        case 'Banned':
+        case 'Unavailable':
+            return (<div className='statusLabel' style={{border: '1px solid #A00000', color: '#A00000', backgroundColor: '#ffd6d6'}}>{status}</div>)
+        case 'Available' :
+        case 'Active' :
+            return (<div className='statusLabel' style={{border: '1px solid #31A300', color: '#31A300', backgroundColor: '#E2FFD6'}}>{status}</div>)
+    }
 }
 
 export default TableTpl

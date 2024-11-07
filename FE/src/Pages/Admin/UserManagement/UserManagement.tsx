@@ -59,6 +59,7 @@ const UserManagement: React.FC = () => {
     {
       id: 'status',
       label: 'Status',
+      align: 'center',
     },
     {
       id: 'wallet',
@@ -93,7 +94,7 @@ const UserManagement: React.FC = () => {
               row.roleId === "42feaeb5-fc53-4163-98b5-d28cfceafa7c" ?
                 "Manager" : "Admin"
           ), 
-          (row.status === 0 ? "Unban" : "Banned"),
+          (row.status === 0 ? "Active" : "Banned"),
           row.wallet))
     })
     setUserList(rowData);
