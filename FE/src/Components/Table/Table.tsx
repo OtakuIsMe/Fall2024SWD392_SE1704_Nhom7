@@ -9,13 +9,6 @@ import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
-import DisabledByDefaultRoundedIcon from '@mui/icons-material/DisabledByDefaultRounded';
-import WhereToVoteRoundedIcon from '@mui/icons-material/WhereToVoteRounded';
-import DoNotDisturbOnRoundedIcon from '@mui/icons-material/DoNotDisturbOnRounded';
-import CancelPresentationRoundedIcon from '@mui/icons-material/CancelPresentationRounded';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -130,6 +123,12 @@ const TableTpl:React.FC<Data> = (
         }
     }
 
+    function handlePassFunction(row: object){
+        if(openPopup1){
+            openPopup1(row)
+        }
+    }
+
     const Row:React.FC<Rows> = ({ index, id, room, user, email, total, bookedDate, start, end, status, isPay, services, openPopup1, openPopup2}) =>{
         const [open, setOpen] = React.useState(false);
         const row = { index, id, room, user, email, total, bookedDate, start, end, status, isPay };
@@ -140,7 +139,7 @@ const TableTpl:React.FC<Data> = (
             }
         }
 
-        function handleFunction2(row: object) {
+        function handleFunction2() {
             if(openPopup2){
                 openPopup2(row)
             }
@@ -179,7 +178,7 @@ const TableTpl:React.FC<Data> = (
                             <TableCell align='center'>
                                 <div 
                                     className={`tblButton btn${index+1}`} 
-                                    onClick={() => { (index + 1) % 2 === 0 ? handleFunction2(row) : handleFunction1()}}>{button.icon}</div>
+                                    onClick={() => { (index + 1) % 2 === 0 ? handleFunction2() : handleFunction1()}}>{button.icon}</div>
                             </TableCell>
                         ) : null
                     )}
@@ -304,7 +303,7 @@ const TableTpl:React.FC<Data> = (
                                                     column.format && typeof value === 'number'
                                                         ? column.format(value)
                                                         : column.id === "roleId" ?
-                                                            <RoleLabel role={value}/>
+                                                            <RoleLabel role={value} row={row} openPopup={handlePassFunction}/>
                                                             : column.id === "status" ?
                                                                 <StatusLabel status={value}/>
                                                                 : value
@@ -316,19 +315,21 @@ const TableTpl:React.FC<Data> = (
                                     {actionButtons.map((button, index) =>
                                         button.condition ? (
                                             <TableCell align='center'>
-                                                {button.label !== "Ban" ? (
+                                                {button.label !== "Action" ? (
                                                         <div className={`tblButton btn${index+1}`} onClick={() => {(index + 1) % 2 === 0 ? handleFunction2(row) : handleFunction1(row)}} >{button.icon}</div>
                                                     ):(
                                                         row?.email !== user?.email ? (
                                                             <div className={`tblButton btn${index+1}`} onClick={() => handleFunction2(row)} >{row.status === "Banned" ? <Btn name='Unban'/>:<Btn name='Ban'/>}</div>  
-                                                        ) : <></>
+                                                        ) 
+                                                        :
+                                                        <></>
                                                     )
                                                 }
                                             </TableCell>
                                         ) : null
                                     )}
                                 </TableRow>
-                                );
+                            );
                         })
                     }
                 </TableBody>
@@ -349,18 +350,45 @@ const TableTpl:React.FC<Data> = (
 
 interface role{
     role: string;
+    row: any;
+    openPopup: (row: any) => void;
 }
 
-const RoleLabel:React.FC<role> = ({role}) => {
+const RoleLabel:React.FC<role> = ({role, row, openPopup}) => {
+    const handlePopup = () => {
+        if (openPopup) {
+            openPopup(row);
+        }
+    }
     switch (role) {
         case 'Admin':
-            return (<div className='roleLabel' style={{color: '#A00000', backgroundColor: '#FF7070'}}>{role}</div>)
+            return (
+                <div 
+                    className='roleLabel' 
+                    style={{color: '#A00000', backgroundColor: '#FF7070'}}
+                    onClick={() => handlePopup()}
+                    >{role}</div>)
         case 'Manager':
-            return (<div className='roleLabel' style={{color: '#8F2600', backgroundColor: '#FF7847'}}>{role}</div>)
+            return (
+                <div 
+                    className='roleLabel' 
+                    style={{color: '#8F2600', backgroundColor: '#FF7847'}}
+                    onClick={() => handlePopup()}
+                    >{role}</div>)
         case 'Staff' :
-            return (<div className='roleLabel' style={{color: '#31A300', backgroundColor: '#7EFF47'}}>{role}</div>)
+            return (
+                <div 
+                    className='roleLabel' 
+                    style={{color: '#31A300', backgroundColor: '#7EFF47'}}
+                    onClick={() => handlePopup()}
+                    >{role}</div>)
         case 'Customer' :
-            return (<div className='roleLabel' style={{color: '#003F66', backgroundColor: '#78CBFF'}}>{role}</div>)
+            return (
+                <div 
+                    className='roleLabel' 
+                    style={{color: '#003F66', backgroundColor: '#78CBFF'}}
+                    onClick={() => handlePopup()}
+                    >{role}</div>)
     }
 }
 

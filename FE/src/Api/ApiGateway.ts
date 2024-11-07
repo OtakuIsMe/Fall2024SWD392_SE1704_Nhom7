@@ -635,4 +635,28 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
             console.error("Error Total: ", error)
         }
     }
+
+    public static async GetAllRooms<T>() : Promise<T[]> {
+        try {
+            const response = await this.axiosInstance.get<T[]>(`/room/GetAllRooms`);
+            return response.data
+        } catch (error) {
+            throw error
+        }
+    }
+
+    public static async ChangeRoleAndStatus<T>(id: string, role: number, status: number) : Promise<T> {
+        try {
+            const formData = {
+                roles: role,
+                status: status
+            }
+            console.log(formData)
+            const response = await this.axiosInstance.post<T>(`/user/UpdateRoleUser/${id}`, formData);
+            return response.data;
+            console.log(response)
+        } catch (error) {
+            throw error
+        }
+    }
 }

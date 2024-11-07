@@ -116,7 +116,7 @@ const RoomManagement: React.FC = () => {
   const getRoomList = async (): Promise<void> => {
     try{
       let rowData : any[] = [] ;
-      const response = await ApiGateway.GetRoomList('', '', '', '')
+      const response = await ApiGateway.GetAllRooms()
       response.forEach((row: any) => {
         rowData.push(
           createData(

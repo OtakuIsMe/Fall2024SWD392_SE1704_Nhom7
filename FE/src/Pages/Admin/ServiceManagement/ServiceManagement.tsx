@@ -135,8 +135,6 @@ const ServiceManagement: React.FC = () => {
         rowData.push(createData(row.amenityService.id, row.amenityService.image.url , getService(row.amenityService.type), row.amenityService.name, (row.amenityService.status === 0 ? "Available" : "Unavailable"), row.amenityService.price))
       })
       setServiceList(rowData)
-      console.log("list updated")
-      console.log(rowData)
     } catch (err) {
       console.error('Error get servicelist :', err);
     }

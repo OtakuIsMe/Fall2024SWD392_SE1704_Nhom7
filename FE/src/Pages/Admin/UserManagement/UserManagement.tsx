@@ -125,33 +125,38 @@ const UserManagement: React.FC = () => {
   };
 
   const closeBanModal = () => {
-    fetchUsers()
     setIsBanModalOpen(false);
     console.log('close')
   };
 
   const openChangeRoleModal = (row: any) => {
-    console.log(row.id)
-    console.log(row.name)
-    setThisUser({
-      ...thisUser,
-      id: row.id,
-      userName: row.userName
-    })
+    setThisUser(row)
     setIsChangeRoleModalOpen(true);
     console.log('open')
   };
 
   const closeChangeRoleModal = () => {
-    fetchUsers()
     setIsChangeRoleModalOpen(false);
     console.log('close')
   };
 
-  const banUser = async (userId: string): Promise<void> => {
+  const changeRole = async (userId: string, role: number, status: number) : Promise<void> => {
     try {
       console.log(userId)
-      const response = await ApiGateway.BanUser(userId);
+      const responsse = await ApiGateway.ChangeRoleAndStatus(userId, role, status)
+      console.log(responsse)
+      await fetchUsers()
+      closeChangeRoleModal()
+    } catch (error) {
+      throw error
+    }
+  } 
+
+  const banUser = async (userId: string, role: number, status: number): Promise<void> => {
+    try {
+      console.log(userId)
+      const response = await ApiGateway.ChangeRoleAndStatus(userId, role, status);
+      await fetchUsers()
     } catch (error) {
       console.log(error)
       throw error
@@ -166,14 +171,14 @@ const UserManagement: React.FC = () => {
       </div>
       <div className='content'>
         {userList ? 
-          <TableTpl columns={columns} rows={userList} banButton={true} openPopup2={openBanModal}/>
+          <TableTpl columns={columns} rows={userList} banButton={true} openPopup1={openChangeRoleModal} openPopup2={openBanModal}/>
           :
           <p style={{textAlign: "center"}}>There are no User</p>
         }
       </div>
       {isModalOpen && <Modal type='add' closeModal={closeModal} />}
-      {isBanModalOpen && <Modal type='ban' user={thisUser} closeModal={closeBanModal} banUser={banUser}/>}
-      {isChangeRoleModalOpen && <Modal type='changerole' user={thisUser} closeModal={closeChangeRoleModal} banUser={banUser}/>}
+      {isBanModalOpen && <Modal type='ban' userInfo={thisUser} closeModal={closeBanModal} banUser={banUser}/>}
+      {isChangeRoleModalOpen && <Modal type='changerole' userInfo={thisUser} closeModal={closeChangeRoleModal} changeRole={changeRole}/>}
     </div>
   )
 }
