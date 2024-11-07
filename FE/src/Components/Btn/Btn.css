@@ -1,0 +1,49 @@
+#ad_ban_btn > div {
+    padding: 5px 15px;
+    border-radius: 5px;
+}
+
+#ad_ban_btn p {
+    margin: 0;
+}
+
+#ad_ban_btn .Ban,
+#ad_ban_btn .Delete,
+#ad_ban_btn .Decline {
+    border: 2px solid #F12425;
+    color: #F12425;
+}
+
+#ad_ban_btn .Ban:hover,
+#ad_ban_btn .Delete:hover,
+#ad_ban_btn .Decline:hover {
+    background-color: #F12425;
+    color: white;
+}
+
+#ad_ban_btn .Edit {
+    border: 2px solid #0062FF;
+    color: #0062FF;
+}
+
+#ad_ban_btn .Edit:hover {
+    background-color: #0062FF;
+    color: white;
+}
+
+#ad_ban_btn .Approve,
+#ad_ban_btn .Unban {
+    border: 2px solid #48937e;
+    color: #48937e;
+}
+
+#ad_ban_btn .Approve:hover,
+#ad_ban_btn .Unban:hover {
+    background-color: #48937e;
+    color: white;
+}
+
+#ad_ban_btn .Ban,
+#ad_ban_btn .Unban {
+    width: 42px;
+}

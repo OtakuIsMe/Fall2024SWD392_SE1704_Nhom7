@@ -45,16 +45,28 @@ const RoomList: React.FC = () => {
   const [roomList, setRoomList] = useState<any>(rooms);
   const [selectedLocation, setSelectedLocation] = useState<string>(locations[0]?.value || '');
   const [selectedType, setSelectedType] = useState<string>(types[0]?.value || '');
+  const [areaList, setAreaList] = useState<any>()
 
   useEffect(() => {
     const date = new Date();
-    const curTime = dayjs(date).set('minute', 0).add(1, 'hour').format('YYYY-MM-DDThh:mm')
+    const curTime = dayjs(date).add(1, 'day').set('minute', 0).set('hour', 7).format('YYYY-MM-DDThh:mm')
     const maxTime = dayjs(date).set('hour', 0).set('minute', 0).add(30, 'day').format('YYYY-MM-DDThh:mm')
     setMax(maxTime)
     setMin(curTime)
     getTimeSpanFromSessions()
+    getAreaList()
     getFilter();
   },[]);
+
+  const getAreaList = async (): Promise<void> => {
+    try {
+      const response = await ApiGateway.GetArea();
+      setAreaList(response)
+    } catch (error) {
+      console.error("Error getting AreaList", error)
+      throw error
+    }
+  }
 
   const getFilter = async (): Promise<void> => {
     try{
@@ -69,16 +81,61 @@ const RoomList: React.FC = () => {
     }
   }
 
-  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) : void => {
-    const startT = event.target.value
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let startT = event.target.value;
+    
+    let startDateTime = dayjs(startT);
+    const startMinutes = startDateTime.minute();
+    startDateTime = startMinutes <= 30 
+      ? startDateTime.minute(0) 
+      : startDateTime.add(1,'hour').minute(0);
+    startT = startDateTime.format('YYYY-MM-DDTHH:mm');
+
+    let endDateTime = startDateTime.add(1, 'hour');
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1, 'hour').minute(0);
+    const endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
     setStart(startT);
-    const endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
-    setEnd(endT);
+    sessionStorage.setItem('startDate', startT);
+  
+    if (dayjs(endDate).isBefore(startT) || dayjs(endDate).isSame(startT)) {
+      setEnd(endT);
+      sessionStorage.setItem('endDate', endT);
+    }
+  
     setMinEnd(endT);
   };
+  
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let endT = event.target.value;
+  
+    let endDateTime = dayjs(endT);
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1,'hour').minute(0);
+    endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
+    if (dayjs(endT).isBefore(minEnd)) {
+      setEnd(minEnd);
+    } else {
+      setEnd(endT);
+      sessionStorage.setItem('endDate', endT);
+    }
+  };
 
-  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) : void => {
-    setEnd(event.target.value);
+  const preventKeyboardInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+  };
+
+  const preventClearInput = (event: React.FormEvent<HTMLInputElement>) => {
+    const input = event.target as HTMLInputElement;
+    if (input.value === '') {
+      input.value = input.defaultValue;
+    }
   };
 
   const getTimeSpanFromSessions = () : void => {
@@ -95,13 +152,11 @@ const RoomList: React.FC = () => {
     }
   }
 
-  // Handle change for location
   const handleLocationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLocation(event.target.value);
     console.log(event.target.value)
   };
 
-  // Handle change for type
   const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedType(event.target.value);
     console.log(event.target.value)
@@ -117,21 +172,42 @@ const RoomList: React.FC = () => {
             <p>Timespan</p>
             <div className='search_input start'>
               <label htmlFor="start_date"><p>From</p></label>
-              <input type="datetime-local" id='start_date' min={min} max={max} value={startDate} onChange={handleStartDateChange} className='hp_date_input' />
+              <input
+                id='start_date'
+                className='hp_date_input'
+                type="datetime-local"
+                min={min}
+                max={max}
+                value={startDate}
+                onChange={handleStartDateChange}
+                onKeyDown={preventKeyboardInput}
+                onInput={preventClearInput}
+              />
             </div>
             <div className='search_input end'>
               <label htmlFor="end_date"><p>To</p></label>
-              <input type="datetime-local" id='end_date' min={minEnd} max={max} value={endDate} onChange={handleEndDateChange} className='hp_date_input' />
+              <input
+                id='end_date'
+                className='hp_date_input'
+                type="datetime-local"
+                min={minEnd}
+                max={max}
+                value={endDate}
+                onChange={handleEndDateChange}
+                onKeyDown={preventKeyboardInput}
+                onInput={preventClearInput}
+              />
             </div>
           </div>
           <div className="location-container">
             <p>Location</p>
             <select className="select" value={selectedLocation} onChange={handleLocationChange}>
-              {locations.map((loc, index) => (
-                <option value={`${loc.value}`} key={index}>
-                  {loc.label}
+              <option value={''}></option>
+              {areaList?.map((area: any, index: number) =>
+                <option value={area.id} key={index}> 
+                  {area.name}
                 </option>
-              ))}
+              )}
             </select>
           </div>
           <div className="type-container">
@@ -149,11 +225,11 @@ const RoomList: React.FC = () => {
         <div className="room-list-container">
           <div className="room-list">
             <div className="list">
-              {roomList.map((room: any, index: number) =>
+              {roomList?.map((room: any, index: number) =>
                 (<Card 
-                  key={room.id || index}  // Prefer room.id for key, fallback to index if room.id is undefined
+                  key={index}
                   id={room.id} 
-                  img={room.images?.[0]?.url || '/default.jpg'}  // Safeguard against missing images
+                  img={room.images?.[0]?.url || '/default.jpg'}
                   type={room.name} 
                   price={room.price} 
               />)

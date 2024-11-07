@@ -2,7 +2,7 @@
 
 namespace BE.src.Domains.Models
 {
-    public class RefundItem:BaseEntity
+    public class RefundItem : BaseEntity
     {
         public int AmountItems { get; set; }
         public float Total { get; set; }

@@ -4,31 +4,3 @@
     transition: all .05s;
     cursor: pointer;
 }
-
-.btn1:hover {
-    color: #4681f4;
-}
-
-.btn2:hover {
-    color: #ED0800;
-}
-
-.btn3:hover {
-    color: #33b249;
-}
-
-.btn4:hover {
-    color: #ED0800;
-}
-
-.btn5:hover {
-    color: #33b249;
-}
-
-.btn6:hover {
-    color: #ffbd03;
-}
-
-.btn7:hover {
-    color: #ED0800;
-}

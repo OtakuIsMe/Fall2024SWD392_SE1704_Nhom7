@@ -1,21 +1,13 @@
 using BE.src.Domains.DTOs.Transaction;
 using MyTransaction = BE.src.Domains.Models.Transaction;
-using System.Transactions;
 using BE.src.Repositories;
 using BE.src.Shared.Constant;
 using BE.src.Shared.Type;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PayPal.Api;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using BE.src.Domains.Models;
 using PaypalTransaction = PayPal.Api.Transaction;
-using MyTrasaction = BE.src.Domains.Models.Transaction;
-
 using BE.src.Domains.Enum;
-using BE.src.Shared.Type;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BE.src.Services
 {
@@ -26,6 +18,9 @@ namespace BE.src.Services
         Task<IActionResult> PaymentPaypalSuccess(Guid bookingId);
         Task<IActionResult> PaymentByCod(Guid bookingId);
         Task<IActionResult> StatisticMonthInYear(int year);
+        Task<IActionResult> BuyMembership(BuyMembershipRqDTO data);
+        Task<IActionResult> PaymentMembershipSuccess(Guid MembershipId, Guid UserId);
+        Task<IActionResult> TotalIncome();
     }
 
     public class TrasactionServ : ITransactionServ
@@ -87,7 +82,6 @@ namespace BE.src.Services
             try
             {
                 var booking = await _bookingRepo.GetBookingById(data.BookingId);
-                Console.WriteLine(booking);
                 if (booking == null)
                 {
                     return ErrorResp.NotFound("Cant find booking");
@@ -223,53 +217,64 @@ namespace BE.src.Services
                 List<StatisticMonth> returnValue = new(){
                     new StatisticMonth(){
                         Month = 1,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 2,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 3,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 4,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 5,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 6,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 7,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 8,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 9,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 10,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 11,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
                     new StatisticMonth(){
                         Month = 12,
-                        Amount = 0
+                        Amount = 0,
+                        Refund = 0
                     },
-
                 };
                 foreach (var transaction in transactions)
                 {
@@ -277,11 +282,92 @@ namespace BE.src.Services
                     {
                         if (transaction.CreateAt.HasValue && statisticMonth.Month == transaction.CreateAt.Value.Month)
                         {
-                            statisticMonth.Amount += transaction.Total;
+                            if (transaction.PaymentRefund != null && transaction.PaymentRefund.Type == PaymentRefundEnum.Refund)
+                            {
+                                statisticMonth.Refund += transaction.Total;
+                            }
+                            else
+                            {
+                                statisticMonth.Amount += transaction.Total;
+                            }
                         }
                     }
                 }
                 return SuccessResp.Ok(returnValue);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> BuyMembership(BuyMembershipRqDTO data)
+        {
+            try
+            {
+                Membership? membership = await _transactionRepo.GetMembership(data.MembershipId);
+                if (membership == null)
+                {
+                    return ErrorResp.NotFound("Cant find membership");
+                }
+                string return_url = $"http://localhost:5101/transaction/Payment-Membership-Success?MembershipId={data.MembershipId}&UserId={data.UserId}";
+                string cancel_url = "http://localhost:5173/";
+                var payment = CreatePayment(membership.Price, return_url, cancel_url);
+                var approvalUrl = payment.links.FirstOrDefault(lnk => lnk.rel.Equals("approval_url", StringComparison.OrdinalIgnoreCase))?.href;
+                return SuccessResp.Ok(approvalUrl);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> PaymentMembershipSuccess(Guid MembershipId, Guid UserId)
+        {
+            try
+            {
+                Membership? membership = await _transactionRepo.GetMembership(MembershipId);
+                if (membership == null)
+                {
+                    return ErrorResp.NotFound("Cant find membership");
+                }
+                MembershipUser membershipUser = new()
+                {
+                    Status = true,
+                    MembershipId = MembershipId,
+                    UserId = UserId
+                };
+                var isCreatedMembershipUser = await _userRepo.CreateMembershipUser(membershipUser);
+                if (!isCreatedMembershipUser)
+                {
+                    return ErrorResp.BadRequest("Cant create membership user");
+                }
+
+                MyTransaction transaction = new()
+                {
+                    TransactionType = TypeTransactionEnum.Membership,
+                    Total = membership.Price,
+                    UserId = UserId
+                };
+                var isCreatedTrasaction = await _transactionRepo.CreateTransaction(transaction);
+                if (!isCreatedTrasaction)
+                {
+                    return ErrorResp.BadRequest("Cant create transaction");
+                }
+                return SuccessResp.Redirect("http://localhost:5173/");
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> TotalIncome()
+        {
+            try
+            {
+                float total = await _transactionRepo.TotalIncome();
+                return SuccessResp.Ok(total);
             }
             catch (System.Exception ex)
             {

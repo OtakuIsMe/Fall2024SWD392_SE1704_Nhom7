@@ -31,5 +31,11 @@ namespace BE.src.Controllers
         {
             return _areaServ.GetAreas();
         }
+
+        [HttpPut("Update/{id}")]
+        public Task<IActionResult> UpdateArea(Guid id, [FromForm] UpdateAreaDTO data)
+        {
+            return _areaServ.UpdateArea(id, data);
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace BE.src.Controllers
         private readonly IMembershipServ _membershipServ;
         public MembershipController(IMembershipServ membershipServ)
         {
-            _membershipServ = membershipServ;   
+            _membershipServ = membershipServ;
         }
 
         [HttpGet("get-membership-details")]
@@ -24,22 +24,26 @@ namespace BE.src.Controllers
             return await _membershipServ.GetMembershipDetailsAsync(id);
         }
         [HttpPost("Create-membership")]
-        public async Task<IActionResult> CreateMembership([FromBody] MembershipCreateDTO data){
+        public async Task<IActionResult> CreateMembership([FromBody] MembershipCreateDTO data)
+        {
             return await _membershipServ.CreateMembership(data);
         }
 
-        [HttpPost("Get-All")]
-        public async Task<IActionResult> GetAllMembership(){
+        [HttpGet("Get-All")]
+        public async Task<IActionResult> GetAllMembership()
+        {
             return await _membershipServ.GetAllMembership();
         }
 
         [HttpPut("Update-membership/{id}")]
-        public async Task<IActionResult> UpdateMembership(Guid id, [FromBody] MembershipUpdateDTO data){
+        public async Task<IActionResult> UpdateMembership(Guid id, [FromBody] MembershipUpdateDTO data)
+        {
             return await _membershipServ.UpdateMembership(id, data);
         }
 
         [HttpDelete("Delete-membership/{id}")]
-        public async Task<IActionResult> DeleteMembership(Guid id){
+        public async Task<IActionResult> DeleteMembership(Guid id)
+        {
             return await _membershipServ.DeleteMembership(id);
         }
     }

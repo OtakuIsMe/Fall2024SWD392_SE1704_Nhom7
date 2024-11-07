@@ -54,30 +54,78 @@ const HomePage: React.FC = () => {
   }
 
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const startT = event.target.value
+    let startT = event.target.value;
+    
+    let startDateTime = dayjs(startT);
+    const startMinutes = startDateTime.minute();
+    startDateTime = startMinutes <= 30 
+      ? startDateTime.minute(0) 
+      : startDateTime.add(1,'hour').minute(0);
+    startT = startDateTime.format('YYYY-MM-DDTHH:mm');
+
+    let endDateTime = startDateTime.add(1, 'hour');
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1, 'hour').minute(0);
+    const endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
     setStart(startT);
-    const endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
-    setEnd(endT);
+    sessionStorage.setItem('startDate', startT);
+  
+    if (dayjs(endDate).isBefore(startT) || dayjs(endDate).isSame(startT)) {
+      setEnd(endT);
+      sessionStorage.setItem('endDate', endT);
+    }
+  
     setMinEnd(endT);
   };
-
+  
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEnd(event.target.value);
+    let endT = event.target.value;
+  
+    let endDateTime = dayjs(endT);
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1,'hour').minute(0);
+    endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
+    if (dayjs(endT).isBefore(minEnd)) {
+      setEnd(minEnd);
+    } else {
+      setEnd(endT);
+      sessionStorage.setItem('endDate', endT);
+    }
+  };
+
+  const preventKeyboardInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+  };
+
+  const preventClearInput = (event: React.FormEvent<HTMLInputElement>) => {
+    const input = event.target as HTMLInputElement;
+    if (input.value === '') {
+      input.value = input.defaultValue;
+    }
   };
 
   useEffect(() => {},[user])
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     const date = new Date();
-    const curTime = dayjs(date).set('minute', 0).add(1, 'hour').format('YYYY-MM-DDThh:mm')
-    const endTime = dayjs(date).set('minute', 0).add(2, 'hour').format('YYYY-MM-DDThh:mm')
+    const curTime = dayjs(date).set('minute', 0).add(1, 'day').set('hour', 7).format('YYYY-MM-DDThh:mm')
+    const endTime = dayjs(date).set('minute', 0).add(1, 'day').set('hour', 8).format('YYYY-MM-DDThh:mm')
     const maxTime = dayjs(date).set('hour', 0).set('minute', 0).add(30, 'day').format('YYYY-MM-DDThh:mm')
     setStart(curTime)
     setEnd(endTime)
     setMax(maxTime)
     setMin(curTime)
     setMinEnd(curTime)
-  }, [])
+    sessionStorage.setItem('startDate', curTime)
+    sessionStorage.setItem('endDate', endTime)
+    }, [])
 
   return (
     <div id='hp'>
@@ -96,11 +144,31 @@ const HomePage: React.FC = () => {
           <div className="hp_input_container">
             <div className='hp_search_input start'>
               <label htmlFor="start_date"><p>From</p></label>
-              <input type="datetime-local" id='start_date' min={min} max={max} value={startDate} onChange={handleStartDateChange} className='hp_date_input' />
+              <input 
+                id='start_date' 
+                className='hp_date_input' 
+                type="datetime-local" 
+                min={min} 
+                max={max} 
+                value={startDate} 
+                onChange={handleStartDateChange} 
+                onKeyDown={preventKeyboardInput}
+                onInput={preventClearInput}
+              />
             </div>
             <div className='hp_search_input end'>
               <label htmlFor="end_date"><p>To</p></label>
-              <input type="datetime-local" id='end_date' min={minEnd} max={max} value={endDate} onChange={handleEndDateChange} className='hp_date_input' />
+              <input
+                id='end_date'
+                className='hp_date_input'
+                type="datetime-local"
+                min={minEnd}
+                max={max}
+                value={endDate}
+                onChange={handleEndDateChange}
+                onKeyDown={preventKeyboardInput}
+                onInput={preventClearInput}
+              />
             </div>
           </div>
           <button className='hp_comfirm' onClick={() => search()}>Check</button>

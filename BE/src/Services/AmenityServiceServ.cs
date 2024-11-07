@@ -5,6 +5,8 @@ using BE.src.Repositories;
 using BE.src.Shared.Type;
 using BE.src.Util;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace BE.src.Services
 {
@@ -21,10 +23,16 @@ namespace BE.src.Services
     public class AmenityServiceServ : IAmenityServiceServ
     {
         private readonly IAmenityServiceRepo _amenityServiceRepo;
+        private readonly IBookingRepo _bookingRepo;
+        private readonly ITransactionRepo _transactionRepo;
+        private readonly IUserRepo _userRepo;
 
-        public AmenityServiceServ(IAmenityServiceRepo amenityServiceRepo)
+        public AmenityServiceServ(IAmenityServiceRepo amenityServiceRepo, IBookingRepo bookingRepo, ITransactionRepo transactionRepo, IUserRepo userRepo)
         {
             _amenityServiceRepo = amenityServiceRepo;
+            _bookingRepo = bookingRepo;
+            _transactionRepo = transactionRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<IActionResult> CreateService(CreateServiceDTO data)
@@ -35,8 +43,13 @@ namespace BE.src.Services
                 {
                     Name = data.Name,
                     Type = data.Type,
-                    Price = data.Price
+                    Price = data.Price,
+                    Status = StatusServiceEnum.Available
                 };
+                if (data.Image == null)
+                {
+                    return ErrorResp.BadRequest("Image is required");
+                }
                 string? url = await Utils.UploadImgToFirebase(data.Image, data.Name, "services");
                 if (url == null)
                 {
@@ -70,14 +83,14 @@ namespace BE.src.Services
         {
             try
             {
-                SerivceDetail serivceDetail = new()
+                ServiceDetail serviceDetail = new()
                 {
                     Name = data.Name,
                     IsNormal = true,
                     IsInUse = false,
                     AmenitySerivceId = data.AmenityServiceId
                 };
-                bool isCreated = await _amenityServiceRepo.CreateServiceDetail(serivceDetail);
+                bool isCreated = await _amenityServiceRepo.CreateServiceDetail(serviceDetail);
                 if (!isCreated)
                 {
                     return ErrorResp.BadRequest("Cant create service detail");
@@ -125,41 +138,63 @@ namespace BE.src.Services
                     return ErrorResp.BadRequest("Service not found");
                 }
 
-                serviceToUpdate.Name = service.Name;
-                serviceToUpdate.Price = service.Price;
+                if (service.Name != null)
+                {
+                    serviceToUpdate.Name = service.Name;
+                }
+                else
+                {
+                    serviceToUpdate.Name = serviceToUpdate.Name;
+                }
+
+                if (service.Price != null)
+                {
+                    serviceToUpdate.Price = (float)service.Price;
+                }        
+                else
+                {
+                    serviceToUpdate.Price = serviceToUpdate.Price;
+                }
+
                 serviceToUpdate.UpdateAt = DateTime.Now;
 
-                if (service.Image == null)
+                if (service.Image != null)
                 {
-                    return ErrorResp.BadRequest("Image is required");
+                    if (serviceToUpdate.Image == null)
+                    {
+                        return ErrorResp.BadRequest("Image not found");
+                    }
+                    string? url = await Utils.UploadImgToFirebase(service.Image, serviceToUpdate.Name, "services");
+
+                    if (url == null)
+                    {
+                        return ErrorResp.BadRequest("Fail to get url Image");
+                    }
+
+                    var image = await _amenityServiceRepo.GetImageByServiceId(id);
+                    if (image == null)
+                    {
+                        return ErrorResp.BadRequest("Image not found");
+                    }
+
+                    image.Url = url;
+                    image.UpdateAt = DateTime.Now;
+
+                    bool isUpdatedImage = await _amenityServiceRepo.UpdateServiceImage(image);
+                    if (!isUpdatedImage)
+                    {
+                        return ErrorResp.BadRequest("Fail to update image service");
+                    }
                 }
-
-                string? url = await Utils.UploadImgToFirebase(service.Image, service.Name, "services");
-
-                if (url == null)
+                else
                 {
-                    return ErrorResp.BadRequest("Fail to get url Image");
+                    serviceToUpdate.Image = serviceToUpdate.Image;
                 }
-
-                var image = await _amenityServiceRepo.GetImageByServiceId(id);
-                if (image == null)
-                {
-                    return ErrorResp.BadRequest("Image not found");
-                }
-
-                image.Url = url;
-                image.UpdateAt = DateTime.Now;
 
                 bool isUpdated = await _amenityServiceRepo.UpdateService(serviceToUpdate);
                 if (!isUpdated)
                 {
                     return ErrorResp.BadRequest("Fail to update service");
-                }
-
-                bool isUpdatedImage = await _amenityServiceRepo.UpdateServiceImage(image);
-                if (!isUpdatedImage)
-                {
-                    return ErrorResp.BadRequest("Fail to update image service");
                 }
 
                 return SuccessResp.Ok("Update service success");
@@ -175,19 +210,63 @@ namespace BE.src.Services
         {
             try
             {
-                bool isDeleted = await _amenityServiceRepo.DeleteService(amenityServiceId);
-                if (!isDeleted)
+                //identify booking have this service
+                List<Booking> GetListBookingByAmenityService = await _bookingRepo.GetListBookingByAmenityService(amenityServiceId);
+                foreach (var booking in GetListBookingByAmenityService)
                 {
-                    return ErrorResp.BadRequest("Fail to delete service");
+                    var bookingItem = booking.BookingItems.FirstOrDefault();
+                    if (booking.PaymentRefunds.FirstOrDefault()?.PaymentType != PaymentTypeEnum.COD)
+                    {
+                        // refund
+                        PaymentRefund? paymentRefund = await _transactionRepo.FindPaymentRefundByBooking(booking.Id);
+                        if (paymentRefund == null)
+                        {
+                            PaymentRefund newPaymentRefund = new()
+                            {
+                                Type = PaymentRefundEnum.Refund,
+                                Total = bookingItem.Total,
+                                PointBonus = 0,
+                                Status = true,
+                                IsRefundReturnRoom = false
+                            };
+                            var isCreatePayment = await _transactionRepo.CreatePaymentRefund(newPaymentRefund);
+                            paymentRefund = newPaymentRefund;
+                        }
+                        else
+                        {
+                            paymentRefund.Total += bookingItem.Total;
+                            var isUpdatedPayment = await _transactionRepo.UpdatePaymentRefund(paymentRefund);
+                        }
+                        RefundItem newRefundItem = new()
+                        {
+                            AmountItems = bookingItem.AmountItems,
+                            Total = bookingItem.Total,
+                            PaymentRefundId = paymentRefund.Id,
+                            BookingItemId = bookingItem.Id
+                        };
+                        var isCreatedRefundItem = await _transactionRepo.CreateRefundItem(newRefundItem);
+                        //plus amount for wallet
+                        var user = await _userRepo.GetUserById(booking.UserId);
+                        user.Wallet += bookingItem.Total;
+                        var isUpdatedUser = await _userRepo.UpdateUser(user);
+                    }
+                    // change status bookingservice
+                    bookingItem.Status = StatusBookingItemEnum.Cancle;
+                    var isUpdateBookingItem = await _bookingRepo.UpdateBookingItem(bookingItem);
+                    // send notification
+                    Notification notification = new()
+                    {
+                        Title = "Refunds due as this service is no longer available",
+                        Description = $"Booking application on {booking.DateBooking}, has been canceled and an amount of {bookingItem.Total} added to your wallet",
+                        UserId = booking.UserId
+                    };
+                    var isCreateNotification = await _userRepo.CreateNotification(notification);
                 }
-
-                bool isDeletedImage = await _amenityServiceRepo.DeleteServiceImage(amenityServiceId);
-                if (!isDeletedImage)
-                {
-                    return ErrorResp.BadRequest("Fail to delete image service");
-                }
-
-                return SuccessResp.Ok("Delete service success");
+                //change service status
+                var serviceAmenity = await _amenityServiceRepo.GetAmenityServiceById(amenityServiceId);
+                serviceAmenity.Status = StatusServiceEnum.Disable;
+                var isUpdatedService = await _amenityServiceRepo.UpdateService(serviceAmenity);
+                return SuccessResp.Ok("Delete Service Success");
             }
             catch (System.Exception ex)
             {

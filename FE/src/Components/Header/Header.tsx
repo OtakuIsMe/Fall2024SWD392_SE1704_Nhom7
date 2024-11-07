@@ -44,7 +44,9 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const handleLoginClick = () => {
     navigate('/login');
   };
-
+const handleProfileCLick = () => {
+  navigate('/profile');
+}
   const handleRegisterClick = () => {
     setIsRegisterOpen(true);
   };

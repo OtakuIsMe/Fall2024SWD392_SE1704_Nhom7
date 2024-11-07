@@ -72,14 +72,14 @@
 }
 
 #rooms > .filter-bar div.date-container > .search_input > label p {
-    margin: 0 0 5px 0;
-
+    margin: 0;
     font-size: 1rem;
     font-weight: bold;
 }
 
 #rooms > .filter-bar div.date-container > .search_input > input {
-    border: none;
+    padding: 5px;
+    border: 1px solid #ccc;
 }
 
 #rooms > .filter-bar div.date-container > .search_input > input:focus {
@@ -145,16 +145,16 @@
 #rooms > .room-list-container > .room-list {
     height: 100vh;
     background-color: #ebebeb;
+    display: flex;
 }
 
 #rooms > .room-list-container > .room-list > .list {
     min-height: 100vh;
     height: fit-content;
-    
-    /* display: grid;
-    grid-template-columns: 250px 250px 250px 250px; */
+    width: 100%;
     display: flex;
+    flex-wrap: wrap;
     background-color: white;
     padding: 25px;
-    gap: 30px;
+    gap: 25px;
 }

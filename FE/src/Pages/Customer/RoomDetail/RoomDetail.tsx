@@ -21,6 +21,9 @@ import { TbAirConditioning } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { RiDrinks2Fill } from "react-icons/ri";
 import SelectedItemCard from '../../../Components/SelectedItem/SelectedItemCard'
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import { useNavigate } from 'react-router'
 
 dayjs.extend(duration);
 
@@ -32,6 +35,7 @@ const RoomDetail = () => {
   }
 
   const { user } = context;
+  const navigate = useNavigate()
 
   const [roomInfo, setRoomInfo] = useState<any>([])
 
@@ -46,6 +50,8 @@ const RoomDetail = () => {
   const [typeNumberServiceSelected, setTypeNumberServiceSelected] = useState('0');
   const [openPopup, setOpenPopup] = useState(false);
   const [openPopupMsg, setOpenPopupMsg] = useState(false);
+  const [openCautionPopup, setOpenCautionPopup] = useState(false);
+  const [openSuccessPopup, setOpenSuccessPopup] = useState(false);
 
   const [payment, setPayment] = useState<string>('COD')
 
@@ -111,9 +117,9 @@ const RoomDetail = () => {
       name: "Hot water dispenser"
     }
   ]
-  
 
-  const totalTime = (start: string, end: string) : string => {
+
+  const totalTime = (start: string, end: string): string => {
     const startT = dayjs(start)
     const endT = dayjs(end)
 
@@ -125,45 +131,89 @@ const RoomDetail = () => {
     return `${days} day(s) ${hours} hour(s)`
   }
 
-  const totalTimeInHour = (start: string, end: string) : string => {
+  const totalTimeInHour = (start: string, end: string): string => {
     const startT = dayjs(start)
     const endT = dayjs(end)
 
-    const diff = endT.diff(startT); // Calculate the difference in milliseconds
-    const duration = dayjs.duration(diff);  // Create a duration object from the difference
-    // Get the difference in days, hours, and minutes
+    const diff = endT.diff(startT);
+    const duration = dayjs.duration(diff); 
+    
     const hours = Math.floor(duration.asHours());
     return `${hours}`
   }
 
-  const totalPrice = (room: string, service: string, start: string, end: string, services: number) : string => {
+  const totalPrice = (room: string, service: string, start: string, end: string, services: number): string => {
     const total = Number(room) * Number(totalTimeInHour(start, end)) + Number(service) + services
     return priceConvert(total)
   }
-
-  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const startT = event.target.value
-    setStart(startT);
-    const endT = dayjs(startT).add(1, 'hour').format('YYYY-MM-DDTHH:mm')
-    setEnd(endT);
-    setMinEnd(endT);
-  };
 
   const priceConvert = (amount: number): string => {
     return new Intl.NumberFormat('de-DE', { style: 'decimal' }).format(amount);
   };
 
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let startT = event.target.value;
+    
+    let startDateTime = dayjs(startT);
+    const startMinutes = startDateTime.minute();
+    startDateTime = startMinutes <= 30 
+      ? startDateTime.minute(0) 
+      : startDateTime.add(1,'hour').minute(0);
+    startT = startDateTime.format('YYYY-MM-DDTHH:mm');
+
+    let endDateTime = startDateTime.add(1, 'hour');
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1, 'hour').minute(0);
+    const endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
+    setStart(startT);
+    sessionStorage.setItem('startDate', startT);
+  
+    if (dayjs(endDate).isBefore(startT) || dayjs(endDate).isSame(startT)) {
+      setEnd(endT);
+      sessionStorage.setItem('endDate', endT);
+    }
+  
+    setMinEnd(endT);
+  };
+  
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEnd(event.target.value);
+    let endT = event.target.value;
+  
+    let endDateTime = dayjs(endT);
+    const endMinutes = endDateTime.minute();
+    endDateTime = endMinutes <= 30 
+      ? endDateTime.minute(0) 
+      : endDateTime.add(1,'hour').minute(0);
+    endT = endDateTime.format('YYYY-MM-DDTHH:mm');
+  
+    if (dayjs(endT).isBefore(minEnd)) {
+      setEnd(minEnd);
+    } else {
+      setEnd(endT);
+      sessionStorage.setItem('endDate', endT);
+    }
   };
 
   const handleNavbarClick = (type: string) => {
     setInfoSelected(type);
   }
 
+  const handleOpenMsgPopup = () => {
+    if (!user) {
+      setOpenCautionPopup(true);
+      sessionStorage.setItem('last_href', window.location.href)
+    } else {
+      setOpenPopupMsg(true)
+    }
+  }
+
   interface ServiceData {
     index: number;
     id: string;
+    image: string;
     type: number;
     name: string;
     price: number;
@@ -171,11 +221,12 @@ const RoomDetail = () => {
   function createData(
     index: number,
     id: string,
+    image: string,
     type: number,
     name: string,
     price: number,
   ): ServiceData {
-    return { index, id, type, name, price };
+    return { index, id, image, type, name, price };
   }
 
   const { roomHashing } = useParams();
@@ -190,19 +241,19 @@ const RoomDetail = () => {
     }
   }
 
-  const postBookingRoom = async (e : React.FormEvent): Promise<void> => {
+  const postBookingRoom = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
     if (roomHashing != null) {
       try {
         const roomId = roomHashing;
         const userId = user.id;
-        const bookingItemDTOs : any[] = selectedItemList.map(item => ({
+        const bookingItemDTOs: any[] = selectedItemList.map(item => ({
           itemsId: item.service.id,
           amount: item.amount
         }))
         const timeHourBooking = parseInt(totalTimeInHour(startDate, endDate));
         const dateBooking = startDate;
-        
+
         const response = await ApiGateway.BookRoom(
           userId,
           roomId,
@@ -217,10 +268,10 @@ const RoomDetail = () => {
         console.error('Error booking room:', error);
       }
     }
-};
+  };
 
-  const payBill = async (bookingId : any) : Promise<void> => {
-    try{
+  const payBill = async (bookingId: any): Promise<void> => {
+    try {
       const bookId = bookingId;
       if (payment === 'COD') {
         const response = await ApiGateway.payCOD(bookId);
@@ -228,8 +279,11 @@ const RoomDetail = () => {
         setOpenPopupMsg(false);
       } else if (payment === 'Paypal') {
         const response = await ApiGateway.payBill(bookId);
-        console.log(response);
+        window.location.href = response.message;
       }
+      setOpenSuccessPopup(true)
+      sessionStorage.removeItem('startDate')
+      sessionStorage.removeItem('endDate')
     } catch (error) {
       console.error('Error booking room:', error);
     }
@@ -237,26 +291,27 @@ const RoomDetail = () => {
 
   const fetchServices = async (): Promise<void> => {
     try {
-        const response = await ApiGateway.GetServices();
-        const rowData1: ServiceData[] = [];
-        const rowData2: ServiceData[] = [];
-        const rowData3: ServiceData[] = [];
+      const response = await ApiGateway.GetServices();
+      const rowData1: ServiceData[] = [];
+      const rowData2: ServiceData[] = [];
+      const rowData3: ServiceData[] = [];
 
-        response.forEach((row: any, index: number) => {
-          const serviceData = createData(index, row.id, row.type, row.name, row.price);
-          if (row.type === 0) {
-            rowData1.push(serviceData);
-          } else if (row.type === 1) {
-            rowData2.push(serviceData);
-          } else if (row.type === 2) {
-            rowData3.push(serviceData);
-          }
-        });
-        setServiceListType1(rowData1);
-        setServiceListType2(rowData2);
-        setServiceListType3(rowData3);  
-      } catch (err) {
-        console.error('Error getting service list:', err);
+      response.forEach((row: any, index: number) => {
+        const serviceData = createData(index, row.amenityService.id, row.amenityService.image.url, row.amenityService.type, row.amenityService.name, row.amenityService.price);
+        if (row.amenityService.type === 0) {
+          rowData1.push(serviceData);
+        } else if (row.amenityService.type === 1) {
+          rowData2.push(serviceData);
+        } else if (row.amenityService.type === 2) {
+          rowData3.push(serviceData);
+        }
+      });
+      setServiceListType1(rowData1);
+      setServiceListType2(rowData2);
+      setServiceListType3(rowData3);
+      console.log(rowData1)
+    } catch (err) {
+      console.error('Error getting service list:', err);
     }
   };
 
@@ -264,14 +319,14 @@ const RoomDetail = () => {
     window.scrollTo(0, 0);
     setSelectedItemList([])
     const date = new Date();
-    const curTime = dayjs(date).set('minute', 0).add(1, 'hour').format('YYYY-MM-DDThh:mm')
+    const curTime = dayjs(date).add(1, 'day').set('minute', 0).set('hour', 7).format('YYYY-MM-DDThh:mm')
     const maxTime = dayjs(date).set('hour', 0).set('minute', 0).add(30, 'day').format('YYYY-MM-DDThh:mm')
     setMax(maxTime)
     setMin(curTime)
     getTimeSpanFromSessions()
     fetchRoomDetail();
   }, [])
-  
+
   useEffect(() => {
   }, [user])
 
@@ -296,7 +351,7 @@ const RoomDetail = () => {
 
   useEffect(() => {
     const total = selectedItemList.reduce((total, item) => total + (item.service.price * item.amount), 0);
-    setTotalService(total); 
+    setTotalService(total);
   }, [selectedItemList]);
 
   useEffect(() => {
@@ -322,9 +377,9 @@ const RoomDetail = () => {
     setTypeServiceSelected(type);
     if (type === 'food') {
       setTypeNumberServiceSelected('0')
-    } else if (type === 'drink'){
+    } else if (type === 'drink') {
       setTypeNumberServiceSelected('1')
-    } else if (type === 'device'){
+    } else if (type === 'device') {
       setTypeNumberServiceSelected('2')
     }
   }
@@ -358,7 +413,7 @@ const RoomDetail = () => {
     }
   }
 
-  const getTimeSpanFromSessions = () : void => {
+  const getTimeSpanFromSessions = (): void => {
     const sesStartDate = sessionStorage.getItem('startDate');
     const sesEndDate = sessionStorage.getItem('endDate');
     if (sesStartDate) {
@@ -372,13 +427,24 @@ const RoomDetail = () => {
     }
   }
 
-  const handlePaymentChange = (e : React.ChangeEvent<HTMLInputElement>) : void => {
+  const preventKeyboardInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+  };
+
+  const preventClearInput = (event: React.FormEvent<HTMLInputElement>) => {
+    const input = event.target as HTMLInputElement;
+    if (input.value === '') {
+      input.value = input.defaultValue;
+    }
+  };
+
+  const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setPayment(e.target.value)
   }
 
   const handleAddItem = (service: ServiceData) => {
     const index = service.index.toString();
-    
+
     setQuantities((prev) => ({
       ...prev,
       [index]: (prev[index] || 0) + 1,
@@ -419,18 +485,24 @@ const RoomDetail = () => {
       <div className="room-detail">
         <div className="room-images">
           <div className="main-image">
-            <img src={roomInfo?.images?.[3] || room1} alt="" />
+            <img src={roomInfo?.images?.[0]?.url || room1} alt="" />
           </div>
           <div className="others-image">
-            <div className="child-image">
-              <img src={roomInfo?.images?.[2] || room2} alt="" />
-            </div>
-            <div className="child-image">
-              <img src={roomInfo?.images?.[1] || room3} alt="" />
-            </div>
-            <div className="child-image">
-              <img src={roomInfo?.images?.[0] || room4} alt="" />
-            </div>
+            {roomInfo?.images?.[1] &&
+              <div className="child-image">
+                <img src={roomInfo?.images?.[1]?.url || room2} alt="" />
+              </div>
+            }
+            {roomInfo?.images?.[2] &&
+              <div className="child-image">
+                <img src={roomInfo?.images?.[2]?.url || room3} alt="" />
+              </div>
+            }
+            {roomInfo?.images?.[3] &&
+              <div className="child-image">
+                <img src={roomInfo?.images?.[3]?.url || room4} alt="" />
+              </div>
+            }
           </div>
         </div>
         <div className="room-detail-container">
@@ -459,20 +531,30 @@ const RoomDetail = () => {
                   <div className="utilities-container">
                     <p className="title">Utilities</p>
                     <div className="utilities">
-                      {utilities.map((utility, index) => (
-                        <div className="utility" key={index}>
-                          {iconReturn(utility.id)}
-                          <span className="utility-name">
-                            {utility.name}
-                          </span>
-                        </div>
-                      ))}
+                      {roomInfo ?
+                        roomInfo?.utilities?.map((utility: any) => (
+                            <div className="utility" key={utility.id}>
+                              {iconReturn(utility.id)}
+                              <span className="utility-name">{utility.name}</span>
+                            </div>
+                          ))
+                        :
+                          utilities.map((utility: any, index: number) => (
+                            <div className="utility" key={index}>
+                              {iconReturn(utility.id)}
+                              <span className="utility-name">
+                                {utility.name}
+                              </span>
+                            </div>
+                          )
+                        )
+                      }
                     </div>
                   </div>
                   <div className="description-container">
                     <p className="title">Workspace Description</p>
                     <p className="description">
-                      Welcome to the ideal workspace, where creativity and productivity are sparked. Centrally located, this space is designed to bring comfort and inspiration to everyone.
+                      {roomInfo ? roomInfo.description  :"Welcome to the ideal workspace, where creativity and productivity are sparked. Centrally located, this space is designed to bring comfort and inspiration to everyone."}
                     </p>
                   </div>
                 </div>
@@ -488,7 +570,7 @@ const RoomDetail = () => {
             {infoSelected === "comments" && (
               <React.Fragment>
                 <div className="info-comments">
-
+                  There are no comments
                 </div>
               </React.Fragment>
             )}
@@ -499,11 +581,29 @@ const RoomDetail = () => {
               <div className="book-interval">
                 <div className="check-in box-time">
                   <p className='title'>CHECK-IN</p>
-                  <input className="time-oclock" min={min} max={max} type='datetime-local' value={startDate} onChange={handleStartDateChange}/>
+                  <input
+                    className="time-oclock"
+                    min={min}
+                    max={max}
+                    type='datetime-local'
+                    value={startDate}
+                    onChange={handleStartDateChange}
+                    onKeyDown={preventKeyboardInput}
+                    onInput={preventClearInput}
+                  />
                 </div>
                 <div className="check-out box-time">
                   <p className='title'>CHECK-OUT</p>
-                  <input className="time-oclock" min={minEnd} max={max} type='datetime-local' value={endDate} onChange={handleEndDateChange}/>
+                  <input
+                  className="time-oclock"
+                  min={minEnd}
+                  max={max}
+                  type='datetime-local'
+                  value={endDate}
+                  onChange={handleEndDateChange}
+                  onKeyDown={preventKeyboardInput}
+                  onInput={preventClearInput}
+                />
                 </div>
               </div>
               <div className="hour-booking date">
@@ -514,11 +614,11 @@ const RoomDetail = () => {
                 <p className="title">PAYMENT METHOD</p>
                 <div className="method">
                   <label>
-                    <input type="radio" name='method' value="COD" checked={payment === 'COD'} onChange={handlePaymentChange}/>
+                    <input type="radio" name='method' value="COD" checked={payment === 'COD'} onChange={handlePaymentChange} />
                     <span>COD</span>
                   </label>
                   <label>
-                    <input type="radio" name='method' value="Paypal" checked={payment === 'Paypal'} onChange={handlePaymentChange}/>
+                    <input type="radio" name='method' value="Paypal" checked={payment === 'Paypal'} onChange={handlePaymentChange} />
                     <span>Paypal</span>
                   </label>
                 </div>
@@ -531,7 +631,7 @@ const RoomDetail = () => {
                   Room:
                 </span>
                 <span className='results'>
-                {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
+                  {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
                 </span>
               </div>
               <div className="services-price line">
@@ -559,19 +659,19 @@ const RoomDetail = () => {
                 </span>
               </div>
             </div>
-            <div className='service-btn but' onClick={async () => { await fetchServices(), setOpenPopup(true)}}>Additional Services</div>
-            <div className='but' onClick={() => setOpenPopupMsg(true)} >Request To Book</div>
-            <div className="service-popup" style={!openPopupMsg ? {display: "none"}:{display: "flex"}}>
+            <div className='service-btn but' onClick={async () => { await fetchServices(), setOpenPopup(true) }}>Additional Services</div>
+            <div className='but' onClick={() => handleOpenMsgPopup()} >Request To Book</div>
+            <div className="service-popup" style={!openPopupMsg ? { display: "none" } : { display: "flex" }}>
               <div className="noti">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 20 20"><path fill="#4DB051" d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z" /></svg>
                 <p>Confirm booking</p>
-                <div className="total" style={{margin: "0", width: "100%"}}>
+                <div className="total" style={{ margin: "0", width: "100%" }}>
                   <div className="Room-price line">
                     <span className='title-result'>
                       Room:
                     </span>
                     <span className='results'>
-                    {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
+                      {priceConvert(roomInfo?.price)} X {totalTimeInHour(startDate, endDate)}h
                     </span>
                   </div>
                   <div className="services-price line">
@@ -608,7 +708,7 @@ const RoomDetail = () => {
           </form>
         </div>
       </div>
-      <div className="service-popup" style={!openPopup ? {display: "none"}:{display: "flex"}}>
+      <div className="service-popup" style={!openPopup ? { display: "none" } : { display: "flex" }}>
         <div className="service-board">
           <div className="title-close">
             <div>
@@ -617,7 +717,7 @@ const RoomDetail = () => {
               </p>
               <p className='short-title'>Enhance your experience with our curated range of premium services tailored to meet your unique needs.</p>
             </div>
-            <RxCross2 onClick={() => setOpenPopup(false)}/>
+            <RxCross2 onClick={() => setOpenPopup(false)} />
           </div>
           <div className="service-content">
             <div className="services-container">
@@ -642,76 +742,98 @@ const RoomDetail = () => {
                 </div>
               </div>
               <div className="services">
-                {typeNumberServiceSelected === '0' ? 
-                  serviceListType1.map((service) => 
-                    <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
+                {typeNumberServiceSelected === '0' ?
+                  serviceListType1.map((service) =>
+                    <ItemCard id={service.index.toString()} img={service.image} name={service.name} price={service.price} type={service.type}>
                       <div className='quatity'>
                         <div className="minus" onClick={() => handleRemoveItem(service)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z"/></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z" /></svg>
                         </div>
                         <p>{quantities[service.index.toString()] || 0}</p>
                         <div className='plus' onClick={() => handleAddItem(service)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z" /></svg>
                         </div>
                       </div>
                     </ItemCard>
                   )
-                : 
-                typeNumberServiceSelected === '1' ?
-                  serviceListType2.map((service) => 
-                    <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
-                      <div className='quatity'>
-                        <div className="minus" onClick={() => handleRemoveItem(service)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z"/></svg>
+                  :
+                  typeNumberServiceSelected === '1' ?
+                    serviceListType2.map((service) =>
+                      <ItemCard id={service.index.toString()} img={service.image} name={service.name} price={service.price} type={service.type}>
+                        <div className='quatity'>
+                          <div className="minus" onClick={() => handleRemoveItem(service)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z" /></svg>
+                          </div>
+                          <p>{quantities[service.index.toString()] || 0}</p>
+                          <div className='plus' onClick={() => handleAddItem(service)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z" /></svg>
+                          </div>
                         </div>
-                        <p>{quantities[service.index.toString()] || 0}</p>
-                        <div className='plus' onClick={() => handleAddItem(service)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+                      </ItemCard>
+                    )
+                    :
+                    serviceListType3.map((service) =>
+                      <ItemCard id={service.index.toString()} img={service.image} name={service.name} price={service.price} type={service.type}>
+                        <div className='quatity'>
+                          <div className="minus" onClick={() => handleRemoveItem(service)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z" /></svg>
+                          </div>
+                          <p>{quantities[service.index.toString()] || 0}</p>
+                          <div className='plus' onClick={() => handleAddItem(service)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z" /></svg>
+                          </div>
                         </div>
-                      </div>
-                    </ItemCard>
-                  )
-                :
-                  serviceListType3.map((service) => 
-                    <ItemCard id={service.index.toString()} img={service.type.toString()} name={service.name} price={service.price} type={service.type}>
-                      <div className='quatity'>
-                        <div className="minus" onClick={() => handleRemoveItem(service)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="black" d="M19 12.998H5v-2h14z"/></svg>
-                        </div>
-                        <p>{quantities[service.index.toString()] || 0}</p>
-                        <div className='plus' onClick={() => handleAddItem(service)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="black" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
-                        </div>
-                      </div>
-                    </ItemCard>
-                  )
+                      </ItemCard>
+                    )
                 }
               </div>
             </div>
             <div className="booking-service">
-                <div className="services">
-                  <div className="item-container">
-                    {selectedItemList.map(service => 
-                      <SelectedItemCard service={service.service} amount={service.amount}/>
-                    )}
-                  </div>
+              <div className="services">
+                <div className="item-container">
+                  {selectedItemList.map(service =>
+                    <SelectedItemCard service={service.service} amount={service.amount} />
+                  )}
                 </div>
-                <div className="service-total">
+              </div>
+              <div className="service-total">
+                <div>
+                  <div>Total:</div>
                   <div>
-                    <div>Total:</div>
-                    <div>
-                      {priceConvert(totalService)}
-                      VND
-                    </div>
-                  </div>
-                  <div className="confirm">
-                    <div className='confirm-btn' onClick={() => {setOpenPopup(false)}}>Confirm</div>
+                    {priceConvert(totalService)}
+                    VND
                   </div>
                 </div>
+                <div className="confirm">
+                  <div className='confirm-btn' onClick={() => { setOpenPopup(false) }}>Confirm</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      {openCautionPopup &&
+        <div className="service-popup">
+          <div className="caution">
+            <ErrorOutlineOutlinedIcon sx={{fontSize: "48px", color: "#F12425"}}/>
+            <p>You haven't logged in yet!</p>
+            <div className="btns">
+              <div className="cancel" onClick={() => setOpenCautionPopup(false)}>Cancel</div>
+              <div className="login" onClick={() => navigate('/login')}>Login</div>
+            </div>
+          </div>
+        </div>
+      }
+      {openSuccessPopup && 
+        <div className="service-popup">
+          <div className="success"> 
+            <CheckCircleOutlineOutlinedIcon sx={{fontSize: "48px", color: "#48937e"}}/>
+            <p>We have receive your Booking Request!</p>
+            <p>Please wait for confirmation</p>
+            <div onClick={() => navigate('/')}>Ok</div>
+          </div>
+        </div>
+      }
     </div>
   )
 }

@@ -11,11 +11,11 @@ namespace BE.src.Repositories
         Task<bool> CreateService(AmenityService service);
         Task<bool> CreateServiceImage(Image image);
         Task<int> CountServiceRemain(Guid serviceId);
-        Task<bool> CreateServiceDetail(SerivceDetail serivceDetail);
+        Task<bool> CreateServiceDetail(ServiceDetail serviceDetail);
         Task<bool> UpdateService(AmenityService service);
-        Task<bool> DeleteService(Guid amenityServiceId);
+        Task<bool> DeleteService(AmenityService service);
         Task<bool> UpdateServiceImage(Image image);
-        Task<bool> DeleteServiceImage(Guid amenityServiceId);
+        Task<bool> DeleteServiceImage(Image image);
         Task<Image?> GetImageByServiceId(Guid amenityServiceId);
         Task<DeviceChecking?> GetDeviceChecking(Guid BookingItemsId);
         Task<bool> AddDeviceChecking(DeviceChecking deviceChecking);
@@ -35,12 +35,13 @@ namespace BE.src.Repositories
         {
             return await _context.AmenityServices
                                 .Include(a => a.Image)
+                                .OrderBy(a => a.CreateAt)
                                 .ToListAsync();
         }
 
         public async Task<AmenityService?> GetAmenityServiceById(Guid amenityServiceId)
         {
-            return await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityServiceId);
+            return await _context.AmenityServices.Include(a => a.Image).FirstOrDefaultAsync(a => a.Id == amenityServiceId);
         }
 
         public async Task<bool> CreateService(AmenityService service)
@@ -57,14 +58,14 @@ namespace BE.src.Repositories
 
         public async Task<int> CountServiceRemain(Guid serviceId)
         {
-            return await _context.SerivceDetails
+            return await _context.ServiceDetails
                         .Where(s => s.AmenitySerivceId == serviceId && s.IsInUse == false)
                         .CountAsync();
         }
 
-        public async Task<bool> CreateServiceDetail(SerivceDetail serivceDetail)
+        public async Task<bool> CreateServiceDetail(ServiceDetail serviceDetail)
         {
-            _context.SerivceDetails.Add(serivceDetail);
+            _context.ServiceDetails.Add(serviceDetail);
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -74,13 +75,8 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> DeleteService(Guid amenityServiceId)
+        public async Task<bool> DeleteService(AmenityService service)
         {
-            var service = await _context.AmenityServices.FirstOrDefaultAsync(a => a.Id == amenityServiceId);
-            if (service == null)
-            {
-                return false;
-            }
             _context.AmenityServices.Remove(service);
             return await _context.SaveChangesAsync() > 0;
         }
@@ -91,13 +87,8 @@ namespace BE.src.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> DeleteServiceImage(Guid amenityServiceId)
+        public async Task<bool> DeleteServiceImage(Image image)
         {
-            var image = await _context.Images.FirstOrDefaultAsync(i => i.AmenityServiceId == amenityServiceId);
-            if (image == null)
-            {
-                return false;
-            }
             _context.Images.Remove(image);
             return await _context.SaveChangesAsync() > 0;
         }

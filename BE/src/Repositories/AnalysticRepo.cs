@@ -60,7 +60,7 @@ namespace BE.src.Repositories
         public async Task<List<Room>> GetMostPurchasedRooms()
         {
             var mostPurchasedRoomIds = await _context.Bookings
-                                        .Where(b => b.Status == StatusBookingEnum.Completed)
+                                        .Where(b => b.Status == StatusBookingEnum.Done)
                                         .Include(b => b.Room)
                                             .ThenInclude(r => r.Images)
                                         .GroupBy(b => b.RoomId)
@@ -75,6 +75,5 @@ namespace BE.src.Repositories
 
             return rooms;
         }
-        // public async Task<>
     }
 }
