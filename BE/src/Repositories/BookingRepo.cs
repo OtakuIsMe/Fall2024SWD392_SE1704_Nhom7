@@ -450,7 +450,7 @@ namespace BE.src.Repositories
 
         public async Task<int> TotalBooking()
         {
-            return await _context.Bookings.Where(b => b.Status == StatusBookingEnum.Done).CountAsync();
+            return await _context.Bookings.Where(b => b.Status == StatusBookingEnum.Done || b.Status == StatusBookingEnum.Accepted).CountAsync();
         }
 
         public async Task<BookingItem?> GetBookingItemById(Guid BookingItemId)
