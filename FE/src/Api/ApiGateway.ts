@@ -32,7 +32,7 @@ export class ApiGateway {
             console.error("Login error:", error);
             throw error;
         }
-    }   public static async Register<T>(email: string, username: string, phone: string, password: string): Promise<T> {
+    } public static async Register<T>(email: string, username: string, phone: string, password: string): Promise<T> {
         try {
             const data = new FormData();
             data.append('email', email)
@@ -82,7 +82,7 @@ export class ApiGateway {
     }
     public static async UpdateUserProfile<T>(userData: any): Promise<T> {
         try {
-            
+
             const headers = userData instanceof FormData ? {} : { 'Content-Type': 'application/json' };
             const response = await this.axiosInstance.post<T>("user/UpdateUserProfile", userData, { headers });
             return response.data;
@@ -121,66 +121,66 @@ export class ApiGateway {
     }
     public static async CreateMembership<T>(name: string, discount: number, expDate: string, rank: number): Promise<T> {
         try {
-          const requestBody = {
-            name,
-            discount,
-            expDate,
-            rank,
-          };
-    
-          const response = await this.axiosInstance.post<T>('/membership/Create-membership', requestBody);
-          return response.data;
+            const requestBody = {
+                name,
+                discount,
+                expDate,
+                rank,
+            };
+
+            const response = await this.axiosInstance.post<T>('/membership/Create-membership', requestBody);
+            return response.data;
         } catch (error) {
-          console.error("Create Membership Error:", error);
-          throw error;
+            console.error("Create Membership Error:", error);
+            throw error;
         }
-      }
-    
-      public static async GetMembershipDetails<T>(id: string): Promise<T> {
+    }
+
+    public static async GetMembershipDetails<T>(id: string): Promise<T> {
         try {
-          const response = await this.axiosInstance.get<T>(`/membership/get-membership-details/${id}`);
-          return response.data;
+            const response = await this.axiosInstance.get<T>(`/membership/get-membership-details/${id}`);
+            return response.data;
         } catch (error) {
-          console.error("Get Membership Details Error:", error);
-          throw error;
+            console.error("Get Membership Details Error:", error);
+            throw error;
         }
-      }
-      public static async DeleteMembership<T>(id: string): Promise<T> {
+    }
+    public static async DeleteMembership<T>(id: string): Promise<T> {
         try {
-          const response = await this.axiosInstance.delete<T>(`/membership/Delete-membership/${id}`);
-          return response.data;
+            const response = await this.axiosInstance.delete<T>(`/membership/Delete-membership/${id}`);
+            return response.data;
         } catch (error) {
-          console.error("Delete Membership Error:", error);
-          throw error;
+            console.error("Delete Membership Error:", error);
+            throw error;
         }
-      }
-      public static async UpdateMembership<T>(id: string, name: string, discount: number, expDate: string, rank: number): Promise<T> {
+    }
+    public static async UpdateMembership<T>(id: string, name: string, discount: number, expDate: string, rank: number): Promise<T> {
         try {
-          const requestBody = {
-            name,
-            discount,
-            expDate,
-            rank,
-          };
-    
-          const response = await this.axiosInstance.put<T>(`/membership/Update-membership/${id}`, requestBody);
-          return response.data;
+            const requestBody = {
+                name,
+                discount,
+                expDate,
+                rank,
+            };
+
+            const response = await this.axiosInstance.put<T>(`/membership/Update-membership/${id}`, requestBody);
+            return response.data;
         } catch (error) {
-          console.error("Update Membership Error:", error);
-          throw error;
+            console.error("Update Membership Error:", error);
+            throw error;
         }
-      }
-      public static async GetAllMemberships<T>(): Promise<T[]> {
+    }
+    public static async GetAllMemberships<T>(): Promise<T[]> {
         try {
-          const response = await this.axiosInstance.get<T[]>('/membership/Get-All');
-          return response.data;
+            const response = await this.axiosInstance.get<T[]>('/membership/Get-All');
+            return response.data;
         } catch (error) {
-          console.error("Error fetching memberships:", error);
-          throw error;
+            console.error("Error fetching memberships:", error);
+            throw error;
         }
-      }
-      
-    
+    }
+
+
     public static async GetRoomDetail<T>(hashCode: string): Promise<T> {
         try {
             const response = await this.axiosInstance.get<T>(`room/${hashCode}`);
@@ -198,7 +198,7 @@ export class ApiGateway {
                 oldPassword: oldPassword,
                 newPassword: newPassword
             };
-            
+
             const response = await this.axiosInstance.put<T>("user/ResetPassword", data);
             return response.data;
         } catch (error) {
@@ -206,10 +206,10 @@ export class ApiGateway {
             throw error;
         }
     }
-    
-    
-    
-    
+
+
+
+
     public static async BookRoom<T>(userId: string, roomId: string, bookingItemDTOs: object[], timeHourBooking: number, dateBooking: string): Promise<T> {
         try {
             const bookingData = {
@@ -293,12 +293,12 @@ export class ApiGateway {
     public static async ViewProfile<T>(data: any): Promise<T> {
         try {
             const response = await this.axiosInstance.post<T>("user/ViewProfile", data, {
-                headers: { 'Content-Type': 'application/json' } 
+                headers: { 'Content-Type': 'application/json' }
             });
             return response.data;
         } catch (error) {
-    
-    
+
+
             throw error;
         }
     }
@@ -321,21 +321,21 @@ export class ApiGateway {
         }
     }
 
-   
 
 
-// Thêm hoặc xóa phòng khỏi danh sách yêu thích
-public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T> {
-    try {
-        const response = await this.axiosInstance.get<T>(
-            `room/(Un)Favourite?userId=${userId}&roomId=${roomId}`
-        );
-        return response.data;
-    } catch (error) {
-        console.error("UnfavoriteRoom error:", error);
-        throw error;
+
+    // Thêm hoặc xóa phòng khỏi danh sách yêu thích
+    public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T> {
+        try {
+            const response = await this.axiosInstance.get<T>(
+                `room/(Un)Favourite?userId=${userId}&roomId=${roomId}`
+            );
+            return response.data;
+        } catch (error) {
+            console.error("UnfavoriteRoom error:", error);
+            throw error;
+        }
     }
-}
     public static async CreateService<T>(name: string, type: number, price: number, image: File): Promise<T> {
         try {
             console.log(image)
@@ -370,12 +370,12 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
             formData.append("Address", address);
             formData.append("Longitude", longitude.toString());
             formData.append("Latitude", latitude.toString());
-    
+
             // Append multiple images
             images.forEach((image, index) => {
                 formData.append(`Images`, image);
             });
-    
+
             const response = await axios.post<T>(`http://localhost:5101/area/Create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -387,7 +387,7 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
             throw error;
         }
     }
-    
+
     public static async GetMembership<T>(): Promise<T[]> {
         try {
             const response = await this.axiosInstance.get<T[]>(`membership/Get-All`)
@@ -441,7 +441,7 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
             throw error
         }
     }
-    
+
     public static async TotalUser<T>(): Promise<T> {
         try {
             const response = await this.axiosInstance.get<T>(`/user/Total`)
@@ -459,31 +459,31 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
         longitude: number,
         latitude: number,
         images: File[] // Thêm kiểu images là mảng File
-      ): Promise<T> {
+    ): Promise<T> {
         try {
-          const formData = new FormData();
-          formData.append("Name", name);
-          formData.append("Description", description);
-          formData.append("Address", address);
-          formData.append("Longitude", longitude.toString());
-          formData.append("Latitude", latitude.toString());
-    
-          // Thêm từng hình ảnh vào formData
-          images.forEach((image, index) => {
-            formData.append("Images", image); // Hoặc "Image[${index}]" nếu backend yêu cầu
-          });
-    
-          const response = await axios.put<T>(`http://localhost:5101/area/Update/${id}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-          return response.data;
+            const formData = new FormData();
+            formData.append("Name", name);
+            formData.append("Description", description);
+            formData.append("Address", address);
+            formData.append("Longitude", longitude.toString());
+            formData.append("Latitude", latitude.toString());
+
+            // Thêm từng hình ảnh vào formData
+            images.forEach((image, index) => {
+                formData.append("Images", image); // Hoặc "Image[${index}]" nếu backend yêu cầu
+            });
+
+            const response = await axios.put<T>(`http://localhost:5101/area/Update/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
         } catch (error) {
-          console.error("Update Area Error: ", error);
-          throw error;
+            console.error("Update Area Error: ", error);
+            throw error;
         }
-      }
+    }
     public static async CreateRoom<T>(areaId: string, type: number, name: string, price: string, description: string, images: File[]): Promise<T> {
         try {
             const utilityIds = [
@@ -554,7 +554,7 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
         }
     }
 
-    public static async DeleteRoom<T>(roomId: string) : Promise<T> {
+    public static async DeleteRoom<T>(roomId: string): Promise<T> {
         try {
             console.log(roomId)
             const response = await this.axiosInstance.post<T>(`/room/Delete?RoomId=${roomId}`)
@@ -565,22 +565,22 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
         }
     }
 
-    public static async UpdateRoom<T>(roomId: string , type: number, name: string, price: string, description: string, images: (File | null)[]): Promise<T> {
+    public static async UpdateRoom<T>(roomId: string, type: number, name: string, price: string, description: string, images: (File | null)[]): Promise<T> {
         try {
             const formData = new FormData();
             formData.append("RoomType", type.toString());
             formData.append("Name", name);
             formData.append("Price", price);
             formData.append("Description", description);
-    
+
             images
-                .filter((image): image is File => image !== null) 
+                .filter((image): image is File => image !== null)
                 .forEach((image) => formData.append("Images", image));
-    
+
             for (const [key, value] of formData.entries()) {
                 console.log(key, value);
             }
-    
+
             const response = await axios.put<T>(
                 `http://localhost:5101/room/Update/${roomId}`,
                 formData,
@@ -630,6 +630,28 @@ public static async UnfavoriteRoom<T>(userId: string, roomId: string): Promise<T
     public static async ScheduleRoom<T>(startDate: string, endDate: string, roomId: any): Promise<any> {
         try {
             const response = await this.axiosInstance.get<T>(`/room/RoomSchedule?roomId=${roomId}&StartDate=${startDate}&EndDate=${endDate}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+
+    public static async BuyMembership<T>(userId: string, membershipId: string): Promise<any> {
+        try {
+            const data = {
+                userId: userId,
+                membershipId: membershipId
+            }
+            const response = await this.axiosInstance.post<T>(`/transaction/Buy-Membership-PayPal`, data)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
+
+    public static async ViewNotification<T>(userId: string): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/user/ViewNotification/${userId}`)
             return response.data;
         } catch (error) {
             console.error("Error Total: ", error)

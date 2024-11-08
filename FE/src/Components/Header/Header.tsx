@@ -8,6 +8,8 @@ import { Button, IconButton, Menu, MenuItem } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import './Header.css';
 import { AuthenContext } from '../AuthenContext';
+import { HiOutlineBellAlert } from "react-icons/hi2";
+import { ApiGateway } from '../../Api/ApiGateway';
 
 // Define the props type
 interface HeaderProps {
@@ -18,6 +20,22 @@ gsap.registerPlugin(ScrollTrigger, CSSRulePlugin);
 
 const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const navigate = useNavigate();
+  const [isOpenNotification, setIsOnpenNotification] = useState<boolean>(false);
+  const [notications, setNotifications] = useState<any[]>([])
+
+
+  useEffect(() => {
+    if (user != null) {
+      fecthNotification(user.id);
+    }
+  }, [])
+
+
+  const fecthNotification = async (userId: string): Promise<void> => {
+    const data = await ApiGateway.ViewNotification(userId)
+    console.log(data);
+    setNotifications(data)
+  }
 
   const navbar = [
     { name: 'Home', link: '/' },
@@ -44,9 +62,9 @@ const Header: React.FC<HeaderProps> = ({ isTransparent }) => {
   const handleLoginClick = () => {
     navigate('/login');
   };
-const handleProfileCLick = () => {
-  navigate('/profile');
-}
+  const handleProfileCLick = () => {
+    navigate('/profile');
+  }
   const handleRegisterClick = () => {
     setIsRegisterOpen(true);
   };
@@ -69,7 +87,35 @@ const handleProfileCLick = () => {
     setIsRegisterOpen(false);
   };
 
-  useEffect(() => {},[user]);
+  function timeDifferenceToNow(pastDateTime) {
+    const now = new Date();
+    const pastDate = new Date(pastDateTime);
+
+    // Tính số giây chênh lệch
+    let diffInSeconds = Math.floor((now - pastDate) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds}s ago`;
+    }
+
+    // Tính số phút chênh lệch nếu quá 60 giây
+    let diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes}m ago`;
+    }
+
+    // Tính số giờ chênh lệch nếu quá 60 phút
+    let diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours}h ago`;
+    }
+
+    // Tính số ngày chênh lệch nếu quá 24 giờ
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays}d ago`;
+  }
+
+  useEffect(() => { }, [user]);
 
   useEffect(() => {
     if (divRef1.current) {
@@ -225,6 +271,33 @@ const handleProfileCLick = () => {
       <div ref={divRef2} className="account">
         {user ? (
           <>
+            <div className=' bell-container'>
+              <HiOutlineBellAlert className='bell' onClick={() => { setIsOnpenNotification(prev => !prev) }} />
+              {isOpenNotification && (
+                <div className="notication-container">
+                  <div className="notication-header">
+                    Notifications
+                  </div>
+                  <div className="notifications">
+                    {notications.map((notication, index) => {
+                      return (
+                        <div className="notification">
+                          <div className='border'>
+                            <div className="info">
+                              <p className="title">{notication.title}</p>
+                              <p className="description">{notication.description}</p>
+                            </div>
+                            <div className="time">
+                              <p>{timeDifferenceToNow(notication.createAt)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
             <IconButton onClick={handleMenu} color="inherit">
               <AccountCircleIcon />
             </IconButton>

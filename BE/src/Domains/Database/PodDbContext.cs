@@ -215,6 +215,8 @@ namespace BE.src.Domains.Database
                         entity.HasOne(dc => dc.BookingItem)
                               .WithOne(bi => bi.DeviceChecking)
                               .HasForeignKey<DeviceChecking>(dc => dc.BookingItemsId);
+                        entity.Property(dc => dc.StaffId)
+                              .IsRequired(false);
                         entity.HasOne(dc => dc.Staff)
                               .WithMany(dc => dc.DeviceCheckings)
                               .HasForeignKey(dc => dc.StaffId);
@@ -498,9 +500,6 @@ namespace BE.src.Domains.Database
                         .HasMaxLength(100);
 
                         entity.Property(s => s.IsNormal)
-                        .IsRequired();
-
-                        entity.Property(s => s.IsInUse)
                         .IsRequired();
 
                         entity.HasOne(s => s.AmenityService)

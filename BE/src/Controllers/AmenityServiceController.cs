@@ -23,6 +23,12 @@ namespace BE.src.Controllers
             return await _amenityServiceServ.GetAllAmenityService();
         }
 
+        [HttpGet("GetServiceWhenBooking")]
+        public async Task<IActionResult> GetServiceWhenBooking([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            return await _amenityServiceServ.GetServicesWhenBooking(startDate, endDate);
+        }
+
         [HttpPost("CreateService")]
         public async Task<IActionResult> CreateService([FromForm] CreateServiceDTO data)
         {
