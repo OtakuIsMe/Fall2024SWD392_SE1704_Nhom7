@@ -142,7 +142,7 @@ namespace BE.src.Services
                 }
                 if (userMembership != null)
                 {
-                    total *= userMembership.Discount;
+                    total -= room.Price * data.TimeHourBooking * userMembership.Discount;
                 }
 
                 booking.Total = total;

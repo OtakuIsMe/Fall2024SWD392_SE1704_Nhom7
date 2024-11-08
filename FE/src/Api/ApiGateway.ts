@@ -746,4 +746,13 @@ export class ApiGateway {
             console.error("Error Total: ", error)
         }
     }
+
+    public static async ViewNotification<T>(userId: string): Promise<any> {
+        try {
+            const response = await this.axiosInstance.get<T>(`/user/ViewNotification/${userId}`)
+            return response.data;
+        } catch (error) {
+            console.error("Error Total: ", error)
+        }
+    }
 }
