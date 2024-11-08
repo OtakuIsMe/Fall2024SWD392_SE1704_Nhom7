@@ -30,6 +30,7 @@ namespace BE.src.Services
         Task<IActionResult> DeleteRoom(Guid RoomId);
         Task<IActionResult> UpdateRoom(Guid id, UpdateRoomDTO data);
         Task<IActionResult> RoomSchedule(Guid roomId, DateTime StartDate, DateTime EndDate);
+        Task<IActionResult> GetAllRoomsAsync();
     }
     public class RoomServ : IRoomServ
     {
@@ -465,7 +466,7 @@ namespace BE.src.Services
 
                         count++;
                     }
-                }              
+                }
 
                 room.UpdateAt = DateTime.Now;
 
@@ -489,6 +490,19 @@ namespace BE.src.Services
             {
                 List<Booking> bookings = await _bookingRepo.ScheduleRoom(roomId, StartDate, EndDate);
                 return SuccessResp.Ok(bookings);
+            }
+            catch (System.Exception ex)
+            {
+                return ErrorResp.BadRequest(ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetAllRoomsAsync()
+        {
+            try
+            {
+                var rooms = await _roomRepo.GetAllRooms();
+                return SuccessResp.Ok(rooms);
             }
             catch (System.Exception ex)
             {

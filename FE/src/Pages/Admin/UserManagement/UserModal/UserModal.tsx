@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { TextField } from "@mui/material";
 import './UserModal.css'
 import { ApiGateway } from "../../../../Api/ApiGateway";
 import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
+import { AuthenContext } from "../../../../Components/AuthenContext";
 
 interface PopupType {
   type: string;
   closeModal: () => void;
-  banUser?: (userId: string) => Promise<void>;
-  user?: any;
+  banUser?: (id: string, role: number, status: number) => Promise<void>;
+  changeRole?: (id: string, role: number, status: number) => Promise<void>;
+  userInfo?: any;
 }
-const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
+const Modal:React.FC<PopupType> = ({closeModal, type, userInfo, banUser, changeRole}) => {
   
   const [ isEmailFilled, setIsEmailFilled ] = useState(true);
   const [ isUserNameFilled, setIsUserNameFilled ] = useState(true);
@@ -18,6 +20,8 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
   const [ isPwdFilled, setIsPwdFilled ] = useState(true);
   const [ isCfPwdFilled, setIsCfPwdFilled ] = useState(true);
   const [ isCfPwdMatch, setIsCfPwdMatch ] = useState(true);
+  const [ userRole, setUserRole ] = useState(0)
+  const [ userStatus, setUserStatus ] = useState(0)
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -26,12 +30,6 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
     cfPwd: "",
   });
 
-  const [ changeRoleData, setChangeRoleData ] = useState({
-    email:'',
-    username: '',
-    phone: '',
-    role: '',
-  })
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -95,20 +93,46 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
     }
   }
 
-  const handleBanUser = () => {
-    if (banUser) {
-      banUser(user.id);
+  const handleChangeRole = () => {
+    if (changeRole) {
+      changeRole(userInfo.id, userRole, userStatus);
     }
   }
 
+  const handleBanUser = () => {
+    if (banUser) {
+      if (userInfo.status !== 'Banned') {
+        banUser(userInfo.id, getUserRoleCode(userInfo.role), 2);
+      } else {
+        banUser(userInfo.id, getUserRoleCode(userInfo.role), 0);
+      }
+    }
+  }
+
+  const getUserRoleCode = (role: string) : number => {
+    switch (role) {
+      case 'Customer': return 0
+      case 'Staff': return 1
+      case 'Manager': return 2
+      case 'Admin': return 3
+      default: return 0
+    }
+  }
+
+  const getUserStatusCode = (role: string) : number => {
+    switch (role) {
+      case 'Active': return 0
+      case 'Banned': return 2
+      default: return 0
+    }
+  }
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) =>{setUserRole(parseInt(e.target.value))}
+
   useEffect(() => {
-    if (user) {
-      setChangeRoleData({
-        email: user.email,
-        username: user.username,
-        phone: user.phone,
-        role: user.roleId
-      })
+    if (userInfo) {
+      setUserRole(getUserRoleCode(userInfo.roleId));
+      setUserStatus(getUserStatusCode(userInfo.status));
     }
   },[])
 
@@ -195,7 +219,7 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
           <div id="user_ban_modal" style={{display: "static"}}>
             <div className="ban-confirm">
               <ErrorRoundedIcon sx={{color: "#C90000", fontSize: "64px"}}/>
-              <p>Are you sure to ban <b>{user? user.userName : "this User"}</b>?</p>
+              <p>Are you sure to ban <b>{userInfo? userInfo.username : "this User"}</b>?</p>
               <div className="btn-group">
                 <div className="cancel" onClick={closeModal}>No</div>
                 <div className="confirm" onClick={handleBanUser}>Yes</div>
@@ -206,8 +230,8 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
       );
       case "changerole":
         return (
-          <div id="user_modal" style={{display: "static"}}>
-            <form className="modal" onSubmit={createUser}>
+          <div id="user_change_role_modal" style={{display: "static"}}>
+            <div className="modal" onSubmit={createUser}>
               <div className="popup-header">
                 <h1>Change Role User</h1>
               </div>
@@ -216,68 +240,39 @@ const Modal:React.FC<PopupType> = ({closeModal, type, user, banUser}) => {
                   <label>
                     <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
                       <p>Email</p>
-                      { !isEmailFilled ? 
-                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Name is required</p>
-                        :
-                        <></>
-                      }
                     </div>
-                    <TextField name="email" type="text" fullWidth size="small" value={formData.email} onChange={handleChange} disabled/>
+                    <TextField name="email" type="text" size="small" fullWidth value={userInfo.email} disabled/>
                   </label>
                   <label>
                     <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
                       <p>User Name</p>
-                      { !isUserNameFilled ? 
-                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*User name is required</p>
-                        :
-                        <></>
-                      }
                     </div>
-                    <TextField name="username" type="text" fullWidth size="small" value={formData.username} onChange={handleChange}/>
+                    <TextField name="username" type="text" size="small" fullWidth value={userInfo.username} onChange={handleChange} disabled/>
                   </label>
                   <label>
                     <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
                       <p>Phone</p>
-                      { !isPhoneFilled ? 
-                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Phone is required</p>
-                        :
-                        <></>
-                      }
                     </div>
-                    <TextField name="phone" type="number" onKeyDown={handleKeyDown} fullWidth size="small" value={formData.phone} onChange={handleChange}/>
+                    <TextField name="phone" type="number" onKeyDown={handleKeyDown} size="small" fullWidth value={userInfo.phone} onChange={handleChange} disabled/>
                   </label>
                   <label>
                     <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
-                      <p>Password</p>
-                      { !isPwdFilled ? 
-                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Password is required</p>
-                        :
-                        <></>
-                      }
+                      <p>Role</p>
                     </div>
-                    <TextField name="pwd" type="password" fullWidth size="small" value={formData.pwd} onChange={handleChange}/>
-                  </label>
-                  <label>
-                    <div style={{display: "flex", alignItems: "center", height: "fit-content"}}>
-                      <p>Confirm Password</p>
-                      { !isCfPwdFilled ? 
-                        <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Please confirm password</p>
-                        :
-                        !isCfPwdMatch ? 
-                          <p style={{color: "red", fontSize: "0.7rem", marginLeft: "5px"}}>*Confirm password doesn't match</p>
-                          :
-                          <></>
-                      }
-                    </div>
-                    <TextField name="cfPwd" type="password" fullWidth size="small" value={formData.cfPwd} onChange={handleChange}/>
+                    <select value={userRole} onChange={handleRoleChange}>
+                      <option value={0}>Customer</option>
+                      <option value={1}>Staff</option>
+                      <option value={2}>Manager</option>
+                      <option value={3}>Admin</option>
+                    </select>
                   </label>
                 </div>
               </div>
               <div className="modal-btns">
                 <div className="modal-cancel btn" onClick={closeModal}>Cancel</div>
-                <button type="submit" className="modal-confirm btn">Confirm</button>
+                <div className="modal-confirm btn" onClick={handleChangeRole}>Confirm</div>
               </div>
-            </form>
+            </div>
           </div>
         );
   }

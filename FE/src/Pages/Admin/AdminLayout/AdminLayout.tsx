@@ -33,7 +33,7 @@ const AdminLayout: React.FC = () => {
     { name: 'PODs / WorkRooms', href: '/rooms', icon: <ComputerIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3', '42feaeb5-fc53-4163-98b5-d28cfceafa7c'] },
     { name: 'Areas', href: '/areas', icon: <RoomIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3'] },
     { name: 'Feedbacks & Reports', href: '/feedbacks&reports', icon: <InsertCommentIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3'] },
-    { name: 'Membership', href: '/membership', icon: <AccountBoxIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3'] },
+    { name: 'Membership', href: '/membership-mng', icon: <AccountBoxIcon />, roles: ['6489cb2a-f4df-4020-bf31-56f2a19d30c3'] },
   ]
 
   const navigate = useNavigate();

@@ -319,6 +319,7 @@ const RoomDetail = () => {
     type: number;
     name: string;
     price: number;
+    quantity: number;
   }
   function createData(
     index: number,
@@ -326,9 +327,10 @@ const RoomDetail = () => {
     image: string,
     type: number,
     name: string,
-    price: number
+    price: number,
+    quantity: number
   ): ServiceData {
-    return { index, id, image, type, name, price };
+    return { index, id, image, type, name, price, quantity };
   }
 
   const { roomHashing } = useParams();
@@ -393,7 +395,7 @@ const RoomDetail = () => {
 
   const fetchServices = async (): Promise<void> => {
     try {
-      const response = await ApiGateway.GetServices();
+      const response = await ApiGateway.GetServicesCustomer(startDate, endDate);
       const rowData1: ServiceData[] = [];
       const rowData2: ServiceData[] = [];
       const rowData3: ServiceData[] = [];
@@ -405,7 +407,8 @@ const RoomDetail = () => {
           row.amenityService.image.url,
           row.amenityService.type,
           row.amenityService.name,
-          row.amenityService.price
+          row.amenityService.price,
+          row.remainingQuantity
         );
         if (row.amenityService.type === 0) {
           rowData1.push(serviceData);
@@ -414,11 +417,12 @@ const RoomDetail = () => {
         } else if (row.amenityService.type === 2) {
           rowData3.push(serviceData);
         }
+        console.log(serviceData);
       });
       setServiceListType1(rowData1);
       setServiceListType2(rowData2);
       setServiceListType3(rowData3);
-      console.log(rowData1);
+      console.log(rowData3);
     } catch (err) {
       console.error("Error getting service list:", err);
     }
@@ -433,7 +437,7 @@ const RoomDetail = () => {
     setMax(maxTime)
     setMin(curTime)
     getTimeSpanFromSessions()
-    fetchRoomDetail();
+    fetchRoomDetail()
   }, []);
 
   useEffect(() => {}, [user]);
@@ -525,17 +529,23 @@ const RoomDetail = () => {
   }
 
   const getTimeSpanFromSessions = (): void => {
+    const date = new Date();
     const sesStartDate = sessionStorage.getItem("startDate");
     const sesEndDate = sessionStorage.getItem("endDate");
-    if (sesStartDate) {
+    if (sesStartDate && sesStartDate !== 'Invalid Date') {
       setStart(sesStartDate);
       const endT = dayjs(sesStartDate)
         .add(1, "hour")
         .format("YYYY-MM-DDTHH:mm");
       setEnd(endT);
       setMinEnd(endT);
+    } else {
+      const curTime = dayjs(date).add(1, 'day').set('minute', 0).set('hour', 7).format('YYYY-MM-DDThh:mm');
+      const endTime = dayjs(date).add(1, 'day').set('minute', 0).set('hour', 8).format('YYYY-MM-DDThh:mm');
+      setStart(curTime);
+      setEnd(endTime);
     }
-    if (sesEndDate) {
+    if (sesEndDate && sesEndDate !== 'Invalid Date') {
       setEnd(sesEndDate);
     }
   };
@@ -1029,6 +1039,7 @@ const RoomDetail = () => {
                         name={service.name}
                         price={service.price}
                         type={service.type}
+                        quantity={service.quantity}
                       >
                         <div className="quatity">
                           <div
@@ -1047,7 +1058,7 @@ const RoomDetail = () => {
                           <p>{quantities[service.index.toString()] || 0}</p>
                           <div
                             className="plus"
-                            onClick={() => handleAddItem(service)}
+                            onClick={() => quantities[service.index.toString()] < 1 && handleAddItem(service)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
